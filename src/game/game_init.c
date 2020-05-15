@@ -19,6 +19,7 @@
 #include "main_entry.h"
 #include "thread6.h"
 #include <prevent_bss_reordering.h>
+#include "../../enhancements/puppycam.h"
 
 // FIXME: I'm not sure all of these variables belong in this file, but I don't
 // know of a good way to split them
@@ -223,7 +224,7 @@ void create_task_structure(void) {
     gGfxSPTask->task.t.dram_stack_size = SP_DRAM_STACK_SIZE8;
     #ifdef VERSION_EU
     // terrible hack
-    gGfxSPTask->task.t.output_buff = 
+    gGfxSPTask->task.t.output_buff =
         (u64 *)((u8 *) gGfxSPTaskOutputBuffer - 0x670 + 0x280);
     gGfxSPTask->task.t.output_buff_size =
         (u64 *)((u8 *) gGfxSPTaskOutputBuffer+ 0x280 + 0x17790);
@@ -601,6 +602,7 @@ void thread5_game_loop(UNUSED void *arg) {
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
     set_sound_mode(save_file_get_sound_mode());
     rendering_init();
+    newcam_init_settings();
 
     while (1) {
         // if the reset timer is active, run the process to reset the game.

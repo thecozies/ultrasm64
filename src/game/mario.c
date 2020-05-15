@@ -31,6 +31,7 @@
 #include "engine/surface_collision.h"
 #include "level_table.h"
 #include "thread6.h"
+#include "../../enhancements/puppycam.h"
 
 u32 unused80339F10;
 s8 filler80339F1C[20];
@@ -350,7 +351,7 @@ void play_mario_heavy_landing_sound_once(struct MarioState *m, u32 soundBits) {
 void play_mario_sound(struct MarioState *m, s32 actionSound, s32 marioSound) {
     if (actionSound == SOUND_ACTION_TERRAIN_JUMP) {
         play_mario_action_sound(
-                m, (m->flags & MARIO_METAL_CAP) ? (s32)SOUND_ACTION_METAL_JUMP 
+                m, (m->flags & MARIO_METAL_CAP) ? (s32)SOUND_ACTION_METAL_JUMP
                                                 : (s32)SOUND_ACTION_TERRAIN_JUMP, 1);
     } else {
         play_sound_if_no_flag(m, actionSound, MARIO_ACTION_SOUND_PLAYED);
@@ -1306,7 +1307,10 @@ void update_mario_joystick_inputs(struct MarioState *m) {
     }
 
     if (m->intendedMag > 0.0f) {
-        m->intendedYaw = atan2s(-controller->stickY, controller->stickX) + m->area->camera->yaw;
+        if (gLakituState.mode != CAM_MODE_NEWCAM)
+            m->intendedYaw = atan2s(-controller->stickY, controller->stickX) + m->area->camera->yaw;
+        else
+            m->intendedYaw = atan2s(-controller->stickY, controller->stickX)-newcam_yaw+0x4000;
         m->input |= INPUT_NONZERO_ANALOG;
     } else {
         m->intendedYaw = m->faceAngle[1];
