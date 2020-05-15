@@ -9,6 +9,11 @@ Puppycam is a brand new camera mode for SM64, designed from the ground up, to im
 - It has a dynamic options menu, that is incredibly easy to add, or take away options for.
 - Support for a player 2 joystick, for emulator users, to allow for analogue camera control.
 
+# Screenshots:
+
+![Screenshot 1](https://i.imgur.com/NJHhyyd.png)
+![Screenshot 2](https://i.imgur.com/TmELc4d.png)
+
 # Credits:
 
 - Me, I made the thing, lmao
