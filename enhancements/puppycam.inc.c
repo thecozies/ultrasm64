@@ -86,7 +86,7 @@ f32 newcam_pan_x;
 f32 newcam_pan_z;
 u8 newcam_cstick_down = 0; //Just a value that triggers true when the player 2 stick is moved in 8 direction move to prevent holding it down.
 u8 newcam_target;
-u8 newcam_sintimer = 0;
+s32 newcam_sintimer = 0;
 
 s16 newcam_sensitivityX; //How quick the camera works.
 s16 newcam_sensitivityY;
@@ -784,7 +784,7 @@ void newcam_display_options()
     newcam_sinpos = sins(newcam_sintimer*5000)*4;
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    print_generic_string(72-newcam_sinpos, 132-(32*(newcam_option_selection-newcam_option_scroll)),  newcam_strings[3]);
+    print_generic_string(80-newcam_sinpos, 132-(32*(newcam_option_selection-newcam_option_scroll)),  newcam_strings[3]);
     print_generic_string(232+newcam_sinpos, 132-(32*(newcam_option_selection-newcam_option_scroll)),  newcam_strings[4]);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
