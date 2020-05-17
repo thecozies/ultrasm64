@@ -1527,12 +1527,6 @@ u32 interact_pole(struct MarioState *m, UNUSED u32 interactType, struct Object *
             marioObj->oMarioPoleYawVel = 0;
             marioObj->oMarioPolePos = m->pos[1] - o->oPosY;
 
-            if (newcam_active)
-            {
-                m->area->camera->mode = CAM_MODE_NEWCAM;
-                gLakituState.mode = CAM_MODE_NEWCAM;
-            }
-
             if (lowSpeed) {
                 return set_mario_action(m, ACT_GRAB_POLE_SLOW, 0);
             }
