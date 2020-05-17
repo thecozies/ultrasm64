@@ -577,6 +577,7 @@ void save_file_set_setting(void) {
     gSaveBuffer.menuData[0].camc = (s16)newcam_aggression;
     gSaveBuffer.menuData[0].camp = (s16)newcam_panlevel;
     gSaveBuffer.menuData[0].analogue = (s16)newcam_analogue;
+    gSaveBuffer.menuData[0].degrade = (s16)newcam_degrade;
 
     gSaveBuffer.menuData[0].firsttime = 1;
 
@@ -593,6 +594,7 @@ void save_file_get_setting(void) {
         newcam_aggression = gSaveBuffer.menuData[0].camc;
         newcam_panlevel = gSaveBuffer.menuData[0].camp;
         newcam_analogue = gSaveBuffer.menuData[0].analogue;
+        newcam_degrade = gSaveBuffer.menuData[0].degrade;
 }
 
 u8 save_check_firsttime(void)

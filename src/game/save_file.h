@@ -63,6 +63,7 @@ struct MainMenuSaveData
     s16 camc;
     s16 camp;
     s16 firsttime;
+    s16 degrade;
     #endif
 #ifdef VERSION_EU
     u16 language;

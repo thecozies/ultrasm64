@@ -229,7 +229,7 @@ void newcam_init_settings()
         newcam_panlevel = newcam_clamp(newcam_panlevel, 100, 0);
         newcam_invertX = newcam_clamp(newcam_invertX, 1, 0);
         newcam_invertY = newcam_clamp(newcam_invertY, 1, 0);
-        newcam_degrade = 10;
+        newcam_degrade = newcam_clamp(newcam_degrade, 100, 10);
     }
     else
     {
