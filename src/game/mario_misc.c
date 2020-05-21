@@ -23,6 +23,7 @@
 #include "interaction.h"
 #include "object_list_processor.h"
 #include "dialog_ids.h"
+#include "../../enhancements/puppycam.h"
 
 #define TOAD_STAR_1_REQUIREMENT 12
 #define TOAD_STAR_2_REQUIREMENT 25
@@ -62,7 +63,7 @@ static s8 gMarioBlinkAnimation[7] = { 1, 2, 1, 0, 1, 2, 1 };
  * There are 3 scale animations in groups of 6 frames.
  * The first animation starts at frame index 3 and goes down, the others start at frame index 5.
  * The values get divided by 10 before assigning, so e.g. 12 gives a scale factor 1.2.
- * All combined, this means e.g. the first animation scales Mario's fist by {2.4, 1.6, 1.2, 1.0} on 
+ * All combined, this means e.g. the first animation scales Mario's fist by {2.4, 1.6, 1.2, 1.0} on
  * succesive frames.
  */
 static s8 gMarioAttackScaleAnimation[3 * 6] = {
@@ -303,6 +304,7 @@ void bhv_unlock_door_star_loop(void) {
 static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
     Gfx *gfx;
     Gfx *gfxHead = NULL;
+    u8 alphaBias;
 
     if (alpha == 255) {
         node->fnNode.node.flags = (node->fnNode.node.flags & 0xFF) | (LAYER_OPAQUE << 8);
@@ -314,7 +316,8 @@ static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
         gfx = gfxHead;
         gDPSetAlphaCompare(gfx++, G_AC_DITHER);
     }
-    gDPSetEnvColor(gfx++, 255, 255, 255, alpha);
+    alphaBias = min(alpha, newcam_xlu);
+    gDPSetEnvColor(gfx++, 255, 255, 255, alphaBias);
     gSPEndDisplayList(gfx);
     return gfxHead;
 }

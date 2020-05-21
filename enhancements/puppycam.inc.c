@@ -21,7 +21,7 @@ NC_MODE_NOTURN: Disables horizontal and vertical control of the camera.
 **/
 
 //!A bunch of developer intended options, to cover every base, really.
-//#define NEWCAM_DEBUG //Some print values for puppycam. Not useful anymore, but never hurts to keep em around.
+//define NEWCAM_DEBUG //Some print values for puppycam. Not useful anymore, but never hurts to keep em around.
 //#define nosound //If for some reason you hate the concept of audio, you can disable it.
 //#define noaccel //Disables smooth movement of the camera with the C buttons.
 
@@ -85,6 +85,8 @@ f32 newcam_pan_z;
 u8 newcam_cstick_down = 0; //Just a value that triggers true when the player 2 stick is moved in 8 direction move to prevent holding it down.
 u8 newcam_target;
 s32 newcam_sintimer = 0;
+s16 newcam_coldist;
+u8 newcam_xlu = 255;
 
 s16 newcam_sensitivityX; //How quick the camera works.
 s16 newcam_sensitivityY;
@@ -351,9 +353,9 @@ static void newcam_rotate_button(void)
     if (newcam_modeflags & NC_FLAG_XTURN)
     {
         if ((gPlayer1Controller->buttonDown & L_CBUTTONS) && newcam_analogue == 0)
-            newcam_yaw_acc = newcam_adjust_value(newcam_yaw_acc,accel, 100);
-        else if ((gPlayer1Controller->buttonDown & R_CBUTTONS) && newcam_analogue == 0)
             newcam_yaw_acc = newcam_adjust_value(newcam_yaw_acc,-accel, -100);
+        else if ((gPlayer1Controller->buttonDown & R_CBUTTONS) && newcam_analogue == 0)
+            newcam_yaw_acc = newcam_adjust_value(newcam_yaw_acc,accel, 100);
         else
         if (!newcam_analogue)
         {
@@ -441,7 +443,7 @@ static void newcam_rotate_button(void)
             }
             else
             {
-                newcam_yaw_acc = newcam_adjust_value(newcam_yaw_acc,gPlayer2Controller->rawStickX/8, intendedXMag);
+                newcam_yaw_acc = newcam_adjust_value(newcam_yaw_acc,(gPlayer2Controller->rawStickX*0.125), intendedXMag);
             }
         }
         else
@@ -452,7 +454,7 @@ static void newcam_rotate_button(void)
         }
 
         if (ABS(gPlayer2Controller->rawStickY) > 20 && newcam_modeflags & NC_FLAG_YTURN)
-            newcam_tilt_acc = newcam_adjust_value(newcam_tilt_acc,gPlayer2Controller->rawStickY/8, intendedYMag);
+            newcam_tilt_acc = newcam_adjust_value(newcam_tilt_acc,gPlayer2Controller->rawStickY*0.125, intendedYMag);
         else
         if (newcam_analogue)
         {
@@ -580,6 +582,10 @@ static void newcam_collision(void)
     camdir[2] = newcam_pos[2]-newcam_lookat[2];
 
     find_surface_on_ray(newcam_pos_target, camdir, &surf, &hitpos);
+    newcam_coldist = sqrtf((newcam_pos_target[0] - hitpos[0]) * (newcam_pos_target[0] - hitpos[0]) + (newcam_pos_target[1] - hitpos[1]) * (newcam_pos_target[1] - hitpos[1]) + (newcam_pos_target[2] - hitpos[2]) * (newcam_pos_target[2] - hitpos[2]));
+    print_text_fmt_int(32,32,"%d",newcam_coldist);
+    print_text_fmt_int(32,48,"%d",newcam_xlu);
+
 
     if (surf)
     {
@@ -723,7 +729,20 @@ static void newcam_apply_values(struct Camera *c)
             }
         }
     }
+}
 
+//If puppycam gets too close to its target, start fading it out so you don't see the inside of it.
+void newcam_fade_target_closeup(void)
+{
+    if (newcam_coldist <= 250)
+    {
+        if ((newcam_coldist-150)*2.5 > 0)
+            newcam_xlu = (newcam_coldist-150)*2.5;
+        else
+            newcam_xlu = 0;
+    }
+    else
+        newcam_xlu = 255;
 }
 
 //The ingame cutscene system is such a spaghetti mess I actually have to resort to something as stupid as this to cover every base.
@@ -744,6 +763,7 @@ void newcam_loop(struct Camera *c)
     newcam_find_fixed();
     if (gMarioObject)
     newcam_apply_values(c);
+    newcam_fade_target_closeup();
 
     //Just some visual information on the values of the camera. utilises ifdef because it's better at runtime.
     #ifdef NEWCAM_DEBUG
