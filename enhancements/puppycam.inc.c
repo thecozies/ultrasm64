@@ -331,9 +331,9 @@ static void newcam_rotate_button(void)
             play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gDefaultSoundArgs);
             #endif
             if (newcam_modeflags & NC_FLAG_8D)
-                newcam_yaw_target = newcam_yaw_target+0x2000;
+                newcam_yaw_target = newcam_yaw_target+(ivrt(newcam_invertX)*0x2000);
             else
-                newcam_yaw_target = newcam_yaw_target+0x4000;
+                newcam_yaw_target = newcam_yaw_target+(ivrt(newcam_invertX)*0x4000);
             newcam_centering = 1;
         }
         else
@@ -343,9 +343,9 @@ static void newcam_rotate_button(void)
             play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gDefaultSoundArgs);
             #endif
             if (newcam_modeflags & NC_FLAG_8D)
-                newcam_yaw_target = newcam_yaw_target-0x2000;
+                newcam_yaw_target = newcam_yaw_target-(ivrt(newcam_invertX)*0x2000);
             else
-                newcam_yaw_target = newcam_yaw_target-0x4000;
+                newcam_yaw_target = newcam_yaw_target-(ivrt(newcam_invertX)*0x4000);
             newcam_centering = 1;
         }
     }
@@ -387,7 +387,7 @@ static void newcam_rotate_button(void)
     {
         if (newcam_framessincec[0] < 6)
         {
-            newcam_yaw_target = newcam_yaw+0x3000;
+            newcam_yaw_target = newcam_yaw+(ivrt(newcam_invertX)*0x3000);
             newcam_centering = 1;
             #ifndef nosound
             play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gDefaultSoundArgs);
@@ -399,7 +399,7 @@ static void newcam_rotate_button(void)
     {
         if (newcam_framessincec[1] < 6)
             {
-            newcam_yaw_target = newcam_yaw-0x3000;
+            newcam_yaw_target = newcam_yaw-(ivrt(newcam_invertX)*0x3000);
             newcam_centering = 1;
             #ifndef nosound
             play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gDefaultSoundArgs);
@@ -428,22 +428,22 @@ static void newcam_rotate_button(void)
                     if (gPlayer2Controller->rawStickX > 20)
                     {
                         if (newcam_modeflags & NC_FLAG_8D)
-                            newcam_yaw_target = newcam_yaw_target+0x2000;
+                            newcam_yaw_target = newcam_yaw_target+(ivrt(newcam_invertX)*0x2000);
                         else
-                            newcam_yaw_target = newcam_yaw_target+0x4000;
+                            newcam_yaw_target = newcam_yaw_target+(ivrt(newcam_invertX)*0x4000);
                     }
                     else
                     {
                         if (newcam_modeflags & NC_FLAG_8D)
-                            newcam_yaw_target = newcam_yaw_target-0x2000;
+                            newcam_yaw_target = newcam_yaw_target-(ivrt(newcam_invertX)*0x2000);
                         else
-                            newcam_yaw_target = newcam_yaw_target-0x4000;
+                            newcam_yaw_target = newcam_yaw_target-(ivrt(newcam_invertX)*0x4000);
                     }
                 }
             }
             else
             {
-                newcam_yaw_acc = newcam_adjust_value(newcam_yaw_acc,(gPlayer2Controller->rawStickX*0.125), intendedXMag);
+                newcam_yaw_acc = newcam_adjust_value(newcam_yaw_acc,gPlayer2Controller->rawStickX*0.125, intendedXMag);
             }
         }
         else
@@ -516,7 +516,7 @@ static void newcam_update_values(void)
     u8 waterflag = 0;
 
     if (newcam_modeflags & NC_FLAG_XTURN)
-        newcam_yaw += ((newcam_yaw_acc*(newcam_sensitivityX/10))*ivrt(newcam_invertX));
+        newcam_yaw -= ((newcam_yaw_acc*(newcam_sensitivityX/10))*ivrt(newcam_invertX));
     if (((newcam_tilt <= 12000) && (newcam_tilt >= -12000)) && newcam_modeflags & NC_FLAG_YTURN)
         newcam_tilt += ((newcam_tilt_acc*ivrt(newcam_invertY))*(newcam_sensitivityY/10));
 
@@ -583,8 +583,6 @@ static void newcam_collision(void)
 
     find_surface_on_ray(newcam_pos_target, camdir, &surf, &hitpos);
     newcam_coldist = sqrtf((newcam_pos_target[0] - hitpos[0]) * (newcam_pos_target[0] - hitpos[0]) + (newcam_pos_target[1] - hitpos[1]) * (newcam_pos_target[1] - hitpos[1]) + (newcam_pos_target[2] - hitpos[2]) * (newcam_pos_target[2] - hitpos[2]));
-    print_text_fmt_int(32,32,"%d",newcam_coldist);
-    print_text_fmt_int(32,48,"%d",newcam_xlu);
 
 
     if (surf)
@@ -734,10 +732,10 @@ static void newcam_apply_values(struct Camera *c)
 //If puppycam gets too close to its target, start fading it out so you don't see the inside of it.
 void newcam_fade_target_closeup(void)
 {
-    if (newcam_coldist <= 250)
+    if (newcam_coldist <= 250 && (newcam_coldist-150)*2.55 < 255)
     {
-        if ((newcam_coldist-150)*2.5 > 0)
-            newcam_xlu = (newcam_coldist-150)*2.5;
+        if ((newcam_coldist-150)*2.55 > 0)
+            newcam_xlu = (newcam_coldist-150)*2.55;
         else
             newcam_xlu = 0;
     }
