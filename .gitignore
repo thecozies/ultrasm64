@@ -70,5 +70,3 @@ build/*
 !/sound/**/*custom*/**/*.aiff
 !/assets/**/*custom*.bin
 !/assets/**/*custom*/**/*.bin
-enhancements/Puppycam Release Notes.txt
-enhancements/puppycam.patch

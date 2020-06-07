@@ -200,7 +200,7 @@ void newcam_init(struct Camera *c, u8 dv)
         case LEVEL_CCM: if (gCurrAreaIndex == 1) {newcam_yaw = -0x4000; newcam_tilt = 2000; newcam_distance_target = newcam_distance_values[1];} else newcam_mode = NC_MODE_SLIDE; break;
         case LEVEL_WDW: newcam_yaw = 0x2000; newcam_tilt = 3000; newcam_distance_target = newcam_distance_values[1]; break;
         case 27: newcam_mode = NC_MODE_SLIDE; break;
-        case LEVEL_THI: if (gCurrAreaIndex == 2) newcam_mode = NC_MODE_SLIDE; break;
+        case LEVEL_TTM: if (gCurrAreaIndex == 2) newcam_mode = NC_MODE_SLIDE; break;
     }
 
     newcam_distance = newcam_distance_target;
@@ -620,7 +620,7 @@ static void newcam_position_cam(void)
     s16 shakeX;
     s16 shakeY;
 
-    if (!(gMarioState->action & ACT_FLAG_SWIMMING))
+    if (!(gMarioState->action & ACT_FLAG_SWIMMING) && newcam_modeflags & NC_FLAG_FOCUSY && newcam_modeflags & NC_FLAG_POSY)
         calc_y_to_curr_floor(&floorY, 1.f, 200.f, &floorY2, 0.9f, 200.f);
 
     newcam_update_values();
@@ -633,9 +633,9 @@ static void newcam_position_cam(void)
     //These will set the position of the camera to where Mario is supposed to be, minus adjustments for where the camera should be, on top of.
     if (newcam_modeflags & NC_FLAG_POSX)
         newcam_pos[0] = newcam_pos_target[0]+lengthdir_x(lengthdir_x(newcam_distance,newcam_tilt+shakeX),newcam_yaw+shakeY);
-    if (newcam_modeflags & NC_FLAG_POSY)
-        newcam_pos[2] = newcam_pos_target[2]+lengthdir_y(lengthdir_x(newcam_distance,newcam_tilt+shakeX),newcam_yaw+shakeY);
     if (newcam_modeflags & NC_FLAG_POSZ)
+        newcam_pos[2] = newcam_pos_target[2]+lengthdir_y(lengthdir_x(newcam_distance,newcam_tilt+shakeX),newcam_yaw+shakeY);
+    if (newcam_modeflags & NC_FLAG_POSY)
         newcam_pos[1] = newcam_pos_target[1]+lengthdir_y(newcam_distance,newcam_tilt+gLakituState.shakeMagnitude[0])+floorY;
     if ((newcam_modeflags & NC_FLAG_FOCUSX) && (newcam_modeflags & NC_FLAG_FOCUSY) && (newcam_modeflags & NC_FLAG_FOCUSZ))
         newcam_set_pan();

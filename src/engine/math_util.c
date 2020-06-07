@@ -58,6 +58,26 @@ void *vec3f_mul(Vec3f dest, f32 a)
     return &dest; //! warning: function returns address of local variable
 }
 
+/// Get length of vector 'a'
+f32 vec3f_length(Vec3f a)
+{
+	return sqrtf(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+}
+
+/// Get dot product of vectors 'a' and 'b'
+f32 vec3f_dot(Vec3f a, Vec3f b)
+{
+	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
+/// Make 'dest' the difference of vectors a and b.
+void *vec3f_dif(Vec3f dest, Vec3f a, Vec3f b) {
+    dest[0] = a[0] - b[0];
+    dest[1] = a[1] - b[1];
+    dest[2] = a[2] - b[2];
+    return &dest; //! warning: function returns address of local variable
+}
+
 /// Copy vector src to dest
 void *vec3s_copy(Vec3s dest, Vec3s src) {
     dest[0] = src[0];
@@ -90,11 +110,11 @@ void *vec3s_sum(Vec3s dest, Vec3s a, Vec3s b) {
     return &dest; //! warning: function returns address of local variable
 }
 
-/// Make 'dest' the difference of vectors a and b.
-void *vec3f_dif(Vec3f dest, Vec3f a, Vec3f b) {
-    dest[0] = a[0] - b[0];
-    dest[1] = a[1] - b[1];
-    dest[2] = a[2] - b[2];
+/// Subtract vector a from 'dest'
+void *vec3s_sub(Vec3s dest, Vec3s a) {
+    dest[0] -= a[0];
+    dest[1] -= a[1];
+    dest[2] -= a[2];
     return &dest; //! warning: function returns address of local variable
 }
 
@@ -147,18 +167,6 @@ void *vec3f_normalize(Vec3f dest) {
     dest[1] *= invsqrt;
     dest[2] *= invsqrt;
     return &dest; //! warning: function returns address of local variable
-}
-
-/// Get length of vector 'a'
-f32 vec3f_length(Vec3f a)
-{
-	return sqrtf(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
-}
-
-/// Get dot product of vectors 'a' and 'b'
-f32 vec3f_dot(Vec3f a, Vec3f b)
-{
-	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
 #pragma GCC diagnostic pop
@@ -578,7 +586,7 @@ void mtxf_mul_vec3s(Mat4 mtx, Vec3s b) {
  * Convert float matrix 'src' to fixed point matrix 'dest'.
  * The float matrix may not contain entries larger than 65536 or the console
  * crashes. The fixed point matrix has entries with a 16-bit integer part, so
- * the floating point numbers are multipled by 2^16 before being cast to a s32
+ * the floating point numbers are multiplied by 2^16 before being cast to a s32
  * integer. If this doesn't fit, the N64 and iQue consoles will throw an
  * exception. On Wii and Wii U Virtual Console the value will simply be clamped
  * and no crashes occur.
@@ -779,7 +787,7 @@ f32 atan2f(f32 y, f32 x) {
  * value t in [0, 1] and gSplineState. Given the current control point P, these
  * weights are for P[0], P[1], P[2] and P[3] to obtain an interpolated point.
  * The weights naturally sum to 1, and they are also always in range [0, 1] so
- * the inteprolated point will never overshoot. The curve is guaranteed to go
+ * the interpolated point will never overshoot. The curve is guaranteed to go
  * through the first and last point, but not through intermediate points.
  *
  * gSplineState ensures that the curve is clamped: the first two points
@@ -841,7 +849,7 @@ void spline_get_weights(Vec4f result, f32 t, UNUSED s32 c) {
 
 /**
  * Initialize a spline animation.
- * 'keyframes' should be an array of (s, x, y, z) vectors
+ * 'keyFrames' should be an array of (s, x, y, z) vectors
  *  s: the speed of the keyframe in 1000/frames, e.g. s=100 means the keyframe lasts 10 frames
  *  (x, y, z): point in 3D space on the curve
  * The array should end with three entries with s=0 (infinite keyframe duration).

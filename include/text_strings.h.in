@@ -3,7 +3,7 @@
 
 #include "text_menu_strings.h"
 
-	#if defined(VERSION_JP)
+#if defined(VERSION_JP)
 	#define NC_CAMX 				_("Camera X Sensitivity")
     #define NC_CAMY 				_("Camera Y Sensitivity")
 	#define NC_INVERTX				_("Invert X Axis")
@@ -70,7 +70,6 @@
 	#define NC_HIGHLIGHT_L_DE 		_(">")
 	#define NC_HIGHLIGHT_R_DE 		_("<")
 	#define NC_ANALOGUE_DE			_("Analogkamera")
-	
 #endif
 
 /**
@@ -540,6 +539,6 @@
 #define TEXT_MENU_SA_DE _("   VERSTECKTES AQUARIUM")
 #define TEXT_MENU_NONE_DE _("")
 #define TEXT_MENU_STARS_DE _("   GEHEIME STERNE")
-#endif
+#endif // VERSION_EU
 
-#endif
+#endif // TEXT_STRINGS_H

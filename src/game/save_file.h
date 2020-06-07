@@ -1,5 +1,7 @@
-#ifndef _SAVE_FILE_H_
-#define _SAVE_FILE_H_
+#ifndef SAVE_FILE_H
+#define SAVE_FILE_H
+
+#include <PR/ultratypes.h>
 
 #include "types.h"
 #include "area.h"
@@ -11,6 +13,7 @@
 #else
     #define EEPROM_SIZE 0x200
 #endif
+
 #define NUM_SAVE_FILES 4
 
 struct SaveBlockSignature
@@ -93,8 +96,6 @@ struct SaveBuffer
     #endif
 };
 
-struct WarpNode;
-
 extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;
 extern s8 sUnusedGotGlobalCoinHiScore;
@@ -173,8 +174,8 @@ void save_file_set_setting(void);
 #endif
 
 void disable_warp_checkpoint(void);
-void check_if_should_set_warp_checkpoint(struct WarpNode *a);
-s32 check_warp_checkpoint(struct WarpNode *a);
+void check_if_should_set_warp_checkpoint(struct WarpNode *warpNode);
+s32 check_warp_checkpoint(struct WarpNode *warpNode);
 
 #ifdef VERSION_EU
 enum EuLanguages {
@@ -187,4 +188,4 @@ void eu_set_language(u16 language);
 u16 eu_get_language(void);
 #endif
 
-#endif
+#endif // SAVE_FILE_H
