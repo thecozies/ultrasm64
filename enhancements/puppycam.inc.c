@@ -8,6 +8,15 @@
 #include "puppycam.h"
 #include "include/text_strings.h"
 #include "engine/surface_collision.h"
+#include "gfx_dimensions.h"
+#ifndef TARGET_N64
+    #if defined(_WIN32) || defined(_WIN64)
+    #include "pc/controller/controller_xinput.h"
+    #else
+    #include "pc/controller/controller_sdl.h"
+    #endif
+#include "pc/configfile.h"
+#endif // TARGET_N64
 
 /**
 Quick explanation of the camera modes
@@ -48,23 +57,19 @@ struct newcam_hardpos
     s16 newcam_hard_lookZ;
 };
 
-///This is the bit that defines where the angles happen. They're basically environment boxes that dictate camera behaviour.
-//Permaswap is a boolean that simply determines wether or not when the camera changes at this point it stays changed. 0 means it resets when you leave, and 1 means it stays changed.
-//The camera position fields accept "32767" as an ignore flag.
-struct newcam_hardpos newcam_fixedcam[] =
-{
-{/*Level ID*/ 16,/*Area ID*/ 1,/*Permaswap*/ 0,/*Mode*/ NC_MODE_FIXED_NOMOVE, //Standard params.
-/*X begin*/ -540,/*Y begin*/ 800,/*Z begin*/ -3500, //Where the activation box begins
-/*X end*/ 540,/*Y end*/ 2000,/*Z end*/ -1500, //Where the activation box ends.
-/*Cam X*/ 0,/*Cam Y*/ 1500,/*Cam Z*/ -1000, //The position the camera gets placed for NC_MODE_FIXED and NC_MODE_FIXED_NOMOVE
-/*Look X*/ 0,/*Look Y*/ 800,/*Look Z*/ -2500}, //The position the camera looks at for NC_MODE_FIXED_NOMOVE
-};
+#include "puppycam_angles.inc.c"
 
 #ifdef noaccel
     u8 accel = 255;
     #else
     u8 accel = 10;
 #endif // noaccel
+
+#ifndef TARGET_N64
+u8 mousemode = 0;
+s16 mousepos[2]; //The current position of the mouse.
+s16 mouselock[2]; //Where the mouse was when it got locked by controller. Moving the mouse 4 pixels away will unlock the mouse again.
+#endif // TARGET_N64
 
 s16 newcam_yaw; //Z axis rotation
 f32 newcam_yaw_acc;
@@ -87,6 +92,7 @@ u8 newcam_target;
 s32 newcam_sintimer = 0;
 s16 newcam_coldist;
 u8 newcam_xlu = 255;
+s8 newcam_stick2[2];
 
 s16 newcam_sensitivityX; //How quick the camera works.
 s16 newcam_sensitivityY;
@@ -95,7 +101,7 @@ s16 newcam_invertY;
 s16 newcam_panlevel; //How much the camera sticks out a bit in the direction you're looking.
 s16 newcam_aggression ; //How much the camera tries to centre itself to Mario's facing and movement.
 s16 newcam_degrade ;
-s16 newcam_analogue; //Wether to accept inputs from a player 2 joystick, and then disables C button input.
+s16 newcam_analogue = 0; //Wether to accept inputs from a player 2 joystick, and then disables C button input.
 s16 newcam_distance_values[] = {750,1250,2000};
 u8 newcam_active = 1; // basically the thing that governs if newcam is on.
 u16 newcam_mode;
@@ -142,7 +148,10 @@ static struct newcam_optionstruct
 
 static struct newcam_optionstruct newcam_optionvar[]=
 { //If the min and max are 0 and 1, then the value text is used, otherwise it's ignored.
+    //No point this existing on hardware you natively get double analogue sticks.
+    #ifdef TARGET_N64
     {/*Option Name*/ 0, /*Option Variable*/ &newcam_analogue, /*Option Value Text Start*/ 0, /*Option Minimum*/ FALSE, /*Option Maximum*/ TRUE},
+    #endif
     {/*Option Name*/ 1, /*Option Variable*/ &newcam_sensitivityX, /*Option Value Text Start*/ 255, /*Option Minimum*/ 10, /*Option Maximum*/ 500},
     {/*Option Name*/ 2, /*Option Variable*/ &newcam_sensitivityY, /*Option Value Text Start*/ 255, /*Option Minimum*/ 10, /*Option Maximum*/ 500},
     {/*Option Name*/ 3, /*Option Variable*/ &newcam_invertX, /*Option Value Text Start*/ 0, /*Option Minimum*/ FALSE, /*Option Maximum*/ TRUE},
@@ -210,9 +219,10 @@ void newcam_init(struct Camera *c, u8 dv)
 
 static s16 newcam_clamp(s16 value, s16 max, s16 min)
 {
-    if (value > max)
+    if (value >= max)
         return max;
-    if (value < min)
+    else
+    if (value <= min)
         return min;
     else
         return value;
@@ -221,6 +231,7 @@ static s16 newcam_clamp(s16 value, s16 max, s16 min)
 ///These are the default settings for Puppycam. You may change them to change how they'll be set for first timers.
 void newcam_init_settings()
 {
+#ifdef TARGET_N64
 #ifndef NC_CODE_NOSAVE
     if (save_check_firsttime())
     {
@@ -247,6 +258,17 @@ void newcam_init_settings()
 #ifndef NC_CODE_NOSAVE
     }
     #endif
+    #else
+    newcam_sensitivityX = puppycam_sensitivityX;
+    newcam_sensitivityY = puppycam_sensitivityY;
+    newcam_aggression = puppycam_aggression;
+    newcam_panlevel = puppycam_panlevel;
+    newcam_invertX = puppycam_invertX;
+    newcam_invertY = puppycam_invertY;
+    newcam_degrade = puppycam_degrade;
+
+    newcam_analogue = 1;
+    #endif // TARGET_N64
 }
 
 /** Mathematic calculations. This stuffs so basic even *I* understand it lol
@@ -274,6 +296,17 @@ void newcam_diagnostics(void)
     print_text_fmt_int(32,64,"YAW %d",newcam_yaw);
     print_text_fmt_int(32,48,"TILT  %d",newcam_tilt);
     print_text_fmt_int(32,32,"DISTANCE %d",newcam_distance);
+}
+
+static void newcam_stick_input(void)
+{
+    #ifdef TARGET_N64
+    newcam_stick2[0] = gPlayer2Controller->rawStickX;
+    newcam_stick2[1] = gPlayer2Controller->rawStickY;
+    #else
+    newcam_stick2[0] = rightstick[0]*0.625;
+    newcam_stick2[1] = rightstick[1]*0.625;
+    #endif // TARGET_N64
 }
 
 static s16 newcam_adjust_value(s16 var, s16 val, s8 max)
@@ -411,10 +444,10 @@ static void newcam_rotate_button(void)
 
     if (newcam_analogue == 1) //There's not much point in keeping this behind a check, but it wouldn't hurt, just incase any 2player shenanigans ever happen, it makes it easy to disable.
     { //The joystick values cap at 80, so divide by 8 to get the same net result at maximum turn as the button
-        intendedXMag = gPlayer2Controller->rawStickX*1.25;
-        intendedYMag = gPlayer2Controller->rawStickY*1.25;
+        intendedXMag = newcam_stick2[0]*1.25;
+        intendedYMag = newcam_stick2[1]*1.25;
 
-        if (ABS(gPlayer2Controller->rawStickX) > 20 && newcam_modeflags & NC_FLAG_XTURN)
+        if (ABS(newcam_stick2[0]) > 20 && newcam_modeflags & NC_FLAG_XTURN)
         {
             if (newcam_modeflags & NC_FLAG_8D)
             {
@@ -425,7 +458,7 @@ static void newcam_rotate_button(void)
                     #ifndef nosound
                     play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gDefaultSoundArgs);
                     #endif
-                    if (gPlayer2Controller->rawStickX > 20)
+                    if (newcam_stick2[0] > 20)
                     {
                         if (newcam_modeflags & NC_FLAG_8D)
                             newcam_yaw_target = newcam_yaw_target+(ivrt(newcam_invertX)*0x2000);
@@ -443,7 +476,7 @@ static void newcam_rotate_button(void)
             }
             else
             {
-                newcam_yaw_acc = newcam_adjust_value(newcam_yaw_acc,gPlayer2Controller->rawStickX*0.125, intendedXMag);
+                newcam_yaw_acc = newcam_adjust_value(newcam_yaw_acc,newcam_stick2[0]*0.125, intendedXMag);
             }
         }
         else
@@ -453,8 +486,8 @@ static void newcam_rotate_button(void)
             newcam_yaw_acc -= (newcam_yaw_acc*((f32)newcam_degrade/100));
         }
 
-        if (ABS(gPlayer2Controller->rawStickY) > 20 && newcam_modeflags & NC_FLAG_YTURN)
-            newcam_tilt_acc = newcam_adjust_value(newcam_tilt_acc,gPlayer2Controller->rawStickY*0.125, intendedYMag);
+        if (ABS(newcam_stick2[1]) > 20 && newcam_modeflags & NC_FLAG_YTURN)
+            newcam_tilt_acc = newcam_adjust_value(newcam_tilt_acc,newcam_stick2[1]*0.125, intendedYMag);
         else
         if (newcam_analogue)
         {
@@ -533,7 +566,7 @@ static void newcam_update_values(void)
         }
         else
         {
-        if (gMarioState->intendedMag > 0 && gMarioState->vel[1] == 0 && newcam_modeflags & NC_FLAG_XTURN)
+        if (gMarioState->intendedMag > 0 && gMarioState->vel[1] == 0 && newcam_modeflags & NC_FLAG_XTURN && !(newcam_modeflags & NC_FLAG_8D) && !(newcam_modeflags & NC_FLAG_4D))
             newcam_yaw = (approach_s16_symmetric(newcam_yaw,-gMarioState->faceAngle[1]-0x4000,((newcam_aggression*(ABS(gPlayer1Controller->rawStickX/10)))*(gMarioState->forwardVel/32))));
         else
             newcam_turnwait = 10;
@@ -755,6 +788,7 @@ void newcam_apply_outside_values(struct Camera *c, u8 bit)
 //Main loop.
 void newcam_loop(struct Camera *c)
 {
+    newcam_stick_input();
     newcam_rotate_button();
     newcam_zoom_button();
     newcam_position_cam();
@@ -767,6 +801,7 @@ void newcam_loop(struct Camera *c)
     #ifdef NEWCAM_DEBUG
     newcam_diagnostics();
     #endif // NEWCAM_DEBUG
+
 }
 
 
@@ -827,6 +862,7 @@ void newcam_display_options()
     s16 scrollpos;
     s16 var;
     u16 maxvar;
+    u16 minvar;
     f32 newcam_sinpos;
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
@@ -859,11 +895,10 @@ void newcam_display_options()
                 int_to_str(*newcam_optionvar[i].newcam_op_var,newstring);
                 newcam_text(160,scroll-12,newstring,newcam_option_selection-i);
                 newcam_display_box(96,111+(32*i)-(newcam_option_scroll*32),224,117+(32*i)-(newcam_option_scroll*32),0x80,0x80,0x80);
-                if (*newcam_optionvar[i].newcam_op_var > newcam_optionvar[i].newcam_op_min)
-                {
-                    maxvar = newcam_optionvar[i].newcam_op_max - newcam_optionvar[i].newcam_op_min;
-                    newcam_display_box(160-(((f32)*newcam_optionvar[i].newcam_op_var/maxvar)*64),111+(32*i)-(newcam_option_scroll*32),160+(((f32)*newcam_optionvar[i].newcam_op_var/maxvar)*64),117+(32*i)-(newcam_option_scroll*32),0xFF,0xFF,0xFF);
-                }
+                maxvar = newcam_optionvar[i].newcam_op_max - newcam_optionvar[i].newcam_op_min;
+                minvar = *newcam_optionvar[i].newcam_op_var - newcam_optionvar[i].newcam_op_min;
+                newcam_display_box(96,111+(32*i)-(newcam_option_scroll*32),96+(((f32)minvar/maxvar)*128),117+(32*i)-(newcam_option_scroll*32),0xFF,0xFF,0xFF);
+                newcam_display_box(94+(((f32)minvar/maxvar)*128),109+(32*i)-(newcam_option_scroll*32),98+(((f32)minvar/maxvar)*128),119+(32*i)-(newcam_option_scroll*32),0xFF,0x0,0x0);
                 gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
             }
         }
@@ -884,6 +919,37 @@ void newcam_render_option_text(void)
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
+
+#ifndef TARGET_N64
+void newcam_mouse_handler(void)
+{
+    //If the cursor moves an amount from the locked position, that isn't just the mouse getting the slightest movement from time manipulation, then it enables mouse input.
+    if ((mousepos[0] - mouselock[0] < 4 || mousepos[1] - mouselock[1] < 4) && !mousemode)
+        mousemode = 1;
+
+    //If the controller even dares to have an input, then the mouse backs the hell down and lets the controller take the wheel.
+    if (gPlayer1Controller->buttonDown || gPlayer1Controller->stickMag|| gPlayer2Controller->stickMag)
+    {
+        mousemode = 0;
+        mouselock[0] = mousepos[0];
+        mouselock[1] = mousepos[1];
+    }
+}
+
+void newcam_config_save(void)
+{
+    puppycam_sensitivityX = newcam_sensitivityX;
+    puppycam_sensitivityY = newcam_sensitivityY;
+    puppycam_aggression = newcam_aggression;
+    puppycam_panlevel = newcam_panlevel;
+    puppycam_invertX = newcam_invertX;
+    puppycam_invertY = newcam_invertY;
+    puppycam_degrade = newcam_degrade;
+
+    configfile_save("sm64config.txt");
+}
+#endif
+
 void newcam_check_pause_buttons()
 {
     if (gPlayer1Controller->buttonPressed & R_TRIG)
@@ -902,13 +968,23 @@ void newcam_check_pause_buttons()
         else
         {
             newcam_option_open = 0;
+            #ifdef TARGET_N64
             save_file_set_setting();
+            #else
+            newcam_config_save();
+            #endif
         }
     }
 
     if (newcam_option_open)
     {
         newcam_sintimer++;
+        #ifndef TARGET_N64
+        if (mousemode)
+        {
+            //newcam_option_index = 140-(32*i)+(newcam_option_scroll*32);
+        }
+        #endif
         if (ABS(gPlayer1Controller->rawStickY) > 60 || gPlayer1Controller->buttonDown & U_JPAD || gPlayer1Controller->buttonDown & D_JPAD)
         {
             newcam_option_timer -= 1;

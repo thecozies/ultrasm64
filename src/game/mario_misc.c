@@ -297,6 +297,37 @@ void bhv_unlock_door_star_loop(void) {
     }
 }
 
+static u32 find_capflag(struct MarioState *m) {
+    u32 flags = m->flags;
+    u64 sCapFlickerFrames = 0x4444449249255555;
+    u32 action;
+
+    if (m->capTimer > 0) {
+        action = m->action;
+
+        if (m->capTimer == 0) {
+
+            m->flags &= ~(MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP);
+            if ((m->flags & (MARIO_NORMAL_CAP | MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP))
+                == 0) {
+                m->flags &= ~MARIO_CAP_ON_HEAD;
+            }
+        }
+
+        // This code flickers the cap through a long binary string, increasing in how
+        // common it flickers near the end.
+        if ((m->capTimer < 0x40) && ((1ULL << m->capTimer) & sCapFlickerFrames)) {
+            flags &= ~(MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP);
+            if ((flags & (MARIO_NORMAL_CAP | MARIO_VANISH_CAP | MARIO_METAL_CAP | MARIO_WING_CAP))
+                == 0) {
+                flags &= ~MARIO_CAP_ON_HEAD;
+            }
+        }
+    }
+
+    return flags;
+}
+
 /**
  * Generate a display list that sets the correct blend mode and color for mirror Mario.
  */
@@ -304,7 +335,7 @@ static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
     Gfx *gfx;
     Gfx *gfxHead = NULL;
     u8 alphaBias;
-    s32 flags = update_and_return_cap_flags(gMarioState);
+    s32 flags = find_capflag(gMarioState);
 
     if (alpha == 255) {
         node->fnNode.node.flags = (node->fnNode.node.flags & 0xFF) | (LAYER_OPAQUE << 8);

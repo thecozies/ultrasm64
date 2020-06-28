@@ -3,6 +3,10 @@
 //#define NC_CODE_NOSAVE //If this is defined, this will disable saving the user settings.
 //#define NC_CODE_NOMENU //If this is defined, this will disable the settings menu. It does NOT disable saving as well, because you might want that in, regardless.
 
+#ifndef TARGET_N64
+    #define NC_CODE_NOSAVE //This gets disabled off the N64 because it's no longer using the EEPROM or the old save system.
+#endif // TARGET_N64
+
 enum newcam_flagvalues
 {
     NC_FLAG_XTURN = 0x0001,//If this flag is set, the camera's yaw can be moved by the player.
@@ -53,3 +57,7 @@ extern u8 newcam_xlu;
 
 extern u16 newcam_mode;
 extern s16 newcam_yaw;
+
+#ifndef TARGET_N64
+extern s16 mousepos[2];
+#endif // TARGET_N64
