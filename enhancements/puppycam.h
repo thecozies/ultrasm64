@@ -40,6 +40,7 @@ extern void newcam_check_pause_buttons(void);
 extern void newcam_init_settings(void);
 extern void newcam_render_option_text(void);
 extern void newcam_diagnostics(void);
+extern void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos);
 
 extern u8 newcam_option_open;
 
