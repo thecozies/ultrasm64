@@ -4,7 +4,7 @@ Puppycam is a brand new camera mode for SM64, designed from the ground up, to im
 
 # Usage
 
-You will want to use [this repo as a base](https://github.com/sm64-port/sm64-port) who made the decompilation project happen to begin with) and then apply the patch in WSL. Simply copy puppycam.patch to the enhancements folder, then in the root directory of your repo, run "tools/apply_patch.sh enhancements/puppycam.patch" To revert, type "tools/revert_patch.sh enhancements/puppycam.patch" instead. This repo still supports everything necessary to develop for N64, so there's absolutely nothing lost abandoning the old one, going forward.
+You will want to use [this repo as a base](https://github.com/sm64-port/sm64-port) and then apply the patch in WSL. Simply copy puppycam.patch to the enhancements folder, then in the root directory of your repo, run "tools/apply_patch.sh enhancements/puppycam.patch" To revert, type "tools/revert_patch.sh enhancements/puppycam.patch" instead. This repo still supports everything necessary to develop for N64, so there's absolutely nothing lost abandoning the old one, going forward.
 
 # Features:
 
