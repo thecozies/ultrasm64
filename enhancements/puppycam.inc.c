@@ -26,7 +26,7 @@ NC_MODE_FIXED: Disables control of camera, and the actual position of the camera
 NC_MODE_2D: Disables horizontal control of the camera and locks Mario's direction to the X axis. NYI though.
 NC_MODE_8D: 8 directional movement. Similar to standard, except the camera direction snaps to 8 directions.
 NC_MODE_FIXED_NOMOVE: Disables control and movement of the camera.
-NC_MODE_NOTURN: Disables horizontal and vertical control of the camera.
+NC_MODE_NOTURN: Disables horizontal and vertical control of the camera. Perfect for when running scripts alongside the camera angle.
 **/
 
 //!A bunch of developer intended options, to cover every base, really.

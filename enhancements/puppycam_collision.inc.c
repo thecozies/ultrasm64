@@ -2,25 +2,15 @@
 #include "engine/surface_load.h"
 #include "engine/math_util.h"
 
-///Completely experimental and untested!!
-#ifdef EXPERIMENTAL
+///Experimental and unfinished, so don't mess with this.
 //Compatability support for the popular existing Extended Boundaries hack.
-#if defined(BOUNDS_EXTENSION)
-    #define MULTI BOUNDS_EXTENSION
+#ifdef EXT_BOUNDS
+    #define MULTI 4.0f
+    #define BOUND 0x7FFF
 #else
-    #define MULTI 1
-#endif // defined
-
-#if defined(LEVEL_BOUNDARY_EXTENDED_MAX)
-    #define BOUND LEVEL_BOUNDARY_EXTENDED_MAX
-#else
-    #define BOUND LEVEL_BOUNDARY_MAX
-#endif // defined
-#else
-    #define BOUND LEVEL_BOUNDARY_MAX
-    #define MULTI 1
-#endif
-
+    #define MULTI 1.0f
+    #define BOUND 0x2000
+#endif // EXT_BOUNDS
 
 /**
  * Raycast functions
