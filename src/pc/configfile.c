@@ -77,8 +77,6 @@ static const struct ConfigOption options[] = {
     {.name = "puppycam_stopping_speed", .type = CONFIG_TYPE_UINT, .uintValue = &puppycam_degrade},
     {.name = "puppycam_centre_aggression", .type = CONFIG_TYPE_UINT, .uintValue = &puppycam_aggression},
     {.name = "puppycam_pan_amount", .type = CONFIG_TYPE_UINT, .uintValue = &puppycam_panlevel},
-
-
 };
 
 // Reads an entire line from a file (excluding the newline character) and returns an allocated string
@@ -225,6 +223,7 @@ void configfile_save(const char *filename) {
     FILE *file;
 
     printf("Saving configuration to '%s'\n", filename);
+    printf("There should be '%d' options\n", ARRAY_LEN(options));
 
     file = fopen(filename, "w");
     if (file == NULL) {

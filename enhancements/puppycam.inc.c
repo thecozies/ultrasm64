@@ -33,6 +33,11 @@ NC_MODE_NOTURN: Disables horizontal and vertical control of the camera. Perfect 
 //#define NEWCAM_DEBUG //Some print values for puppycam. Not useful anymore, but never hurts to keep em around.
 //#define nosound //If for some reason you hate the concept of audio, you can disable it.
 //#define noaccel //Disables smooth movement of the camera with the C buttons.
+//#define EXT_BOUNDS
+
+#ifdef EXT_BOUNDS
+    #define MULTI 4.0f
+#endif // EXT_BOUNDS
 
 
 //!Hardcoded camera angle stuff. They're essentially area boxes that when Mario is inside, will trigger some view changes.

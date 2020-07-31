@@ -2,15 +2,7 @@
 #include "engine/surface_load.h"
 #include "engine/math_util.h"
 
-///Experimental and unfinished, so don't mess with this.
-//Compatability support for the popular existing Extended Boundaries hack.
-#ifdef EXT_BOUNDS
-    #define MULTI 4.0f
-    #define BOUND 0x7FFF
-#else
-    #define MULTI 1.0f
-    #define BOUND 0x2000
-#endif // EXT_BOUNDS
+//#define EXT_BOUNDS
 
 /**
  * Raycast functions
@@ -132,6 +124,16 @@ void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Ve
     f32 step, dx, dz;
     u32 i;
 
+    #ifdef EXT_BOUNDS
+    orig[0] /= MULTI;
+    orig[1] /= MULTI;
+    orig[2] /= MULTI;
+
+    dir[0] /= MULTI;
+    dir[1] /= MULTI;
+    dir[2] /= MULTI;
+    #endif // EXT_BOUNDS
+
     // Set that no surface has been hit
     *hit_surface = NULL;
     vec3f_sum(hit_pos, orig, dir);
@@ -143,8 +145,8 @@ void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Ve
     vec3f_normalize(normalized_dir);
 
     // Get our cell coordinate
-    fCellX = (orig[0] + BOUND) / CELL_SIZE / MULTI;
-    fCellZ = (orig[2] + BOUND) / CELL_SIZE / MULTI;
+    fCellX = (orig[0] + BOUND) / CELL_SIZE;
+    fCellZ = (orig[2] + BOUND) / CELL_SIZE;
     cellX = (s16)fCellX;
     cellZ = (s16)fCellZ;
 
@@ -157,12 +159,12 @@ void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Ve
 
     // Get cells we cross using DDA
     if (abs(dir[0]) >= abs(dir[2]))
-        step = abs(dir[0]) / CELL_SIZE / MULTI;
+        step = abs(dir[0]) / CELL_SIZE;
     else
-        step = abs(dir[2]) / CELL_SIZE / MULTI;
+        step = abs(dir[2]) / CELL_SIZE;
 
-    dx = dir[0] / step / CELL_SIZE / MULTI;
-    dz = dir[2] / step / CELL_SIZE / MULTI;
+    dx = dir[0] / step / CELL_SIZE;
+    dz = dir[2] / step / CELL_SIZE;
 
     for (i = 0; i < step && *hit_surface == NULL; i++)
     {
@@ -174,4 +176,10 @@ void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Ve
         cellX = (s16)fCellX;
         cellZ = (s16)fCellZ;
     }
+
+    #ifdef EXT_BOUNDS
+    hit_pos[0] *= MULTI;
+    hit_pos[1] *= MULTI;
+    hit_pos[2] *= MULTI;
+    #endif // EXT_BOUNDS
 }
