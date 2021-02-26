@@ -308,8 +308,6 @@ extern struct SaveBuffer gSaveBuffer;
 
 void puppycam_check_pause_buttons()
 {
-    print_text_fmt_int(32,32,"%d",gSaveBuffer.menuData.firstBoot);
-    print_text_fmt_int(32,48,"%d",FILLERSIZE);
     if (gPlayer1Controller->buttonPressed & R_TRIG)
     {
         play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
