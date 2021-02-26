@@ -313,8 +313,6 @@ Gfx *geo_mirror_mario_set_alpha(s32 callContext, struct GraphNode *node, UNUSED 
     s16 alpha;
     UNUSED u8 unused2[4];
 
-    print_text_fmt_int(32,32,"%d",gPuppyCam.opacity);
-
     if (callContext == GEO_CONTEXT_RENDER) {
 
 
