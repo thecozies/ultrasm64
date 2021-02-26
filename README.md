@@ -19,6 +19,7 @@ I used [this repo as a base](https://github.com/CrashOveride95/ultrasm64) for th
 - Add an option for changing the input preset to match with Return to Yoshi's Island because I can't believe I didn't think of that sooner.
 - Cutscenes. A lot of the system's already done, as it was written for Puppycam 1, but it does 
 - Water camera improvements. The initial implimentation is functional, but not perfect yet.
+- Translations for EU. I'm not multilingual though so pls help :))))
 
 # Screenshots:
 
