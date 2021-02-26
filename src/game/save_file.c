@@ -10,14 +10,19 @@
 #include "sound_init.h"
 #include "level_table.h"
 #include "course_table.h"
-#include "thread6.h"
-#include "../../enhancements/puppycam.h"
+#include "rumble_init.h"
+#ifdef SRAM
+#include "sram.h"
+#endif
+#include "puppycam2.h"
+#include "string.h"
+
+#define ALIGN4(val) (((val) + 0x3) & ~0x3)
 
 #define MENU_DATA_MAGIC 0x4849
 #define SAVE_FILE_MAGIC 0x4441
 
-STATIC_ASSERT(sizeof(struct SaveBuffer) <= EEPROM_SIZE, "eeprom buffer size higher than intended");
-STATIC_ASSERT(sizeof(struct SaveBuffer) >= EEPROM_SIZE, "eeprom buffer size lower than intended");
+//STATIC_ASSERT(sizeof(struct SaveBuffer) == EEPROM_SIZE, "eeprom buffer size must match");
 
 extern struct SaveBuffer gSaveBuffer;
 
@@ -29,10 +34,10 @@ s8 gSaveFileModified;
 u8 gLastCompletedCourseNum = COURSE_NONE;
 u8 gLastCompletedStarNum = 0;
 s8 sUnusedGotGlobalCoinHiScore = 0;
-u8 gGotFileCoinHiScore = 0;
+u8 gGotFileCoinHiScore = FALSE;
 u8 gCurrCourseStarFlags = 0;
 
-u8 gSpecialTripleJump = 0;
+u8 gSpecialTripleJump = FALSE;
 
 #define STUB_LEVEL(_0, _1, courseenum, _3, _4, _5, _6, _7, _8) courseenum,
 #define DEFINE_LEVEL(_0, _1, courseenum, _3, _4, _5, _6, _7, _8, _9, _10) courseenum,
@@ -45,13 +50,7 @@ s8 gLevelToCourseNumTable[] = {
 
 STATIC_ASSERT(ARRAY_COUNT(gLevelToCourseNumTable) == LEVEL_COUNT - 1,
               "change this array if you are adding levels");
-
-// This was probably used to set progress to 100% for debugging, but
-// it was removed from the release ROM.
-static void stub_save_file_1(void) {
-    UNUSED s32 pad;
-}
-
+#ifdef EEP
 /**
  * Read from EEPROM to a given address.
  * The EEPROM address is computed using the offset of the destination address from gSaveBuffer.
@@ -66,12 +65,12 @@ static s32 read_eeprom_data(void *buffer, s32 size) {
         u32 offset = (u32)((u8 *) buffer - (u8 *) &gSaveBuffer) / 8;
 
         do {
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
             block_until_rumble_pak_free();
 #endif
             triesLeft--;
             status = osEepromLongRead(&gSIEventMesgQueue, offset, buffer, size);
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
             release_rumble_pak_control();
 #endif
         } while (triesLeft > 0 && status != 0);
@@ -94,12 +93,12 @@ static s32 write_eeprom_data(void *buffer, s32 size) {
         u32 offset = (u32)((u8 *) buffer - (u8 *) &gSaveBuffer) >> 3;
 
         do {
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
             block_until_rumble_pak_free();
 #endif
             triesLeft--;
             status = osEepromLongWrite(&gSIEventMesgQueue, offset, buffer, size);
-#ifdef VERSION_SH
+#if ENABLE_RUMBLE
             release_rumble_pak_control();
 #endif
         } while (triesLeft > 0 && status != 0);
@@ -107,6 +106,65 @@ static s32 write_eeprom_data(void *buffer, s32 size) {
 
     return status;
 }
+#endif
+#ifdef SRAM
+/**
+ * Read from SRAM to a given address.
+ * The SRAM address is computed using the offset of the destination address from gSaveBuffer.
+ * Try at most 4 times, and return 0 on success. On failure, return the status returned from
+ * nuPiReadSram. It also returns 0 if SRAM isn't loaded correctly in the system.
+ */
+static s32 read_eeprom_data(void *buffer, s32 size) {
+    s32 status = 0;
+
+    if (gSramProbe != 0) {
+        s32 triesLeft = 4;
+        u32 offset = (u32)((u8 *) buffer - (u8 *) &gSaveBuffer);
+
+        do {
+#if ENABLE_RUMBLE
+            block_until_rumble_pak_free();
+#endif
+            triesLeft--;
+            status = nuPiReadSram(offset, buffer, ALIGN4(size));
+#if ENABLE_RUMBLE
+            release_rumble_pak_control();
+#endif
+        } while (triesLeft > 0 && status != 0);
+    }
+
+    return status;
+}
+
+/**
+ * Write data to SRAM.
+ * The SRAM address is computed using the offset of the source address from gSaveBuffer.
+ * Try at most 4 times, and return 0 on success. On failure, return the status returned from
+ * nuPiWriteSram. Unlike read_eeprom_data, return 1 if SRAM isn't loaded.
+ */
+static s32 write_eeprom_data(void *buffer, s32 size) {
+    s32 status = 1;
+
+    if (gSramProbe != 0) {
+        s32 triesLeft = 4;
+        u32 offset = (u32)((u8 *) buffer - (u8 *) &gSaveBuffer);
+
+        do {
+#if ENABLE_RUMBLE
+            block_until_rumble_pak_free();
+#endif
+            triesLeft--;
+            status = nuPiWriteSram(offset, buffer, ALIGN4(size));
+#if ENABLE_RUMBLE
+            release_rumble_pak_control();
+#endif
+        } while (triesLeft > 0 && status != 0);
+    }
+
+    return status;
+}
+#endif
+
 
 /**
  * Sum the bytes in data to data + size - 2. The last two bytes are ignored
@@ -153,51 +211,48 @@ static void restore_main_menu_data(s32 srcSlot) {
     s32 destSlot = srcSlot ^ 1;
 
     // Compute checksum on source data
-    add_save_block_signature(&gSaveBuffer.menuData[srcSlot], sizeof(gSaveBuffer.menuData[srcSlot]), MENU_DATA_MAGIC);
+    add_save_block_signature(&gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData), MENU_DATA_MAGIC);
 
     // Copy source data to destination
-    bcopy(&gSaveBuffer.menuData[srcSlot], &gSaveBuffer.menuData[destSlot], sizeof(gSaveBuffer.menuData[destSlot]));
+    bcopy(&gSaveBuffer.menuData, &gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData));
 
     // Write destination data to EEPROM
-    write_eeprom_data(&gSaveBuffer.menuData[destSlot], sizeof(gSaveBuffer.menuData[destSlot]));
+    write_eeprom_data(&gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData));
 }
 
 static void save_main_menu_data(void) {
     if (gMainMenuDataModified) {
         // Compute checksum
-        add_save_block_signature(&gSaveBuffer.menuData[0], sizeof(gSaveBuffer.menuData[0]), MENU_DATA_MAGIC);
-
-        // Back up data
-        bcopy(&gSaveBuffer.menuData[0], &gSaveBuffer.menuData[1], sizeof(gSaveBuffer.menuData[1]));
+        add_save_block_signature(&gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData), MENU_DATA_MAGIC);
 
         // Write to EEPROM
-        write_eeprom_data(gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData));
+        write_eeprom_data(&gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData));
 
         gMainMenuDataModified = FALSE;
     }
 }
 
 static void wipe_main_menu_data(void) {
-    bzero(&gSaveBuffer.menuData[0], sizeof(gSaveBuffer.menuData[0]));
+    bzero(&gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData));
 
     // Set score ages for all courses to 3, 2, 1, and 0, respectively.
-    gSaveBuffer.menuData[0].coinScoreAges[0] = 0x3FFFFFFF;
-    gSaveBuffer.menuData[0].coinScoreAges[1] = 0x2AAAAAAA;
-    gSaveBuffer.menuData[0].coinScoreAges[2] = 0x15555555;
+    gSaveBuffer.menuData.coinScoreAges[0] = 0x3FFFFFFF;
+    gSaveBuffer.menuData.coinScoreAges[1] = 0x2AAAAAAA;
+    gSaveBuffer.menuData.coinScoreAges[2] = 0x15555555;
 
     gMainMenuDataModified = TRUE;
     save_main_menu_data();
 }
 
 static s32 get_coin_score_age(s32 fileIndex, s32 courseIndex) {
-    return (gSaveBuffer.menuData[0].coinScoreAges[fileIndex] >> (2 * courseIndex)) & 0x3;
+    return (gSaveBuffer.menuData.coinScoreAges[fileIndex] >> (2 * courseIndex)) & 0x3;
 }
 
 static void set_coin_score_age(s32 fileIndex, s32 courseIndex, s32 age) {
     s32 mask = 0x3 << (2 * courseIndex);
 
-    gSaveBuffer.menuData[0].coinScoreAges[fileIndex] &= ~mask;
-    gSaveBuffer.menuData[0].coinScoreAges[fileIndex] |= age << (2 * courseIndex);
+    gSaveBuffer.menuData.coinScoreAges[fileIndex] &= ~mask;
+    gSaveBuffer.menuData.coinScoreAges[fileIndex] |= age << (2 * courseIndex);
 }
 
 /**
@@ -300,21 +355,6 @@ void save_file_load_all(void) {
     bzero(&gSaveBuffer, sizeof(gSaveBuffer));
     read_eeprom_data(&gSaveBuffer, sizeof(gSaveBuffer));
 
-    // Verify the main menu data and create a backup copy if only one of the slots is valid.
-    validSlots = verify_save_block_signature(&gSaveBuffer.menuData[0], sizeof(gSaveBuffer.menuData[0]), MENU_DATA_MAGIC);
-    validSlots |= verify_save_block_signature(&gSaveBuffer.menuData[1], sizeof(gSaveBuffer.menuData[1]),MENU_DATA_MAGIC) << 1;
-    switch (validSlots) {
-        case 0: // Neither copy is correct
-            wipe_main_menu_data();
-            break;
-        case 1: // Slot 0 is correct and slot 1 is incorrect
-            restore_main_menu_data(0);
-            break;
-        case 2: // Slot 1 is correct and slot 0 is incorrect
-            restore_main_menu_data(1);
-            break;
-    }
-
     for (file = 0; file < NUM_SAVE_FILES; file++) {
         // Verify the save file and create a backup copy if only one of the slots is valid.
         validSlots = verify_save_block_signature(&gSaveBuffer.files[file][0], sizeof(gSaveBuffer.files[file][0]), SAVE_FILE_MAGIC);
@@ -331,9 +371,41 @@ void save_file_load_all(void) {
                 break;
         }
     }
-
-    stub_save_file_1();
 }
+
+void puppycam_check_save(void)
+{
+    if (gSaveBuffer.menuData.firstBoot != 4)
+    {
+        wipe_main_menu_data();
+        gSaveBuffer.menuData.firstBoot = 4;
+        puppycam_default_config();
+    }
+}
+
+void puppycam_get_save(void)
+{
+    gPuppyCam.options = gSaveBuffer.menuData.saveOptions;
+
+    //gPuppyCam.options.sensitivityX = gSaveBuffer.menuData.saveOptions.sensitivityX;
+
+    gSaveBuffer.menuData.firstBoot = gSaveBuffer.menuData.firstBoot;
+
+    puppycam_check_save();
+}
+
+void puppycam_set_save(void)
+{
+    gSaveBuffer.menuData.saveOptions = gPuppyCam.options;
+
+    //gSaveBuffer.menuData.saveOptions.sensitivityX = gPuppyCam.options.sensitivityX;
+
+    gSaveBuffer.menuData.firstBoot = 4;
+
+    gMainMenuDataModified = TRUE;
+    save_main_menu_data();
+}
+
 
 /**
  * Reload the current save file from its backup copy, which is effectively a
@@ -342,14 +414,14 @@ void save_file_load_all(void) {
  */
 void save_file_reload(void) {
     // Copy save file data from backup
-    bcopy(&gSaveBuffer.files[gCurrSaveFileNum - 1][1], &gSaveBuffer.files[gCurrSaveFileNum - 1][0],
-          sizeof(gSaveBuffer.files[gCurrSaveFileNum - 1][0]));
+    //bcopy(&gSaveBuffer.files[gCurrSaveFileNum - 1][1], &gSaveBuffer.files[gCurrSaveFileNum - 1][0],
+    //      sizeof(gSaveBuffer.files[gCurrSaveFileNum - 1][0]));
 
     // Copy main menu data from backup
-    bcopy(&gSaveBuffer.menuData[1], &gSaveBuffer.menuData[0], sizeof(gSaveBuffer.menuData[0]));
+    //bcopy(&gSaveBuffer.menuData[1], &gSaveBuffer.menuData, sizeof(gSaveBuffer.menuData));
 
-    gMainMenuDataModified = FALSE;
-    gSaveFileModified = FALSE;
+    //gMainMenuDataModified = FALSE;
+    //gSaveFileModified = FALSE;
 }
 
 /**
@@ -366,7 +438,7 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex) {
     gLastCompletedCourseNum = courseIndex + 1;
     gLastCompletedStarNum = starIndex + 1;
     sUnusedGotGlobalCoinHiScore = 0;
-    gGotFileCoinHiScore = 0;
+    gGotFileCoinHiScore = FALSE;
 
     if (courseIndex >= 0 && courseIndex < COURSE_STAGES_COUNT) {
         //! Compares the coin score as a 16 bit value, but only writes the 8 bit
@@ -380,7 +452,7 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex) {
             gSaveBuffer.files[fileIndex][0].courseCoinScores[courseIndex] = coinScore;
             touch_coin_score_age(fileIndex, courseIndex);
 
-            gGotFileCoinHiScore = 1;
+            gGotFileCoinHiScore = TRUE;
             gSaveFileModified = TRUE;
         }
     }
@@ -477,7 +549,7 @@ void save_file_clear_flags(u32 flags) {
 }
 
 u32 save_file_get_flags(void) {
-    if (gCurrCreditsEntry != 0 || gCurrDemoInput != NULL) {
+    if (gCurrCreditsEntry != NULL || gCurrDemoInput != NULL) {
         return 0;
     }
     return gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags;
@@ -491,7 +563,7 @@ u32 save_file_get_star_flags(s32 fileIndex, s32 courseIndex) {
     u32 starFlags;
 
     if (courseIndex == -1) {
-        starFlags = (gSaveBuffer.files[fileIndex][0].flags >> 24) & 0x7F;
+        starFlags = SAVE_FLAG_TO_STAR_FLAG(gSaveBuffer.files[fileIndex][0].flags);
     } else {
         starFlags = gSaveBuffer.files[fileIndex][0].courseStars[courseIndex] & 0x7F;
     }
@@ -505,7 +577,7 @@ u32 save_file_get_star_flags(s32 fileIndex, s32 courseIndex) {
  */
 void save_file_set_star_flags(s32 fileIndex, s32 courseIndex, u32 starFlags) {
     if (courseIndex == -1) {
-        gSaveBuffer.files[fileIndex][0].flags |= starFlags << 24;
+        gSaveBuffer.files[fileIndex][0].flags |= STAR_FLAG_TO_SAVE_FLAG(starFlags);
     } else {
         gSaveBuffer.files[fileIndex][0].courseStars[courseIndex] |= starFlags;
     }
@@ -557,60 +629,15 @@ s32 save_file_get_cap_pos(Vec3s capPos) {
 
 void save_file_set_sound_mode(u16 mode) {
     set_sound_mode(mode);
-    gSaveBuffer.menuData[0].soundMode = mode;
+    gSaveBuffer.menuData.soundMode = mode;
 
     gMainMenuDataModified = TRUE;
     save_main_menu_data();
 }
 
 u16 save_file_get_sound_mode(void) {
-    return gSaveBuffer.menuData[0].soundMode;
+    return gSaveBuffer.menuData.soundMode;
 }
-
-#ifndef NC_CODE_NOSAVE
-void save_file_set_setting(void) {
-
-    gSaveBuffer.menuData[0].camx = (s16)newcam_sensitivityX;
-    gSaveBuffer.menuData[0].camy = (s16)newcam_sensitivityY;
-    gSaveBuffer.menuData[0].invertx = (s16)newcam_invertX;
-    gSaveBuffer.menuData[0].inverty = (s16)newcam_invertY;
-    gSaveBuffer.menuData[0].camc = (s16)newcam_aggression;
-    gSaveBuffer.menuData[0].camp = (s16)newcam_panlevel;
-    gSaveBuffer.menuData[0].analogue = (s16)newcam_analogue;
-    gSaveBuffer.menuData[0].degrade = (s16)newcam_degrade;
-
-    gSaveBuffer.menuData[0].firsttime = 1;
-
-
-    gMainMenuDataModified = TRUE;
-    save_main_menu_data();
-}
-
-void save_file_get_setting(void) {
-        newcam_sensitivityX = gSaveBuffer.menuData[0].camx;
-        newcam_sensitivityY = gSaveBuffer.menuData[0].camy;
-        newcam_invertX = gSaveBuffer.menuData[0].invertx;
-        newcam_invertY = gSaveBuffer.menuData[0].inverty;
-        newcam_aggression = gSaveBuffer.menuData[0].camc;
-        newcam_panlevel = gSaveBuffer.menuData[0].camp;
-        newcam_analogue = gSaveBuffer.menuData[0].analogue;
-        newcam_degrade = gSaveBuffer.menuData[0].degrade;
-}
-
-u8 save_check_firsttime(void)
-{
-    return gSaveBuffer.menuData[0].firsttime;
-}
-
-
-void save_set_firsttime(void)
-{
-    gSaveBuffer.menuData[0].firsttime = 1;
-
-    gMainMenuDataModified = TRUE;
-    save_main_menu_data();
-}
-#endif
 
 void save_file_move_cap_to_default_location(void) {
     if (save_file_get_flags() & SAVE_FLAG_CAP_ON_GROUND) {
@@ -631,13 +658,13 @@ void save_file_move_cap_to_default_location(void) {
 
 #ifdef VERSION_EU
 void eu_set_language(u16 language) {
-    gSaveBuffer.menuData[0].language = language;
+    gSaveBuffer.menuData.language = language;
     gMainMenuDataModified = TRUE;
     save_main_menu_data();
 }
 
 u16 eu_get_language(void) {
-    return gSaveBuffer.menuData[0].language;
+    return gSaveBuffer.menuData.language;
 }
 #endif
 
@@ -667,7 +694,7 @@ void check_if_should_set_warp_checkpoint(struct WarpNode *warpNode) {
  * returns TRUE if input WarpNode was updated, and FALSE if not.
  */
 s32 check_warp_checkpoint(struct WarpNode *warpNode) {
-    s16 isWarpCheckpointActive = FALSE;
+    s16 warpCheckpointActive = FALSE;
     s16 currCourseNum = gLevelToCourseNumTable[(warpNode->destLevel & 0x7F) - 1];
 
     // gSavedCourseNum is only used in this function.
@@ -676,11 +703,11 @@ s32 check_warp_checkpoint(struct WarpNode *warpNode) {
         warpNode->destLevel = gWarpCheckpoint.levelID;
         warpNode->destArea = gWarpCheckpoint.areaNum;
         warpNode->destNode = gWarpCheckpoint.warpNode;
-        isWarpCheckpointActive = TRUE;
+        warpCheckpointActive = TRUE;
     } else {
         // Disable the warp checkpoint just in case the other 2 conditions failed?
         gWarpCheckpoint.courseNum = COURSE_NONE;
     }
 
-    return isWarpCheckpointActive;
+    return warpCheckpointActive;
 }

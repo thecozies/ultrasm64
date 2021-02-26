@@ -41,9 +41,14 @@ extern Gfx *gDisplayListHead;
 extern u8 *gGfxPoolEnd;
 extern struct GfxPool *gGfxPool;
 extern u8 gControllerBits;
+#ifdef EEP
 extern s8 gEepromProbe;
+#endif
+#ifdef SRAM
+extern s8 gSramProbe;
+#endif
 
-extern void (*D_8032C6A0)(void);
+extern void (*gGoddardVblankCallback)(void);
 extern struct Controller *gPlayer1Controller;
 extern struct Controller *gPlayer2Controller;
 extern struct Controller *gPlayer3Controller;

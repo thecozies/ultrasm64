@@ -1,27 +1,70 @@
-# Puppycam for SM64
+# UltraSM64
 
-Puppycam is a brand new camera mode for SM64, designed from the ground up, to improve and fix all of the existing flaws with the horribly dated camera, that comes with the original game.
+- This repo contains a full decompilation of Super Mario 64 (J), (U), (E), and (SH).
+- Naming and documentation of the source code and data structures are in progress.
+- It has been edited to allow for the usage of the final "N64 OS" library, version ``2.0L``
+- Shindou Rumble Pak code is on for all regions.
+- Targeting the iQue Player is supported.
+- Saving to 32kbyte/256kbit SRAM is supported.
+- Using gzip DEFLATE compression is supported.
+- It has been patched with someone2639's shiftable segments patch
+- Getting HVQM FMV support to work with the game is in progress.
+- Getting UNFLoader (flashcart USB library) to work with the game is in progress.
 
-# Usage
+## Multi-Save support
 
-You will want to use [this repo as a base](https://github.com/sm64-port/sm64-port) and then apply the patch in WSL. Simply copy puppycam.patch to the enhancements folder, then in the root directory of your repo, run "tools/apply_patch.sh enhancements/puppycam.patch" To revert, type "tools/revert_patch.sh enhancements/puppycam.patch" instead. This repo still supports everything necessary to develop for N64, so there's absolutely nothing lost abandoning the old one, going forward.
+The repository supports SRAM in addition to EEPROM. The standard save data functions are #ifdef'd to accommedate this.
 
-# Features:
+To build with SRAM support, run make with ``SAVETYPE=sram``.
 
-- It features movement on both the X and Y axis, as well as accurate raycasting collision that prevents the camera from ever getting stuck, while retaining its absolute formost in staying within the level boundaries.
-- It also features a whole range of different behavioural flags that dictate how the camera itself will operate, based on what you decide to set.
-- It has a dynamic options menu, that is incredibly easy to add, or take away options for.
-- Support for a player 2 joystick, for emulator users, to allow for analogue camera control.
+I may attempt FlashRAM in the future.
 
-# Screenshots:
+## Multi-Console support
 
-![Screenshot 1](https://i.imgur.com/NJHhyyd.png)
-![Screenshot 2](https://i.imgur.com/TmELc4d.png)
+The repository supports targeting the iQue Player in addition to the N64. The iQue libultra is ***NOT*** compatible with N64 in many ways, so it is currently NOT possible to have one build for both consoles.
 
-# Credits:
+To target iQue, run make with the ``CONSOLE=bb`` argument.
 
-- Me, I made the thing, lmao
-- [CuckyDev](https://github.com/cuckydev) for making the raycasting script that powers Puppycam's collision system.
-- [The Clever Folks™](https://github.com/n64decomp/sm64) who made the decompilation project happen to begin with
+## Compression
 
-SM64 Decomp Discord: https://discord.gg/DuYH3Fh
+The repository supports using DEFLATE compression instead of Nintendo's Yay0. This boasts a better compression ratio, but at a slight cost to load times.
+
+On average I'd estimate that the bottleneck on decompression is about 1-2 seconds.
+
+To switch to gzip, run make with the ``COMPRESS=gzip`` argument.
+
+The repo also supports gziping with ``libdeflate-gzip``. This compresses at a slightly better ratio than standard ``gzip``, with no real downside from a decompression standpoint.
+
+To use ``libdeflate-gzip``, first clone the [repo](https://github.com/ebiggers/libdeflate), then make and make install it.
+
+Then run make for sm64 with ``GZIPVER=libdef`` in addition to ``COMPRESS=gzip``
+
+The repo also supports RNC (Rob Northen Compression). RNC has two methods. 
+
+Method 1 is designed to compress as small as possible, while method 2 is designed so that decompression is as fast as possible.
+
+Both methods are fast. Method 1 has better compression than 2, so I suggest using method 1 if using RNC.
+
+To switch to RNC, run make with either ``COMPRESS=rnc1`` or ``COMPRESS=rnc2``, depending on preferred method.
+
+
+## FAQ
+
+Q: Why in the hell are you bundling your own build of ``ld``?
+
+A: Newer binutils (Like the one bundled with Ubuntu, 2.34) break linking with libultra builds due to local asm symbols.
+
+This puts me at a crossroads of either touching leaked code and requiring GCC, or just using an older linker that works just fine.
+
+I went with the latter.
+
+Thanks to "someone2639" for this hacky-ass idea
+
+Q: Will this allow me to use FlashRAM/Transfer Pak/microcode swapping/Other Cool N64 Features?
+
+A: Theoretically, all yes.
+
+## Installation help
+
+
+Go read the original repo README.md
