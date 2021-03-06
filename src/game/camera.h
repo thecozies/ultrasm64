@@ -656,8 +656,6 @@ struct LakituState
     /*0xBC*/ s16 unused;
 };
 
-// bss order hack to not affect BSS order. if possible, remove me, but it will be hard to match otherwise
-#ifndef INCLUDED_FROM_CAMERA_C
 // BSS
 extern s16 sSelectionFlags;
 extern s16 sCameraSoundFlags;
@@ -667,7 +665,6 @@ extern struct LakituState gLakituState;
 extern s16 gCameraMovementFlags;
 extern s32 gObjCutsceneDone;
 extern struct Camera *gCamera;
-#endif
 
 extern struct Object *gCutsceneFocus;
 extern struct Object *gSecondCameraFocus;

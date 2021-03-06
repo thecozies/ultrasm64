@@ -7,6 +7,7 @@
 #include "area.h"
 
 #include "course_table.h"
+#include "puppycam2.h"
 
 #define EEPROM_SIZE 0x200
 #define NUM_SAVE_FILES 4
@@ -45,6 +46,9 @@ enum SaveFileIndex {
     SAVE_FILE_D
 };
 
+#define FILLERSIZE EEPROM_SIZE - ((NUM_SAVE_FILES*(sizeof(struct SaveFile)*2)+sizeof(struct MainMenuSaveData)))
+
+
 struct MainMenuSaveData
 {
     // Each save file has a 2 bit "age" for each course. The higher this value,
@@ -52,17 +56,11 @@ struct MainMenuSaveData
     // on the high score screen.
     u32 coinScoreAges[NUM_SAVE_FILES];
     u16 soundMode;
-
 #ifdef VERSION_EU
     u16 language;
-#define SUBTRAHEND 8
-#else
-#define SUBTRAHEND 6
 #endif
-
-    // Pad to match the EEPROM size of 0x200 (10 bytes on JP/US, 8 bytes on EU)
-    u8 filler[EEPROM_SIZE / 2 - SUBTRAHEND - NUM_SAVE_FILES * (4 + sizeof(struct SaveFile))];
-
+    u8 firstBoot;
+    struct gPuppyOptions saveOptions;
     struct SaveBlockSignature signature;
 };
 
@@ -71,8 +69,13 @@ struct SaveBuffer
     // Each of the four save files has two copies. If one is bad, the other is used as a backup.
     struct SaveFile files[NUM_SAVE_FILES][2];
     // The main menu data has two copies. If one is bad, the other is used as a backup.
-    struct MainMenuSaveData menuData[2];
+    struct MainMenuSaveData menuData;
+    //u8 filler[FILLERSIZE];
 };
+
+void puppycam_set_save(void);
+void puppycam_get_save(void);
+void puppycam_check_save(void);
 
 extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;

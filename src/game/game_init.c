@@ -30,6 +30,7 @@
 #include "sram.h"
 #endif
 #include <prevent_bss_reordering.h>
+#include "puppycam2.h"
 
 // FIXME: I'm not sure all of these variables belong in this file, but I don't
 // know of a good way to split them
@@ -250,7 +251,7 @@ void create_task_structure(void) {
     gGfxSPTask->task.t.ucode_data = gspF3DEX_fifoDataStart;
 #elif   SUPER3D_GBI
     gGfxSPTask->task.t.ucode = gspSuper3D_fifoTextStart;
-    gGfxSPTask->task.t.ucode_data = gspSuper3D_fifoDataStart; 
+    gGfxSPTask->task.t.ucode_data = gspSuper3D_fifoDataStart;
 #else
     gGfxSPTask->task.t.ucode = gspFast3D_fifoTextStart;
     gGfxSPTask->task.t.ucode_data = gspFast3D_fifoDataStart;
@@ -630,6 +631,7 @@ void thread5_game_loop(UNUSED void *arg) {
     createHvqmThread();
 #endif
     save_file_load_all();
+    puppycam_boot();
 
     set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg) 1);
 

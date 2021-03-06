@@ -28,6 +28,7 @@
 #include "paintings.h"
 #include "engine/graph_node.h"
 #include "level_table.h"
+#include "puppycam2.h"
 
 #define CBUTTON_MASK (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS)
 
@@ -3010,7 +3011,7 @@ void update_camera(struct Camera *c) {
 
     gCamera = c;
     update_camera_hud_status(c);
-    if (c->cutscene == 0) {
+    if (c->cutscene == 0 && !gPuppyCam.enabled) {
         // Only process R_TRIG if 'fixed' is not selected in the menu
         if (cam_select_alt_mode(0) == CAM_SELECTION_MARIO) {
             if (gPlayer1Controller->buttonPressed & R_TRIG) {
@@ -3032,6 +3033,8 @@ void update_camera(struct Camera *c) {
         sStatusFlags |= CAM_FLAG_FRAME_AFTER_CAM_INIT;
     }
 
+    if (!gPuppyCam.enabled || c->cutscene != 0)
+    {
     // Store previous geometry information
     sMarioGeometry.prevFloorHeight = sMarioGeometry.currFloorHeight;
     sMarioGeometry.prevCeilHeight = sMarioGeometry.currCeilHeight;
@@ -3153,10 +3156,13 @@ void update_camera(struct Camera *c) {
             }
         }
     }
+    }
     // Start any Mario-related cutscenes
     start_cutscene(c, get_cutscene_from_mario_status(c));
     stub_camera_2(c);
     gCheckingSurfaceCollisionsForCamera = FALSE;
+    if (!gPuppyCam.enabled || c->cutscene != 0)
+    {
     if (gCurrLevelNum != LEVEL_CASTLE) {
         // If fixed camera is selected as the alternate mode, then fix the camera as long as the right
         // trigger is held
@@ -3194,6 +3200,32 @@ void update_camera(struct Camera *c) {
     }
 
     update_lakitu(c);
+    }
+    //Just a cute little bit that syncs puppycamera up to vanilla when playing a vanilla cutscene :3
+    if (c->cutscene != 0)
+    {
+        gPuppyCam.yawTarget = gCamera->yaw;
+        gPuppyCam.yaw = gCamera->yaw;
+        if (gMarioState->action == ACT_ENTERING_STAR_DOOR)
+        { //god this is stupid and the fact I have to continue doing this is testament to the idiocy of the star door cutscene >:(
+            gPuppyCam.yawTarget = gMarioState->faceAngle[1]+0x8000;
+            gPuppyCam.yaw = gMarioState->faceAngle[1]+0x8000;
+        }
+    }
+
+    if (c->cutscene == 0 && gPuppyCam.enabled)
+    {
+        // Clear the recent cutscene after 8 frames
+        if (gRecentCutscene != 0 && sFramesSinceCutsceneEnded < 8) {
+            sFramesSinceCutsceneEnded++;
+            if (sFramesSinceCutsceneEnded >= 8) {
+                gRecentCutscene = 0;
+                sFramesSinceCutsceneEnded = 0;
+            }
+        }
+        puppycam_loop();
+    }
+
 
     gLakituState.lastFrameAction = sMarioCamState->action;
 }
@@ -3425,6 +3457,8 @@ void init_camera(struct Camera *c) {
     gLakituState.nextYaw = gLakituState.yaw;
     c->yaw = gLakituState.yaw;
     c->nextYaw = gLakituState.yaw;
+
+    puppycam_init();
 }
 
 /**

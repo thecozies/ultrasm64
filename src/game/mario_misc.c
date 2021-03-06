@@ -22,6 +22,7 @@
 #include "save_file.h"
 #include "skybox.h"
 #include "sound_init.h"
+#include "puppycam2.h"
 
 #define TOAD_STAR_1_REQUIREMENT 12
 #define TOAD_STAR_2_REQUIREMENT 25
@@ -287,7 +288,14 @@ static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
         node->fnNode.node.flags = (node->fnNode.node.flags & 0xFF) | (LAYER_TRANSPARENT << 8);
         gfxHead = alloc_display_list(3 * sizeof(*gfxHead));
         gfx = gfxHead;
-        gDPSetAlphaCompare(gfx++, G_AC_DITHER);
+        if (gMarioState->flags & MARIO_VANISH_CAP)
+        {
+            gDPSetAlphaCompare(gfx++, G_AC_DITHER);
+        }
+        else
+        {
+            gDPSetAlphaCompare(gfx++, G_AC_NONE);
+        }
     }
     gDPSetEnvColor(gfx++, 255, 255, 255, alpha);
     gSPEndDisplayList(gfx);
@@ -306,7 +314,18 @@ Gfx *geo_mirror_mario_set_alpha(s32 callContext, struct GraphNode *node, UNUSED 
     UNUSED u8 unused2[4];
 
     if (callContext == GEO_CONTEXT_RENDER) {
+
+
+
         alpha = (bodyState->modelState & 0x100) ? (bodyState->modelState & 0xFF) : 255;
+
+        if (alpha > gPuppyCam.opacity)
+        {
+            alpha = gPuppyCam.opacity;
+            bodyState->modelState = MODEL_STATE_NOISE_ALPHA;
+        }
+
+
         gfx = make_gfx_mario_alpha(asGenerated, alpha);
     }
     return gfx;
