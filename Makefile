@@ -129,6 +129,8 @@ else ifeq ($(GRUCODE),super3d) # Super3D
   DEFINES += SUPER3D_GBI=1 F3D_NEW=1
 endif
 
+DEFINES += S2DEX_GBI_2=1
+
 ifeq ($(COMPILER),gcc)
   NON_MATCHING := 1
   MIPSISET     := -mips3
@@ -269,7 +271,7 @@ ACTOR_DIR      := actors
 LEVEL_DIRS     := $(patsubst levels/%,%,$(dir $(wildcard levels/*/header.h)))
 
 # Directories containing source files
-SRC_DIRS += src src/engine src/game src/audio src/menu src/buffers actors levels bin data assets asm lib sound
+SRC_DIRS += src src/engine src/game src/audio src/menu src/buffers src/s2dex actors levels bin data assets asm lib sound
 LIBZ_SRC_DIRS := src/libz
 BIN_DIRS := bin bin/$(VERSION)
 

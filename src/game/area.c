@@ -21,6 +21,10 @@
 #include "engine/geo_layout.h"
 #include "save_file.h"
 #include "level_table.h"
+#include "s2dex/init.h"
+#include "s2dex/s2d_draw.h"
+#include "s2dex/s2d_print.h"
+
 
 struct SpawnInfo gPlayerSpawnInfos[1];
 struct GraphNode *D_8033A160[0x100];
@@ -78,6 +82,10 @@ Vp D_8032CF00 = { {
     { 640, 480, 511, 0 },
     { 640, 480, 511, 0 },
 } };
+
+
+char myString[] = "This is a " SCALE "2" "test string!\n"
+                "\tThis is " COLOR "255 0 0 0" "Colorful text!";
 
 #ifdef VERSION_EU
 const char *gNoControllerMsg[] = {
@@ -359,6 +367,19 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
     play_transition(transType, time, red, green, blue);
 }
 
+
+void render_s2dex(void) {
+    // initialized S2DEX; only needed once before all prints
+	s2d_init();
+	uObjMtx *buffer;
+	// substitute with a different alloc function as neccesary
+	buffer = alloc_display_list(0x200 * sizeof(uObjMtx));
+	s2d_print(50, 50, ALIGN_LEFT, myString, buffer);
+
+	// reloads the original microcode; only needed once after all prints
+	s2d_stop();
+}
+
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
@@ -368,11 +389,14 @@ void render_game(void) {
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
                       SCREEN_HEIGHT - BORDER_HEIGHT);
         render_hud();
+        render_s2dex();
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         render_text_labels();
         do_cutscene_handler();
         print_displaying_credits_entry();
+
+
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
                       SCREEN_HEIGHT - BORDER_HEIGHT);
         gPauseScreenMode = render_menus_and_dialogs();

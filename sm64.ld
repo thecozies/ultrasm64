@@ -124,6 +124,7 @@ SECTIONS
       BUILD_DIR/asm/entry.o(.text);
 
       BUILD_DIR/src/game*.o(.text);
+      BUILD_DIR/src/s2dex*.o(.text);
 #ifdef HVQM
       BUILD_DIR/src/hvqm*.o(.text);
 #endif
@@ -170,7 +171,9 @@ SECTIONS
 
       /* data */
       BUILD_DIR/src/game*.o(.data*);
+      BUILD_DIR/src/s2dex*.o(.data*);
       BUILD_DIR/src/game*.o(.sdata*);
+      BUILD_DIR/src/s2dex*.o(.sdata*);
 #ifdef UNF
       BUILD_DIR/src/usb*.o(.data*);
       BUILD_DIR/src/usb*.o(.sdata*);
@@ -199,6 +202,7 @@ SECTIONS
 
       /* rodata */
       BUILD_DIR/src/game*.o(.rodata*);
+      BUILD_DIR/src/s2dex*.o(.rodata*);
 #ifdef UNF
       BUILD_DIR/src/usb*.o(.rodata*);
 #endif
@@ -230,7 +234,9 @@ SECTIONS
    BEGIN_NOLOAD(main)
    {
       BUILD_DIR/src/game*.o(.bss*);
+      BUILD_DIR/src/s2dex*.o(.bss*);
       BUILD_DIR/src/game*.o(.sbss*);
+      BUILD_DIR/src/s2dex*.o(.sbss*);
 #ifdef HVQM
       BUILD_DIR/src/hvqm*.o(.bss*);
 #endif
