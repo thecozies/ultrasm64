@@ -435,7 +435,7 @@ void puppycam_init(void)
 //Handles C Button inputs for modes that have held inputs, rather than presses.
 static void puppycam_input_hold(void)
 {
-    s8 ivX = ((gPuppyCam.options.invertX*2)-1)*(gPuppyCam.options.sensitivityX/100.f);
+    f32 ivX = ((gPuppyCam.options.invertX*2)-1)*(gPuppyCam.options.sensitivityX/100.f);
     s8 stickMag = 0;
 
     gPuppyCam.framesSinceC[0]++;
@@ -485,7 +485,7 @@ static void puppycam_input_hold(void)
 //Handles C Button inputs for modes that have pressed inputs, rather than held.
 static void puppycam_input_press(void)
 {
-    s8 ivX = ((gPuppyCam.options.invertX*2)-1)*(gPuppyCam.options.sensitivityX/100.f);
+    f32 ivX = ((gPuppyCam.options.invertX*2)-1)*(gPuppyCam.options.sensitivityX/100.f);
 
     //Just in case it happens to be nonzero.
     gPuppyCam.yawAcceleration = 0;
@@ -830,7 +830,7 @@ void puppycam_shake(s16 x, s16 y, s16 z)
 //The centrepiece behind the input side of PuppyCam. The C buttons branch off.
 static void puppycam_input_core(void)
 {
-    s8 ivY = ((gPuppyCam.options.invertY*2)-1)*(gPuppyCam.options.sensitivityY/100.f);
+    f32 ivY = ((gPuppyCam.options.invertY*2)-1)*(gPuppyCam.options.sensitivityY/100.f);
     s8 stickMag = 0;
 
     puppycam_analogue_stick();
