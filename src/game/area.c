@@ -84,8 +84,8 @@ Vp D_8032CF00 = { {
 } };
 
 
-char myString[] = "Hey baby, check me out\nyo.\n"
-                "We gonna " COLOR "255 0 0 0" "DEMOLISH\n" COLOR "255 255 255 0" "the competition!!";
+char myString[] = "Where am I\n"
+                "I don't think I'm safe here...";
 // char myString[] = "This is a " SCALE "2" "test string!\n"
 //                 "\tThis is " COLOR "255 0 0 0" "Colorful text!";
 
