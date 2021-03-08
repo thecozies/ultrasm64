@@ -66,7 +66,7 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
     // init
     Mat4 tmp, rot, scal, translate;
     guMtxIdentF(tmp);
-    guScaleF(scal, myScale, myScale, 0);
+    guScaleF(scal, 0.5f, 0.5f, 0);
     guRotateF(rot, (f32) myDegrees, 0, 0, 1.0f);
     guTranslateF(translate, x, y, 0);
 
@@ -77,7 +77,7 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
     gu_to_gs2dex(m, tmp);
 
     if (myDegrees != 0) {
-        mat2_translate_vec(m, -(myDegrees) * M_DTOR, myScale);
+        mat2_translate_vec(m, -(myDegrees) * M_DTOR, 1);
     }
 
     gSPObjMatrix(gdl_head++, m);
@@ -98,7 +98,7 @@ void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
                    CLAMP_0(s2d_green - 100),
                    CLAMP_0(s2d_blue - 100),
                    s2d_alpha);
-        gSPObjSprite(gdl_head++, &billy_obj_dropshadow);
+        gSPObjSprite(gdl_head++, &s2d_font_dropshadow);
         gDPPipeSync(gdl_head++);
         gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     }

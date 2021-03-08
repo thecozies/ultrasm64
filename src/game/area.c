@@ -84,8 +84,10 @@ Vp D_8032CF00 = { {
 } };
 
 
-char myString[] = "This is a " SCALE "2" "test string!\n"
-                "\tThis is " COLOR "255 0 0 0" "Colorful text!";
+char myString[] = "Hey baby, check me out\nyo.\n"
+                "We gonna " COLOR "255 0 0 0" "DEMOLISH\n" COLOR "255 255 255 0" "the competition!!";
+// char myString[] = "This is a " SCALE "2" "test string!\n"
+//                 "\tThis is " COLOR "255 0 0 0" "Colorful text!";
 
 #ifdef VERSION_EU
 const char *gNoControllerMsg[] = {

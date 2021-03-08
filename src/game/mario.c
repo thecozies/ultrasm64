@@ -90,6 +90,36 @@ s16 set_mario_animation(struct MarioState *m, s32 targetAnimID) {
     return o->header.gfx.animInfo.animFrame;
 }
 
+s16 set_custom_mario_animation(struct MarioState *m, s32 targetAnimID) {
+    return TRUE;
+    // CTODO: Get custom anims
+
+    // struct Object *o = m->marioObj;
+
+    // if (o->header.gfx.animInfo.animID != targetAnimID) {
+    //     struct Animation **animPtrAddr = &mario_anims[targetAnimID];
+    //     struct Animation **animSegmented = segmented_to_virtual(animPtrAddr);
+    //     struct Animation *targetAnim = segmented_to_virtual(*animSegmented);
+
+    //     o->header.gfx.animInfo.animID = targetAnimID;
+    //     o->header.gfx.animInfo.curAnim = targetAnim;
+    //     o->header.gfx.animInfo.animAccel = 0;
+    //     o->header.gfx.animInfo.animYTrans = m->unkB0;
+
+    //     if (targetAnim->flags & ANIM_FLAG_2) {
+    //         o->header.gfx.animInfo.animFrame = targetAnim->startFrame;
+    //     } else {
+    //         if (targetAnim->flags & ANIM_FLAG_FORWARD) {
+    //             o->header.gfx.animInfo.animFrame = targetAnim->startFrame + 1;
+    //         } else {
+    //             o->header.gfx.animInfo.animFrame = targetAnim->startFrame - 1;
+    //         }
+    //     }
+    // }
+
+    // return o->header.gfx.animInfo.animFrame;
+}
+
 /**
  * Sets Mario's animation where the animation is sped up or
  * slowed down via acceleration.
@@ -124,6 +154,38 @@ s16 set_mario_anim_with_accel(struct MarioState *m, s32 targetAnimID, s32 accel)
     o->header.gfx.animInfo.animAccel = accel;
 
     return o->header.gfx.animInfo.animFrame;
+}
+
+s16 set_custom_mario_animation_accel(struct MarioState *m, s32 targetAnimID, s32 accel) {
+    return TRUE;
+    // CTODO: Get custom anims
+
+    // struct Object *o = m->marioObj;
+
+    // if (o->header.gfx.animInfo.animID != targetAnimID) {
+    //     struct Animation **animPtrAddr = &mario_anims[targetAnimID];
+    //     struct Animation **animSegmented = segmented_to_virtual(animPtrAddr);
+    //     struct Animation *targetAnim = segmented_to_virtual(*animSegmented);
+
+    //     o->header.gfx.animInfo.animID = targetAnimID;
+    //     o->header.gfx.animInfo.curAnim = targetAnim;
+    //     o->header.gfx.animInfo.animAccel = 0;
+    //     o->header.gfx.animInfo.animYTrans = m->unkB0;
+
+    //     if (targetAnim->flags & ANIM_FLAG_2) {
+    //         o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10);
+    //     } else {
+    //         if (targetAnim->flags & ANIM_FLAG_FORWARD) {
+    //             o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10) + accel;
+    //         } else {
+    //             o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10) - accel;
+    //         }
+    //     }
+
+    //     o->header.gfx.animInfo.animFrame = (o->header.gfx.animInfo.animFrameAccelAssist >> 0x10);
+    // }
+
+    // return o->header.gfx.animInfo.animFrame;
 }
 
 /**
@@ -770,6 +832,36 @@ static void set_mario_y_vel_based_on_fspeed(struct MarioState *m, f32 initialVel
     }
 }
 
+void set_mario_vel_based_on_fspeed_grav(struct MarioState *m, f32 initialVelY, f32 multiplier) {
+    // uses gravPower to add speed and height
+    if (!m->appliedGravChange) {
+        if (m->gravPower[0] == 0.0f) {
+            m->forwardVel *= 0.7f;
+            m->vel[1] *= 0.7f;
+        } else {
+            if ((m->forwardVel *= m->gravPower[1]) > 70.0f) {
+                m->forwardVel = 70.0f;
+            } else if (m->forwardVel < -70.0f) {
+                m->forwardVel = -70.0f;
+            }
+
+            m->vel[1] = (initialVelY * m->gravPower[2]) + m->forwardVel * multiplier
+                        + (m->gravPower[0] / initialVelY);
+        }
+        m->appliedGravChange = TRUE;
+        m->gravPower[2] = 1.0f;
+    } else {
+        if ((m->forwardVel *= 1.25f) > 55.0f) {
+            m->forwardVel = 55.0f;
+        }
+        m->vel[1] = initialVelY + m->forwardVel * multiplier;
+    }
+
+    if (m->squishTimer != 0 || m->quicksandDepth > 1.0f) {
+        m->vel[1] *= 0.5f;
+    }
+}
+
 /**
  * Transitions for a variety of airborne actions.
  */
@@ -805,7 +897,8 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
         case ACT_WATER_JUMP:
         case ACT_HOLD_WATER_JUMP:
             if (actionArg == 0) {
-                set_mario_y_vel_based_on_fspeed(m, 42.0f, 0.0f);
+                if (m->dolphinPowers) set_mario_vel_based_on_fspeed_grav(m, 64.0f, 1.0f);
+                else set_mario_y_vel_based_on_fspeed(m, 42.0f, 0.0f);
             }
             break;
 
@@ -858,6 +951,12 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
                 fowardVel = 48.0f;
             }
             mario_set_forward_vel(m, fowardVel);
+            break;
+
+        case ACT_DOLPHIN_DIVE:
+            if (actionArg != 2) {
+                set_mario_vel_based_on_fspeed_grav(m, 50.0f, 0.05f);
+            }
             break;
 
         case ACT_LONG_JUMP:
@@ -1172,17 +1271,15 @@ s32 transition_submerged_to_walking(struct MarioState *m) {
  * non-submerged action. This also applies the water surface camera preset.
  */
 s32 set_water_plunge_action(struct MarioState *m) {
-    m->forwardVel = m->forwardVel / 4.0f;
-    m->vel[1] = m->vel[1] / 2.0f;
+    m->vel[1] = m->vel[1] * 0.55f;
 
-    m->pos[1] = m->waterLevel - 100;
+    // CTODO: Insure this doesn't make entering water too slippery
+    vec3s_set(m->angleVel, m->angleVel[0] / 2, m->angleVel[1] / 2, m->angleVel[2] / 2);
 
-    m->faceAngle[2] = 0;
+    m->faceAngle[2] = (int) (m->faceAngle[2] * 0.6f);
 
-    vec3s_set(m->angleVel, 0, 0, 0);
-
-    if (!(m->action & ACT_FLAG_DIVING)) {
-        m->faceAngle[0] = 0;
+    if ((m->action & ACT_FLAG_DIVING) == 0) {
+        m->faceAngle[0] = (int) (m->faceAngle[0] * 0.7f);
     }
 
     if (m->area->camera->mode != CAMERA_MODE_WATER_SURFACE) {
@@ -1448,65 +1545,10 @@ void set_submerged_cam_preset_and_spawn_bubbles(struct MarioState *m) {
 }
 
 /**
- * Both increments and decrements Mario's HP.
+ * Keeps mario's health full
  */
 void update_mario_health(struct MarioState *m) {
-    s32 terrainIsSnow;
-
-    if (m->health >= 0x100) {
-        // When already healing or hurting Mario, Mario's HP is not changed any more here.
-        if (((u32) m->healCounter | (u32) m->hurtCounter) == 0) {
-            if ((m->input & INPUT_IN_POISON_GAS) && !(m->action & ACT_FLAG_INTANGIBLE)) {
-                if (!(m->flags & MARIO_METAL_CAP) && !gDebugLevelSelect) {
-                    m->health -= 4;
-                }
-            } else {
-                if ((m->action & ACT_FLAG_SWIMMING) && !(m->action & ACT_FLAG_INTANGIBLE)) {
-                    terrainIsSnow = (m->area->terrainType & TERRAIN_MASK) == TERRAIN_SNOW;
-
-                    // When Mario is near the water surface, recover health (unless in snow),
-                    // when in snow terrains lose 3 health.
-                    // If using the debug level select, do not lose any HP to water.
-                    if ((m->pos[1] >= (m->waterLevel - 140)) && !terrainIsSnow) {
-                        m->health += 0x1A;
-                    } else if (!gDebugLevelSelect) {
-                        m->health -= (terrainIsSnow ? 3 : 1);
-                    }
-                }
-            }
-        }
-
-        if (m->healCounter > 0) {
-            m->health += 0x40;
-            m->healCounter--;
-        }
-        if (m->hurtCounter > 0) {
-            m->health -= 0x40;
-            m->hurtCounter--;
-        }
-
-        if (m->health > 0x880) {
-            m->health = 0x880;
-        }
-        if (m->health < 0x100) {
-            m->health = 0xFF;
-        }
-
-        // Play a noise to alert the player when Mario is close to drowning.
-        if (((m->action & ACT_GROUP_MASK) == ACT_GROUP_SUBMERGED) && (m->health < 0x300)) {
-            play_sound(SOUND_MOVING_ALMOST_DROWNING, gGlobalSoundSource);
-#if ENABLE_RUMBLE
-            if (gRumblePakTimer == 0) {
-                gRumblePakTimer = 36;
-                if (is_rumble_finished_and_queue_empty()) {
-                    queue_rumble_data(3, 30);
-                }
-            }
-        } else {
-            gRumblePakTimer = 0;
-#endif
-        }
-    }
+    m->health = 0x880;
 }
 
 /**
@@ -1793,6 +1835,12 @@ void init_mario(void) {
     gMarioState->actionTimer = 0;
     gMarioState->framesSinceA = 0xFF;
     gMarioState->framesSinceB = 0xFF;
+    gMarioState->appliedGravChange = TRUE;
+    gMarioState->gravPower[0] = 1.0f;
+    gMarioState->gravPower[1] = 1.0f;
+    gMarioState->gravPower[2] = 1.0f;
+    // CTODO: Check save file
+    gMarioState->dolphinPowers = TRUE;
 
     gMarioState->invincTimer = 0;
 
@@ -1881,6 +1929,12 @@ void init_mario_from_save_file(void) {
     gMarioState->numStars =
         save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
     gMarioState->numKeys = 0;
+    gMarioState->appliedGravChange = TRUE;
+    gMarioState->gravPower[0] = 1.0f;
+    gMarioState->gravPower[1] = 1.0f;
+    gMarioState->gravPower[2] = 1.0f;
+    // CTODO: Check save file
+    gMarioState->dolphinPowers = TRUE;
 
     gMarioState->numLives = 4;
     gMarioState->health = 0x880;

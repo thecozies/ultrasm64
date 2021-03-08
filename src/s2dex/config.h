@@ -44,8 +44,8 @@ extern char *proutSprintf(char *dst, const char *src, size_t count);
 #define TAB_WIDTH_V TEX_WIDTH / 2
 
 // Set these to optimize s2d texture "cache"
-#define TEX_WIDTH 16
-#define TEX_HEIGHT 16
+#define TEX_WIDTH 32
+#define TEX_HEIGHT 32
 #define TEX_BITDEPTH 8
 
 // Texture resolution (pixels on the texture per pixel on the framebuffer)

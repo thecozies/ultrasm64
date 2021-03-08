@@ -345,6 +345,9 @@ struct MarioState
     /*0xBC*/ f32 peakHeight;
     /*0xC0*/ f32 quicksandDepth;
     /*0xC4*/ f32 unkC4;
+    s8 dolphinPowers;
+    s8 appliedGravChange;
+    Vec3f gravPower;
 };
 
 #endif // TYPES_H
