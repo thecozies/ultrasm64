@@ -25,10 +25,9 @@
 #define DECELERATION 0.75f
 #define DEADZONE 20
 #define SCRIPT_MEMORY_POOL 0x1000
-#define MAX_PUPPYCAM_VOLUMES 50
 
 struct gPuppyStruct gPuppyCam;
-struct sPuppyVolume *sPuppyVolumeStack[];
+struct sPuppyVolume *sPuppyVolumeStack[MAX_PUPPYCAM_VOLUMES];
 s16 sFloorHeight = 0;
 u8 gPCOptionOpen = 0;
 s8 gPCOptionSelected = 0;
