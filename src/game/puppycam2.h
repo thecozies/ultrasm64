@@ -7,6 +7,7 @@
 #define PUPPY_ERROR_POOL_FULL 0x1
 
 #define PUPPY_NULL 15151
+#define MAX_PUPPYCAM_VOLUMES 50
 
 #include "include/command_macros_base.h"
 
@@ -65,7 +66,7 @@ struct gPuppyStruct
     s8 stick2[2];//The value that's set and read for analogue stick.
     u8 stickN[2]; //This is set when the stick is neutral. It's to prevent rapidfire input.
     u8 enabled;
-    s16 waterY;
+    s16 swimPitch;
     struct gPuppyOptions options;
 
 };
@@ -128,7 +129,7 @@ enum gPuppyCamBeh
 extern u8 gPCOptionOpen;
 extern s32 gPuppyError;
 extern struct gPuppyStruct gPuppyCam;
-extern struct sPuppyVolume *sPuppyVolumeStack[];
+extern struct sPuppyVolume *sPuppyVolumeStack[MAX_PUPPYCAM_VOLUMES];
 extern u16 gPuppyVolumeCount;
 extern struct MemoryPool *gPuppyMemoryPool;
 extern void puppycam_boot(void);
