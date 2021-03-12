@@ -79,3 +79,4 @@ build/*
 
 !/lib/PR/hvqm/*.o
 
+usb64.exe

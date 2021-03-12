@@ -1,8 +1,8 @@
 void scroll_castle_grounds_dl_Plane_mesh_layer_5_vtx_0() {
 	int i = 0;
-	int count = 4;
-	int width = 32 * 0x20;
-	int height = 32 * 0x20;
+	int count = 62;
+	int width = 64 * 0x20;
+	int height = 64 * 0x20;
 
 	static int currentY = 0;
 	int deltaY;

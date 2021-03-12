@@ -1,5 +1,8 @@
 #include <PR/ultratypes.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "prevent_bss_reordering.h"
 #include "area.h"
 #include "sm64.h"
@@ -21,6 +24,7 @@
 #include "engine/geo_layout.h"
 #include "save_file.h"
 #include "level_table.h"
+#include "game_init.h"
 #include "s2dex/init.h"
 #include "s2dex/s2d_draw.h"
 #include "s2dex/s2d_print.h"
@@ -85,7 +89,7 @@ Vp D_8032CF00 = { {
 
 
 char myString[] = "Where am I\n"
-                "I don't think I'm safe here...";
+                "                    ";
 // char myString[] = "This is a " SCALE "2" "test string!\n"
 //                 "\tThis is " COLOR "255 0 0 0" "Colorful text!";
 
@@ -371,15 +375,20 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
 
 
 void render_s2dex(void) {
+    // return;
     // initialized S2DEX; only needed once before all prints
-	s2d_init();
-	uObjMtx *buffer;
-	// substitute with a different alloc function as neccesary
-	buffer = alloc_display_list(0x200 * sizeof(uObjMtx));
-	s2d_print(50, 50, ALIGN_LEFT, myString, buffer);
+    s2d_init();
+    // uObjMtx *buffer;
+    char s1[30];
 
-	// reloads the original microcode; only needed once after all prints
-	s2d_stop();
+    // substitute with a different alloc function as neccesary
+    // buffer = alloc_display_list(0x200 * sizeof(uObjMtx));
+    sprintf(s1, "goals: %d\ngrabbed: %d", gParasitesGoals[0], gParasitesGrabbed[0]);
+    s2d_print_alloc(40, 20, ALIGN_LEFT, s1);
+    // s2d_print(20, 20, ALIGN_LEFT, s1, buffer);
+
+    // reloads the original microcode; only needed once after all prints
+    s2d_stop();
 }
 
 void render_game(void) {
@@ -391,13 +400,11 @@ void render_game(void) {
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
                       SCREEN_HEIGHT - BORDER_HEIGHT);
         render_hud();
-        render_s2dex();
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         render_text_labels();
         do_cutscene_handler();
         print_displaying_credits_entry();
-
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
                       SCREEN_HEIGHT - BORDER_HEIGHT);
@@ -427,6 +434,10 @@ void render_game(void) {
             } else {
                 gWarpTransDelay--;
             }
+        }
+
+        if (gControllers[0].buttonDown & D_JPAD) {
+            render_s2dex();
         }
     } else {
         render_text_labels();

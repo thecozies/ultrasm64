@@ -66,7 +66,7 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
     // init
     Mat4 tmp, rot, scal, translate;
     guMtxIdentF(tmp);
-    guScaleF(scal, 0.5f, 0.5f, 0);
+    guScaleF(scal, 1.0f, 1.0f, 0);
     guRotateF(rot, (f32) myDegrees, 0, 0, 1.0f);
     guTranslateF(translate, x, y, 0);
 

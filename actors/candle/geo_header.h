@@ -1,0 +1,16 @@
+extern const GeoLayout candle_geo[];
+extern Lights1 candle_fireflame_layer5_lights;
+extern u8 candle_accent_wall128_i8[];
+extern u8 candle_fire__ia16[];
+extern u8 candle_fire_blurry_ia16[];
+extern Vtx candle_candle_mesh_layer_1_vtx_0[16];
+extern Gfx candle_candle_mesh_layer_1_tri_0[];
+extern Vtx candle_fire_flame_mesh_layer_5_vtx_0[9];
+extern Gfx candle_fire_flame_mesh_layer_5_tri_0[];
+extern Gfx mat_candle_door_front[];
+extern Gfx mat_revert_candle_door_front[];
+extern Gfx mat_candle_fireflame_layer5[];
+extern Gfx mat_revert_candle_fireflame_layer5[];
+extern Gfx candle_candle_mesh_layer_1[];
+extern Gfx candle_fire_flame_mesh_layer_5[];
+extern Gfx candle_material_revert_render_settings[];

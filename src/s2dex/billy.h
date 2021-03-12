@@ -95,6 +95,7 @@ extern u8 billy_tex_left_curly_bracket[];
 extern u8 billy_tex_pipe[];
 extern u8 billy_tex_right_curly_bracket[];
 extern u8 billy_tex_tilde[];
+extern u8 billy_tex_spaces[];
 extern uObjTxtr billy_tex[];
 extern uObjMtx billy_mtx;
 extern uObjSprite billy_obj;

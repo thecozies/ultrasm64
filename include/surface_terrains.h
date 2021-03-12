@@ -23,6 +23,7 @@
 #define SURFACE_INSTANT_WARP_1C              0x001C // Instant warp to another area, used to warp between areas in WDW
 #define SURFACE_INSTANT_WARP_1D              0x001D // Instant warp to another area, used to warp between areas in DDD, SSL and TTM
 #define SURFACE_INSTANT_WARP_1E              0x001E // Instant warp to another area, used to warp between areas in DDD, SSL and TTM
+#define SURFACE_CHECKPOINT                   0x001F // Instant warp to another area, used to warp between areas in DDD, SSL and TTM
 #define SURFACE_SHALLOW_QUICKSAND            0x0021 // Shallow Quicksand (depth of 10 units)
 #define SURFACE_DEEP_QUICKSAND               0x0022 // Quicksand (lethal, slow, depth of 160 units)
 #define SURFACE_INSTANT_QUICKSAND            0x0023 // Quicksand (lethal, instant)

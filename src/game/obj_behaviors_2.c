@@ -44,6 +44,7 @@
 #include "save_file.h"
 #include "seq_ids.h"
 #include "spawn_sound.h"
+#include "puppycam2.h"
 
 #define POS_OP_SAVE_POSITION 0
 #define POS_OP_COMPUTE_VELOCITY 1
@@ -930,6 +931,8 @@ static void treat_far_home_as_mario(f32 threshold) {
 #include "behaviors/haunted_chair.inc.c"
 #include "behaviors/mad_piano.inc.c"
 #include "behaviors/flying_bookend_switch.inc.c"
+#include "behaviors/sliding_door.inc.c"
+#include "behaviors/checkpoint.inc.c"
 
 /**
  * Used by bowser, fly guy, piranha plant, and fire spitters.

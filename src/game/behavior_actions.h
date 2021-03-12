@@ -551,6 +551,10 @@ void bhv_intro_scene_loop(void);
 void bhv_dust_smoke_loop(void);
 void bhv_yoshi_loop(void);
 void bhv_volcano_trap_loop(void);
+void bhv_parasite_init(void);
+void bhv_parasite_loop(void);
+void bhv_sliding_door_loop(void);
+void bhv_checkpoint_loop(void);
 
 Gfx *geo_move_mario_part_from_parent(s32 run, UNUSED struct GraphNode *node, Mat4 mtx);
 

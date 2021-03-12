@@ -32,7 +32,7 @@
 #include "macros.h"
 
 //set this to the extended bounds mode you want, then do "make clean".
-#define EXTENDED_BOUNDS_MODE 1
+#define EXTENDED_BOUNDS_MODE 4
 
 //the maximum amount of collision surfaces (static and dynamic combined)
 //8200 should work fine for a 2x extended stage, the vanilla value is 2300
@@ -67,6 +67,10 @@
     #undef LEVEL_BOUNDARY_MAX
     #define LEVEL_BOUNDARY_MAX 0x8000L
     #define CELL_SIZE          0x400
+#elif EXTENDED_BOUNDS_MODE == 4
+    #undef LEVEL_BOUNDARY_MAX
+    #define LEVEL_BOUNDARY_MAX 0x4000L
+    #define CELL_SIZE          0x200
 #endif
 
 STATIC_ASSERT(LEVEL_BOUNDARY_MAX != 0, "You must set a valid extended bounds mode!");

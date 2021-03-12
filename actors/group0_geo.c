@@ -16,3 +16,7 @@
 #include "water_splash/geo.inc.c"
 #include "sparkle_animation/geo.inc.c"
 #include "mario/geo.inc.c"
+
+#include "sliding_door/geo.inc.c"
+#include "candle/geo.inc.c"
+#include "parasite/geo.inc.c"

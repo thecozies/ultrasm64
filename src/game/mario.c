@@ -1752,6 +1752,29 @@ void func_sh_8025574C(void) {
 }
 #endif
 
+void warp_mario_to_checkpoint(void) {
+    if (gMarioState->lastParaGroup != -1) {
+        gParasitesGrabbed[gMarioState->lastParaGroup] = 0;
+    }
+    vec3f_copy(gMarioState->pos, gMarioState->checkpointPos);
+    gMarioState->vel[0] = 0.0f;
+    gMarioState->vel[1] = 0.0f;
+    gMarioState->vel[2] = 0.0f;
+    gMarioState->forwardVel = 0.0f;
+    set_mario_action(gMarioState, ACT_IDLE, 0);
+}
+
+void check_and_set_checkpoint(struct MarioState *m) {
+    if (m->floor->type == SURFACE_CHECKPOINT) {
+        vec3f_center(
+            m->checkpointPos,
+            m->floor->vertex1,
+            m->floor->vertex2,
+            m->floor->vertex3
+        );
+    }
+}
+
 /**
  * Main function for executing Mario's behavior.
  */
@@ -1770,16 +1793,22 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             return 0;
         }
 
+        if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+            warp_mario_to_checkpoint();
+        }
+
         // The function can loop through many action shifts in one frame,
         // which can lead to unexpected sub-frame behavior. Could potentially hang
         // if a loop of actions were found, but there has not been a situation found.
         while (inLoop) {
             switch (gMarioState->action & ACT_GROUP_MASK) {
                 case ACT_GROUP_STATIONARY:
+                    check_and_set_checkpoint(gMarioState);
                     inLoop = mario_execute_stationary_action(gMarioState);
                     break;
 
                 case ACT_GROUP_MOVING:
+                    check_and_set_checkpoint(gMarioState);
                     inLoop = mario_execute_moving_action(gMarioState);
                     break;
 
@@ -1872,6 +1901,7 @@ void init_mario(void) {
 
     gMarioState->forwardVel = 0.0f;
     gMarioState->squishTimer = 0;
+    gMarioState->lastParaGroup = -1;
 
     gMarioState->hurtCounter = 0;
     gMarioState->healCounter = 0;
@@ -1899,6 +1929,10 @@ void init_mario(void) {
     if (gMarioState->pos[1] < gMarioState->floorHeight) {
         gMarioState->pos[1] = gMarioState->floorHeight;
     }
+
+    gMarioState->checkpointPos[0] = gMarioState->pos[0];
+    gMarioState->checkpointPos[1] = gMarioState->pos[1];
+    gMarioState->checkpointPos[2] = gMarioState->pos[2];
 
     gMarioState->marioObj->header.gfx.pos[1] = gMarioState->pos[1];
 
@@ -1942,6 +1976,7 @@ void init_mario_from_save_file(void) {
     gMarioState->marioBodyState = &gBodyStates[0];
     gMarioState->controller = &gControllers[0];
     gMarioState->animation = &D_80339D10;
+    gMarioState->lastParaGroup = -1;
 
     gMarioState->numCoins = 0;
     gMarioState->numStars =
@@ -1951,6 +1986,9 @@ void init_mario_from_save_file(void) {
     gMarioState->gravPower[0] = 1.0f;
     gMarioState->gravPower[1] = 1.0f;
     gMarioState->gravPower[2] = 1.0f;
+    gMarioState->checkpointPos[0] = gMarioState->pos[0];
+    gMarioState->checkpointPos[1] = gMarioState->pos[1];
+    gMarioState->checkpointPos[2] = gMarioState->pos[2];
     // CTODO: Check save file
     gMarioState->dolphinPowers = TRUE;
 

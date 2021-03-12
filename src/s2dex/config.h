@@ -38,15 +38,14 @@ extern u32 s2d_timer;
 #define vsprintf(dst, str, fmt, args) _Printf(proutSprintf, dst, fmt, args)
 extern char *proutSprintf(char *dst, const char *src, size_t count);
 
-
-// tab glyph width and height
-#define TAB_WIDTH_H TEX_WIDTH * 2
-#define TAB_WIDTH_V TEX_WIDTH / 2
-
 // Set these to optimize s2d texture "cache"
 #define TEX_WIDTH 32
 #define TEX_HEIGHT 32
 #define TEX_BITDEPTH 8
+
+// tab glyph width and height
+#define TAB_WIDTH_H TEX_WIDTH * 2
+#define TAB_WIDTH_V TEX_WIDTH / 2
 
 // Texture resolution (pixels on the texture per pixel on the framebuffer)
 #define TEX_RES 1

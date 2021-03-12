@@ -1,5 +1,8 @@
 #include "types.h"
 
+#ifndef TILE_SCROLL_H
+#define TILE_SCROLL_H
+
 #define PACK_TILESIZE(w, d) ((w << 2) + d)
 
 typedef struct {
@@ -17,3 +20,4 @@ void shift_t(Gfx *dl, u32 cmd, u16 t);
 void shift_s_down(Gfx *dl, u32 cmd, u16 s);
 void shift_t_down(Gfx *dl, u32 cmd, u16 t);
 
+#endif

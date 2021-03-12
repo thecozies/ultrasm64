@@ -33,3 +33,4 @@ extern void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 extern void s2d_print(int x, int y, int align, const char *str, uObjMtx *buf);
 extern void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int *pos);
 extern void s2d_vsprint(int x, int y, int align, uObjMtx *buf, const char *str, ...);
+extern void s2d_print_alloc(int x, int y, int align, const char *str);

@@ -25,3 +25,10 @@
 #include "white_particle_small/model.inc.c"
 
 #include "sparkle_animation/model.inc.c"
+
+#include "sliding_door/model.inc.c"
+#include "sliding_door/collision.inc.c"
+#include "candle/model.inc.c"
+#include "parasite/model.inc.c"
+#include "parasite/anims/data.inc.c"
+#include "parasite/anims/table.inc.c"

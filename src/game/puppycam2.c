@@ -972,12 +972,12 @@ static void puppycam_projection(void)
         }
 
         gPuppyCam.focus[0] = targetPos3[0] + gPuppyCam.shake[0] + (gPuppyCam.pan[0]*gPuppyCam.collisionDistance/gPuppyCam.zoomPoints[2])*panD;
-        gPuppyCam.focus[1] = targetPos3[1] + gPuppyCam.shake[1] + (gPuppyCam.pan[1]*gPuppyCam.collisionDistance/gPuppyCam.zoomPoints[2]) + gPuppyCam.povHeight - gPuppyCam.floorY[0] + gPuppyCam.posHeight[0] + (gPuppyCam.swimPitch/10);
+        gPuppyCam.focus[1] = targetPos3[1] + gPuppyCam.shake[1] + (gPuppyCam.pan[1]*gPuppyCam.collisionDistance/gPuppyCam.zoomPoints[2]) + gPuppyCam.povHeight - gPuppyCam.floorY[0] + gPuppyCam.posHeight[0] + (gPuppyCam.swimPitch / 10);
         gPuppyCam.focus[2] = targetPos3[2] + gPuppyCam.shake[2] + (gPuppyCam.pan[2]*gPuppyCam.collisionDistance/gPuppyCam.zoomPoints[2])*panD;
 
-        gPuppyCam.pos[0] = gPuppyCam.targetObj->oPosX + LENSIN(LENSIN(gPuppyCam.zoom,gPuppyCam.pitch),gPuppyCam.yaw) + gPuppyCam.shake[0];
-        gPuppyCam.pos[1] = gPuppyCam.targetObj->oPosY + LENCOS(gPuppyCam.zoom,gPuppyCam.pitch+(gPuppyCam.swimPitch*5)) + gPuppyCam.shake[1] - gPuppyCam.floorY[1] + gPuppyCam.posHeight[1];
-        gPuppyCam.pos[2] = gPuppyCam.targetObj->oPosZ + LENCOS(LENSIN(gPuppyCam.zoom,gPuppyCam.pitch),gPuppyCam.yaw) + gPuppyCam.shake[2];
+        gPuppyCam.pos[0] = gPuppyCam.targetObj->oPosX + LENSIN(LENSIN(gPuppyCam.zoom, gPuppyCam.pitch), gPuppyCam.yaw) + gPuppyCam.shake[0];
+        gPuppyCam.pos[1] = gPuppyCam.targetObj->oPosY + LENCOS(gPuppyCam.zoom, gPuppyCam.pitch + (gPuppyCam.swimPitch * 5)) + gPuppyCam.shake[1] - gPuppyCam.floorY[1] + gPuppyCam.posHeight[1];
+        gPuppyCam.pos[2] = gPuppyCam.targetObj->oPosZ + LENCOS(LENSIN(gPuppyCam.zoom, gPuppyCam.pitch), gPuppyCam.yaw) + gPuppyCam.shake[2];
     }
 
 

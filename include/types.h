@@ -348,6 +348,8 @@ struct MarioState
     s8 dolphinPowers;
     s8 appliedGravChange;
     Vec3f gravPower;
+    Vec3f checkpointPos;
+    s8 lastParaGroup;
 };
 
 #endif // TYPES_H

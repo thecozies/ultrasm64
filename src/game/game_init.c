@@ -141,8 +141,8 @@ void clear_z_buffer(void) {
     gDPSetFillColor(gDisplayListHead++,
                     GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
 
-    gDPFillRectangle(gDisplayListHead++, 0, BORDER_HEIGHT, SCREEN_WIDTH - 1,
-                     SCREEN_HEIGHT - 1 - BORDER_HEIGHT);
+    gDPFillRectangle(gDisplayListHead++, 0, 0, SCREEN_WIDTH,
+                     SCREEN_HEIGHT);
 }
 
 /** Sets up the final framebuffer image. */
@@ -152,8 +152,8 @@ void display_frame_buffer(void) {
     gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
     gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH,
                      gPhysicalFrameBuffers[frameBufferIndex]);
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
-                  SCREEN_HEIGHT - BORDER_HEIGHT);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH,
+                  SCREEN_HEIGHT);
 }
 
 /** Clears the framebuffer, allowing it to be overwritten. */
@@ -165,8 +165,8 @@ void clear_frame_buffer(s32 color) {
 
     gDPSetFillColor(gDisplayListHead++, color);
     gDPFillRectangle(gDisplayListHead++,
-                     GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), BORDER_HEIGHT,
-                     GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - BORDER_HEIGHT - 1);
+                     GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), 0,
+                     GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0), SCREEN_HEIGHT);
 
     gDPPipeSync(gDisplayListHead++);
 
@@ -180,10 +180,10 @@ void clear_viewport(Vp *viewport, s32 color) {
     s16 vpLrx = (viewport->vp.vtrans[0] + viewport->vp.vscale[0]) / 4 - 2;
     s16 vpLry = (viewport->vp.vtrans[1] + viewport->vp.vscale[1]) / 4 - 2;
 
-#ifdef WIDESCREEN
+// #ifdef WIDESCREEN
     vpUlx = GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(vpUlx);
     vpLrx = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(SCREEN_WIDTH - vpLrx);
-#endif
+// #endif
 
     gDPPipeSync(gDisplayListHead++);
 

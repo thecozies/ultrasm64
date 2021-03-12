@@ -49,6 +49,13 @@ void *vec3f_sum(Vec3f dest, Vec3f a, Vec3f b) {
     return &dest; //! warning: function returns address of local variable
 }
 
+/// Make 'dest' the sum of vectors a and b.
+void vec3f_center(Vec3f dest, Vec3s vtx1, Vec3s vtx2, Vec3s vtx3) {
+    dest[0] = ((f32) (vtx1[0] + vtx2[0] + vtx3[0])) * 0.33333333f;
+    dest[1] = ((f32) (vtx1[1] + vtx2[1] + vtx3[1])) * 0.33333333f;
+    dest[2] = ((f32) (vtx1[2] + vtx2[2] + vtx3[2])) * 0.33333333f;
+}
+
 /// Copy vector src to dest
 void *vec3s_copy(Vec3s dest, Vec3s src) {
     dest[0] = src[0];
@@ -178,6 +185,11 @@ void mtxf_translate(Mat4 dest, Vec3f b) {
     dest[3][2] = b[2];
 }
 
+static f32 non_zero_val(f32 val) {
+    if (val == 0) return 1.0f;
+    else return val;
+}
+
 /**
  * Set mtx to a look-at matrix for the camera. The resulting transformation
  * transforms the world as if there exists a camera at position 'from' pointed
@@ -201,7 +213,7 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s16 roll) {
     dx = to[0] - from[0];
     dz = to[2] - from[2];
 
-    invLength = -1.0 / sqrtf(dx * dx + dz * dz);
+    invLength = -1.0 / non_zero_val(sqrtf(dx * dx + dz * dz));
     dx *= invLength;
     dz *= invLength;
 
@@ -213,7 +225,7 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s16 roll) {
     yColZ = to[1] - from[1];
     zColZ = to[2] - from[2];
 
-    invLength = -1.0 / sqrtf(xColZ * xColZ + yColZ * yColZ + zColZ * zColZ);
+    invLength = -1.0 / non_zero_val(sqrtf(xColZ * xColZ + yColZ * yColZ + zColZ * zColZ));
     xColZ *= invLength;
     yColZ *= invLength;
     zColZ *= invLength;
@@ -222,7 +234,7 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s16 roll) {
     yColX = zColY * xColZ - xColY * zColZ;
     zColX = xColY * yColZ - yColY * xColZ;
 
-    invLength = 1.0 / sqrtf(xColX * xColX + yColX * yColX + zColX * zColX);
+    invLength = 1.0 / non_zero_val(sqrtf(xColX * xColX + yColX * yColX + zColX * zColX));
 
     xColX *= invLength;
     yColX *= invLength;
@@ -232,7 +244,7 @@ void mtxf_lookat(Mat4 mtx, Vec3f from, Vec3f to, s16 roll) {
     yColY = zColZ * xColX - xColZ * zColX;
     zColY = xColZ * yColX - yColZ * xColX;
 
-    invLength = 1.0 / sqrtf(xColY * xColY + yColY * yColY + zColY * zColY);
+    invLength = 1.0 / non_zero_val(sqrtf(xColY * xColY + yColY * yColY + zColY * zColY));
     xColY *= invLength;
     yColY *= invLength;
     zColY *= invLength;
