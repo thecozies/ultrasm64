@@ -37,6 +37,7 @@ u8 gPCOptionScroll = 0;
 u16 gPuppyVolumeCount = 0;
 struct MemoryPool *gPuppyMemoryPool;
 s32 gPuppyError = 0;
+s16 gPrevPuppyZoomDist = 0;
 
 #if defined(VERSION_EU)
 static u8 gPCOptionStringsFR[][64] = {{NC_ANALOGUE_FR}, {NC_CAMX_FR}, {NC_CAMY_FR}, {NC_INVERTX_FR}, {NC_INVERTY_FR}, {NC_CAMC_FR}, {NC_CAMP_FR}, {NC_CAMD_FR}};
@@ -528,12 +529,19 @@ static void puppycam_view_panning(void)
         gPuppyCam.pan[2] = approach_f32_asymptotic(gPuppyCam.pan[2], LENCOS(panEx+(500*(gMarioState->forwardVel/32.f)), gMarioState->faceAngle[1])*panMulti, 0.02f);
         if (gMarioState->vel[1] == 0.0f)
         {
-            panFloor = CLAMP(find_floor_height((s16)(gPuppyCam.targetObj->oPosX+gPuppyCam.pan[0]),(s16)(gPuppyCam.targetObj->oPosY + 200),
-            (s16)(gPuppyCam.targetObj->oPosZ+gPuppyCam.pan[2])),gPuppyCam.targetObj->oPosY-50,gPuppyCam.targetObj->oPosY+50);
+            panFloor = CLAMP(
+                find_floor_height(
+                    (s16)(gPuppyCam.targetObj->oPosX + gPuppyCam.pan[0]),
+                    (s16)(gPuppyCam.targetObj->oPosY + 200),
+                    (s16)(gPuppyCam.targetObj->oPosZ + gPuppyCam.pan[2])
+                ),
+                gPuppyCam.targetObj->oPosY - 50,
+                gPuppyCam.targetObj->oPosY + 50
+            );
             gPuppyCam.pan[1] = approach_f32_asymptotic(gPuppyCam.pan[1], panFloor-height, 0.25f);
         }
         else
-            gPuppyCam.pan[1] = approach_f32_asymptotic(gPuppyCam.pan[1], 0, 0.5f);
+            gPuppyCam.pan[1] = approach_f32_asymptotic(gPuppyCam.pan[1], 0.0f, 0.5f);
     }
     else
     {
@@ -559,20 +567,20 @@ static void puppycam_view_height_offset(void)
     }
     else
     {
-            gPuppyCam.posHeight[0] = approach_f32_asymptotic(gPuppyCam.posHeight[0],0,0.1f);
+            gPuppyCam.posHeight[0] = approach_f32_asymptotic(gPuppyCam.posHeight[0], 0, 0.05f);
     }
 
 
     floorTemp = find_floor_height(gPuppyCam.targetObj->oPosX + LENSIN(tempDist,gPuppyCam.yaw), gPuppyCam.targetObj->oPosY+200, gPuppyCam.targetObj->oPosZ + LENCOS(tempDist,gPuppyCam.yaw));
     if (floorTemp > gPuppyCam.targetObj->oPosY - 200 && !(gMarioState->action & ACT_FLAG_SWIMMING))
     {
-        gPuppyCam.posHeight[1] = approach_f32_asymptotic(gPuppyCam.posHeight[1],floorTemp-gPuppyCam.targetFloorHeight,0.05f);
+        gPuppyCam.posHeight[1] = approach_f32_asymptotic(gPuppyCam.posHeight[1], floorTemp-gPuppyCam.targetFloorHeight, 0.05f);
         //if (gPuppyCam.posHeight[1]-gPuppyCam.shake[1] - gPuppyCam.floorY[0] < floorTemp)
         //    gPuppyCam.posHeight[1] = floorTemp-gPuppyCam.shake[1]+gPuppyCam.povHeight - gPuppyCam.floorY[0];
     }
     else
     {
-            gPuppyCam.posHeight[1] = approach_f32_asymptotic(gPuppyCam.posHeight[1],0,0.1f);
+            gPuppyCam.posHeight[1] = approach_f32_asymptotic(gPuppyCam.posHeight[1], 0, 0.05f);
     }
 }
 
@@ -887,6 +895,10 @@ static void puppycam_input_core(void)
     }
     if (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_4DIR)
         gPuppyCam.yawTarget %= 0x4000;
+
+    if (gPuppyCam.targetObj2 != NULL) {
+        gPuppyCam.yawTarget = obj_angle_to_object(gPuppyCam.targetObj2, gPuppyCam.targetObj);
+    }
 }
 
 //Calculates the base position the camera should be, before any modification.

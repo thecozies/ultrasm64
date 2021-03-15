@@ -126,6 +126,25 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
     return dlStart;
 }
 
+Gfx *geo_update_fog(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    Gfx *dlStart, *dlHead;
+    s32 objectOpacity;
+
+    dlStart = NULL;
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        dlStart = alloc_display_list(sizeof(Gfx) * 3);
+        
+
+        dlHead = dlStart;
+        gDPSetFogColor(dlHead++, gGlobalFog.r, gGlobalFog.g, gGlobalFog.b, gGlobalFog.a);
+        gSPFogPosition(dlHead++, gGlobalFog.low, gGlobalFog.high);
+        gSPEndDisplayList(dlHead);
+    }
+
+    return dlStart;
+}
+
 /**
  * @bug Every geo function declares the 3 parameters of callContext, node, and
  * the matrix array. This one (see also geo_switch_area) doesn't. When executed,

@@ -5,7 +5,7 @@
 int myScale = 1;
 int myDegrees = 0;
 uObjMtx final_mtx, rot_mtx;
-int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 255;
+int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 0;
 int drop_shadow = FALSE;
 
 Gfx s2d_text_init_dl[] = {
@@ -19,10 +19,14 @@ Gfx s2d_text_init_dl[] = {
 
     // IA8
     // TODO: add more formats
+    // gsDPSetCombineLERP(0, 0, 0, ENVIRONMENT,
+    //                    0, 0, 0, TEXEL0,
+    //                    0, 0, 0, ENVIRONMENT,
+    //                    0, 0, 0, TEXEL0),
     gsDPSetCombineLERP(0, 0, 0, ENVIRONMENT,
-                       0, 0, 0, TEXEL0,
+                       TEXEL0, 0, ENVIRONMENT, 0,
                        0, 0, 0, ENVIRONMENT,
-                       0, 0, 0, TEXEL0),
+                       TEXEL0, 0, ENVIRONMENT, 0),
 
     gsSPEndDisplayList(),
 };

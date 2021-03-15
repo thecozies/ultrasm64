@@ -80,3 +80,5 @@ build/*
 !/lib/PR/hvqm/*.o
 
 usb64.exe
+
+open_retroarch47

@@ -118,6 +118,16 @@ struct WarpTransition
     /*0x04*/ struct WarpTransitionData data;
 };
 
+struct GlobalFog
+{
+    /*0x00*/ u8 r;
+    /*0x01*/ u8 g;
+    /*0x02*/ u8 b;
+    /*0x03*/ u8 a;
+    /*0x04*/ s16 low;
+    /*0x04*/ s16 high;
+};
+
 extern struct GraphNode **gLoadedGraphNodes;
 extern struct SpawnInfo gPlayerSpawnInfos[];
 extern struct GraphNode *D_8033A160[];
@@ -129,6 +139,7 @@ extern s16 gCurrAreaIndex;
 extern s16 gSavedCourseNum;
 extern s16 gPauseScreenMode;
 extern s16 gSaveOptSelectIndex;
+extern s16 gGoalFadeState;
 
 extern struct SpawnInfo *gMarioSpawnInfo;
 
@@ -137,6 +148,8 @@ extern struct Area *gCurrentArea;
 
 extern s16 gCurrSaveFileNum;
 extern s16 gCurrLevelNum;
+
+extern struct GlobalFog gGlobalFog;
 
 
 void override_viewport_and_clip(Vp *a, Vp *b, u8 c, u8 d, u8 e);
@@ -154,5 +167,7 @@ void area_update_objects(void);
 void play_transition(s16 transType, s16 time, u8 red, u8 green, u8 blue);
 void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 blue, s16 delay);
 void render_game(void);
+void set_collected_para(s32 group);
+void set_current_fog_state(s32 fogState);
 
 #endif // AREA_H

@@ -1,0 +1,14 @@
+extern const GeoLayout palmtree_geo[];
+extern Lights1 palmtree_f3d_material_lights;
+extern Lights1 palmtree_leafs_lights;
+extern u8 palmtree_bark_palm_i4[];
+extern u8 palmtree_bark_palm_i8[];
+extern Vtx palmtree_palmtree_mesh_layer_1_vtx_0[9];
+extern Gfx palmtree_palmtree_mesh_layer_1_tri_0[];
+extern Vtx palmtree_palmtree_mesh_layer_1_vtx_1[75];
+extern Gfx palmtree_palmtree_mesh_layer_1_tri_1[];
+extern Gfx mat_palmtree_f3d_material[];
+extern Gfx mat_palmtree_leafs[];
+extern Gfx mat_revert_palmtree_leafs[];
+extern Gfx palmtree_palmtree_mesh_layer_1[];
+extern Gfx palmtree_material_revert_render_settings[];

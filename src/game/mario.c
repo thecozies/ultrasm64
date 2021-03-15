@@ -35,6 +35,7 @@
 
 u32 unused80339F10;
 s8 filler80339F1C[20];
+s8 gCheckingWaterForMario = FALSE;
 
 /**************************************************
  *                    ANIMATIONS                  *
@@ -890,6 +891,11 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
             m->forwardVel *= 0.8f;
             break;
 
+        case ACT_SPECIAL_TRIPLE_JUMP:
+            set_mario_y_vel_based_on_fspeed(m, 69.0f, 0.0f);
+            m->forwardVel *= 0.8f;
+            break;
+
         case ACT_FLYING_TRIPLE_JUMP:
             set_mario_y_vel_based_on_fspeed(m, 82.0f, 0.0f);
             break;
@@ -1446,7 +1452,9 @@ void update_mario_geometry_inputs(struct MarioState *m) {
 
     m->ceilHeight = vec3f_find_ceil(m->pos, m->pos[1], &m->ceil);
     gasLevel = find_poison_gas_level(m->pos[0], m->pos[2]);
+    gCheckingWaterForMario = TRUE;
     m->waterLevel = find_water_level(m->pos[0], m->pos[2]);
+    gCheckingWaterForMario = FALSE;
 
     if (m->floor != NULL) {
         m->floorAngle = atan2s(m->floor->normal.z, m->floor->normal.x);
@@ -1793,9 +1801,18 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             return 0;
         }
 
-        if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-            warp_mario_to_checkpoint();
-        }
+// // CTODO: DEBUG
+//         if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+//             warp_mario_to_checkpoint();
+//         }
+// // CTODO: DEBUG
+        // if (gMarioState->controller->buttonDown & A_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
+        //     gMarioState->pos[1] += 30.0f;
+        //     gMarioState->vel[1] = 30.0f;
+        //     gMarioState->faceAngle[1] = gMarioState->intendedYaw;
+        //     gMarioState->forwardVel = 1.0f * gMarioState->intendedMag;
+        //     gMarioState->action = ACT_DOLPHIN_DIVE;
+        // }
 
         // The function can loop through many action shifts in one frame,
         // which can lead to unexpected sub-frame behavior. Could potentially hang
@@ -1887,7 +1904,8 @@ void init_mario(void) {
     gMarioState->gravPower[1] = 1.0f;
     gMarioState->gravPower[2] = 1.0f;
     // CTODO: Check save file
-    gMarioState->dolphinPowers = TRUE;
+    gMarioState->dolphinPowers = FALSE;
+    gMarioState->canAirJump = FALSE;
 
     gMarioState->invincTimer = 0;
 
@@ -1913,8 +1931,10 @@ void init_mario(void) {
     gMarioState->riddenObj = NULL;
     gMarioState->usedObj = NULL;
 
+    gCheckingWaterForMario = TRUE;
     gMarioState->waterLevel =
         find_water_level(gMarioSpawnInfo->startPos[0], gMarioSpawnInfo->startPos[2]);
+    gCheckingWaterForMario = FALSE;
 
     gMarioState->area = gCurrentArea;
     gMarioState->marioObj = gMarioObject;
@@ -1990,7 +2010,8 @@ void init_mario_from_save_file(void) {
     gMarioState->checkpointPos[1] = gMarioState->pos[1];
     gMarioState->checkpointPos[2] = gMarioState->pos[2];
     // CTODO: Check save file
-    gMarioState->dolphinPowers = TRUE;
+    gMarioState->dolphinPowers = FALSE;
+    gMarioState->canAirJump = FALSE;
 
     gMarioState->numLives = 4;
     gMarioState->health = 0x880;

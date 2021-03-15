@@ -52,6 +52,14 @@ static s32 swimming_near_surface(struct MarioState *m) {
     return (m->waterLevel - 80) - m->pos[1] < 400.0f;
 }
 
+static s32 swimming_near_bottom_surface(struct MarioState *m) {
+    if (m->flags & MARIO_METAL_CAP) {
+        return FALSE;
+    }
+
+    return (m->waterBottomHeight + 150.0f) > m->pos[1];
+}
+
 static f32 get_buoyancy(struct MarioState *m) {
     f32 buoyancy = 0.0f;
 
@@ -62,6 +70,8 @@ static f32 get_buoyancy(struct MarioState *m) {
             buoyancy = -18.0f;
         }
     } else if (swimming_near_surface(m)) {
+        buoyancy = 1.25f;
+    } else if (swimming_near_bottom_surface(m)) {
         buoyancy = 1.25f;
     } else if (!(m->action & ACT_FLAG_MOVING)) {
         buoyancy = -2.0f;
@@ -172,6 +182,9 @@ static u32 perform_water_step(struct MarioState *m) {
     u32 stepResult;
     Vec3f nextPos;
     Vec3f step;
+    s32 canExitWaterWithMomentum = 
+        m->action == ACT_WATER_GROUND_POUND ||
+        (m->dolphinPowers && (m->input & INPUT_A_DOWN || m->action == ACT_WATER_PUNCH));
     struct Object *marioObj = m->marioObj;
 
     vec3f_copy(step, m->vel);
@@ -184,10 +197,18 @@ static u32 perform_water_step(struct MarioState *m) {
     nextPos[1] = m->pos[1] + step[1];
     nextPos[2] = m->pos[2] + step[2];
 
-    if (nextPos[1] > m->waterLevel - 80) {
+    if (nextPos[1] > m->waterLevel - 80 && !canExitWaterWithMomentum) {
         nextPos[1] = m->waterLevel - 80;
         m->vel[1] = 0.0f;
     }
+
+    // CTODO: Check if water exit should be capped instead
+    // if (nextPos[1] < m->waterBottomHeight + 100.0f && !canExitWaterWithMomentum) {
+    //     // nextPos[1] = MAX(nextPos[1], m->waterBottomHeight - 80.0f);
+    //     // m->vel[1] = 0.0f;
+    //     nextPos[1] += 2.0f;
+    //     m->vel[1] += 2.0f;
+    // }
 
     stepResult = perform_water_full_step(m, nextPos);
 
@@ -930,10 +951,9 @@ s32 act_water_ground_pound(struct MarioState *m) {
 
     if (m->actionState == 0) {
         if (m->actionTimer < 16) {
-            yOffset = 20 - 2 * m->actionTimer;
-            if (m->pos[1] + yOffset + 160.0f < m->ceilHeight) {
+            yOffset = 10 - m->actionTimer;
+            if (m->pos[1] + yOffset + 160.0f < m->waterLevel) {
                 m->pos[1] += yOffset;
-                m->peakHeight = m->pos[1];
                 vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
             }
         }
@@ -964,13 +984,13 @@ s32 act_water_ground_pound(struct MarioState *m) {
             }
             set_camera_shake_from_hit(SHAKE_GROUND_POUND);
         } else if (stepResult == WATER_STEP_HIT_WALL) {
-            mario_set_forward_vel(m, -16.0f);
+            // mario_set_forward_vel(m, -16.0f);
             if (m->vel[1] > 0.0f) {
                 m->vel[1] = 0.0f;
             }
 
-            m->particleFlags |= PARTICLE_VERTICAL_STAR;
-            set_mario_action(m, ACT_BACKWARD_WATER_KB, 0);
+            // m->particleFlags |= PARTICLE_VERTICAL_STAR;
+            // set_mario_action(m, ACT_BACKWARD_WATER_KB, 0);
         }
     }
 

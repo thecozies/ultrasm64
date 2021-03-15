@@ -54,5 +54,6 @@ s32 execute_mario_action(UNUSED struct Object *o);
 void warp_mario_to_checkpoint(void);
 void init_mario(void);
 void init_mario_from_save_file(void);
+extern s8 gCheckingWaterForMario;
 
 #endif // MARIO_H

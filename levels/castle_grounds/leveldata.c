@@ -32,3 +32,5 @@
 #include "levels/castle_grounds/areas/1/8/collision.inc.c"
 #include "levels/castle_grounds/areas/1/movtext.inc.c"
 #include "levels/castle_grounds/leveldata.inc.c"
+
+#include "levels/castle_grounds/palmtree/model.inc.c"

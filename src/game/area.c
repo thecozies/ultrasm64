@@ -59,6 +59,35 @@ u8 gWarpTransBlue = 0;
 s16 gCurrSaveFileNum = 1;
 s16 gCurrLevelNum = LEVEL_MIN;
 
+struct GlobalFog gGlobalFog = { 73, 63, 52, 0xFF, 812, 1000 };
+struct GlobalFog sDefaultFog = { 73, 63, 52, 0xFF, 812, 1000 };
+struct GlobalFog sWaterFog = { 0x33, 0x6C, 0x71, 0xDF, 800, 1000 };
+struct GlobalFog sTemple1Room4Fog = { 73, 63, 52, 0xFF, 812, 1100 };
+struct GlobalFog sTrippyFog = { 73, 63, 52, 0xFF, 750, 1100 };
+
+s16 gGoalFadeState = 0;
+s32 sGoalFadeTimer = 0;
+
+enum FOG_OPTIONS {
+    DEFAULT_FOG,
+    WATER_FOG,
+    TEMPLE1_ROOM4_FOG,
+    TRIPPY_FOG
+};
+
+s8 sCurFog = DEFAULT_FOG;
+
+enum GOAL_FADE_STATES {
+    NO_GOAL,
+    STARTING_SHOW_GOAL,
+    FULL_SHOW_GOAL,
+    FADING_SHOW_GOAL
+};
+
+#define GOAL_FADE_IN_LEN 30
+#define GOAL_SHOW_LEN 60
+#define GOAL_FADE_OUT_LEN 30
+
 /*
  * The following two tables are used in get_mario_spawn_type() to determine spawn type
  * from warp behavior.
@@ -373,6 +402,88 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
     play_transition(transType, time, red, green, blue);
 }
 
+void set_next_goal_state(s32 state, s32 nextAlpha) {
+    gGoalFadeState = state;
+    sGoalFadeTimer = 0;
+    s2d_alpha = nextAlpha;
+}
+
+void set_collected_para(s32 group) {
+    set_next_goal_state(STARTING_SHOW_GOAL, 0);
+    gParasitesGrabbed[group]++;
+    gMarioState->lastParaGroup = group;
+}
+
+s32 update_goals_text(void) {
+    if (gGoalFadeState == NO_GOAL) return FALSE;
+    
+    if (gGoalFadeState == STARTING_SHOW_GOAL) {
+        if (sGoalFadeTimer >= GOAL_FADE_IN_LEN) set_next_goal_state(FULL_SHOW_GOAL, 255);
+        s2d_alpha = MIN(s2d_alpha + 9, 255);
+    } else if (gGoalFadeState == FULL_SHOW_GOAL && sGoalFadeTimer >= GOAL_SHOW_LEN) {
+        set_next_goal_state(FADING_SHOW_GOAL, 255);
+    } else if (gGoalFadeState == FADING_SHOW_GOAL) { // FADING_SHOW_GOAL
+        if (sGoalFadeTimer > GOAL_FADE_OUT_LEN) set_next_goal_state(NO_GOAL, 0);
+        s2d_alpha = MAX(s2d_alpha - 8, 0);
+    }
+
+    sGoalFadeTimer++;
+    return TRUE;
+}
+
+void render_goals(void) {
+    if (update_goals_text() && gMarioState->lastParaGroup != -1) {
+        s2d_init();
+        char s1[30];
+
+        sprintf(
+            s1,
+            "orbs: %d\ngoal: %d",
+            gParasitesGrabbed[gMarioState->lastParaGroup],
+            gParasitesGoals[gMarioState->lastParaGroup]
+        );
+        s2d_print_alloc(40, 20, ALIGN_LEFT, s1);
+
+        s2d_stop();
+    }
+}
+
+void set_current_fog_state(s32 fogState) {
+    sCurFog = fogState;
+}
+
+void update_fog(void) {
+    s32 waterLevel;
+    struct GlobalFog* targetFog;
+
+    gCheckingSurfaceCollisionsForCamera = TRUE;
+    waterLevel = find_water_level(gLakituState.pos[0], gLakituState.pos[2]);
+    gCheckingSurfaceCollisionsForCamera = FALSE;
+
+    if (waterLevel > gLakituState.pos[1]) targetFog = &sWaterFog;
+    else {
+        switch (sCurFog) {
+            case WATER_FOG:
+                targetFog = &sWaterFog;
+                break;
+            case TEMPLE1_ROOM4_FOG:
+                targetFog = &sTemple1Room4Fog;
+                break;
+            case TRIPPY_FOG:
+                targetFog = &sTrippyFog;
+                break;
+            default:
+                targetFog = &sDefaultFog;
+        }
+    }
+
+    gGlobalFog.r = (u8) MIN_MAX(approach_s16_asymptotic(gGlobalFog.r, targetFog->r, 5), 0, 255);
+    gGlobalFog.g = (u8) MIN_MAX(approach_s16_asymptotic(gGlobalFog.g, targetFog->g, 5), 0, 255);
+    gGlobalFog.b = (u8) MIN_MAX(approach_s16_asymptotic(gGlobalFog.b, targetFog->b, 5), 0, 255);
+    gGlobalFog.a = (u8) MIN_MAX(approach_s16_asymptotic(gGlobalFog.a, targetFog->a, 5), 0, 255);
+    gGlobalFog.low = MIN_MAX(approach_s16_asymptotic(gGlobalFog.low, targetFog->low, 8), 0, 4000);
+    gGlobalFog.high = MIN_MAX(approach_s16_asymptotic(gGlobalFog.high, targetFog->high, 8), 0, 4000);
+}
 
 void render_s2dex(void) {
     // return;
@@ -393,6 +504,7 @@ void render_s2dex(void) {
 
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
+        update_fog();
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
 
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));
@@ -436,9 +548,10 @@ void render_game(void) {
             }
         }
 
-        if (gControllers[0].buttonDown & D_JPAD) {
-            render_s2dex();
-        }
+        // if (gControllers[0].buttonDown & D_JPAD) {
+        //     render_s2dex();
+        // }
+        render_goals();
     } else {
         render_text_labels();
         if (D_8032CE78 != NULL) {

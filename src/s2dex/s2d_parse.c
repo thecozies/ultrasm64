@@ -22,7 +22,6 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 
 	// resets parameters
 	s2d_red = s2d_green = s2d_blue = 255;
-	s2d_alpha = 255;
 	drop_shadow = FALSE;
 
 	switch (align) {
@@ -107,7 +106,6 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 			// 	break;
 			case CH_RESET:
 				s2d_red = s2d_green = s2d_blue = 255;
-				s2d_alpha = 255;
 				drop_shadow = FALSE;
 				myScale = 1;
 				myDegrees = 0;

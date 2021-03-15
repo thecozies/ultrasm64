@@ -762,6 +762,7 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
 u32 interact_water_ring(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
     m->healCounter += 4 * o->oDamageOrCoinValue;
     o->oInteractStatus = INT_STATUS_INTERACTED;
+    m->canAirJump = TRUE;
     return FALSE;
 }
 

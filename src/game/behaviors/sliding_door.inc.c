@@ -22,6 +22,8 @@ void sliding_door_act_1(void) {
     if (o->oTimer == 0) {
         // cutscene_object(CUTSCENE_POV_TO_OBJECT_FAST, o);
         gPuppyCam.targetObj2 = o;
+        gPrevPuppyZoomDist = gPuppyCam.zoomTarget;
+        gPuppyCam.zoomTarget = o->oDistanceToMario + 1000;
         enable_time_stop_including_mario();
     }
 
@@ -55,10 +57,9 @@ void sliding_door_act_1(void) {
     }
     else if (ABS(o->oHomeY - o->oPosY) >= SLIDING_DOOR_CUTSCENE_END_HEIGHT)
     {
-        // gPuppyCam.targetObj = gMarioObject;
         gPuppyCam.targetObj2 = NULL;
-        // gPuppyCam.zoomSet = 2;
         gObjCutsceneDone = TRUE;
+        gPuppyCam.zoomTarget = gPrevPuppyZoomDist;
         disable_time_stop_including_mario();
     }
 }

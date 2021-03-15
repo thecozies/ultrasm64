@@ -132,6 +132,7 @@ extern struct gPuppyStruct gPuppyCam;
 extern struct sPuppyVolume *sPuppyVolumeStack[MAX_PUPPYCAM_VOLUMES];
 extern u16 gPuppyVolumeCount;
 extern struct MemoryPool *gPuppyMemoryPool;
+extern s16 gPrevPuppyZoomDist;
 extern void puppycam_boot(void);
 extern void puppycam_init(void);
 extern void puppycam_loop(void);

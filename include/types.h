@@ -349,7 +349,9 @@ struct MarioState
     s8 appliedGravChange;
     Vec3f gravPower;
     Vec3f checkpointPos;
+    f32 waterBottomHeight;
     s8 lastParaGroup;
+    s8 canAirJump;
 };
 
 #endif // TYPES_H

@@ -3200,6 +3200,17 @@ const BehaviorScript bhvTree[] = {
     END_LOOP(),
 };
 
+const BehaviorScript bhvPalmTree[] = {
+    BEGIN(OBJ_LIST_POLELIKE),
+    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    SET_INT(oInteractType, INTERACT_POLE),
+    SET_HITBOX(/*Radius*/ 80, /*Height*/ 1500),
+    SET_INT(oIntangibleTimer, 0),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_pole_base_loop),
+    END_LOOP(),
+};
+
 const BehaviorScript bhvSparkle[] = {
     BEGIN(OBJ_LIST_UNIMPORTANT),
     BILLBOARD(),
@@ -4134,12 +4145,14 @@ const BehaviorScript bhvJetStreamWaterRing[] = {
     BEGIN(OBJ_LIST_LEVEL),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
     LOAD_ANIMATIONS(oAnimations, water_ring_seg6_anims_06013F7C),
-    SET_HITBOX_WITH_OFFSET(/*Radius*/ 75, /*Height*/ 20, /*Downwards offset*/ 20),
+    // SET_HITBOX_WITH_OFFSET(/*Radius*/ 1, /*Height*/ 1, /*Downwards offset*/ 2000),
+    // SET_HITBOX_WITH_OFFSET(/*Radius*/ 450, /*Height*/ 20, /*Downwards offset*/ 20),
     SET_INTERACT_TYPE(INTERACT_WATER_RING),
     SET_INT(oDamageOrCoinValue, 2),
-    SET_INT(oIntangibleTimer, 0),
+    SET_INT(oIntangibleTimer, 20),
     CALL_NATIVE(bhv_jet_stream_water_ring_init),
     BEGIN_LOOP(),
+        SET_INT(oAnimState, 0),
         SET_INT(oIntangibleTimer, 0),
         CALL_NATIVE(bhv_jet_stream_water_ring_loop),
     END_LOOP(),
@@ -6131,7 +6144,7 @@ const BehaviorScript bhvParasite[] = {
 const BehaviorScript bhvSlidingDoor[] = {
     BEGIN(OBJ_LIST_SURFACE),
     LOAD_COLLISION_DATA(sliding_door_collision),
-    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO)),
     DROP_TO_FLOOR(),
     ADD_FLOAT(oPosY, 1),
     SET_HOME(),

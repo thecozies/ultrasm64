@@ -1,6 +1,6 @@
 extern const GeoLayout sliding_door_geo[];
 extern u8 sliding_door_marble_2_i8[];
-extern u8 sliding_door_accent_wall128_i8[];
+extern u8 sliding_door_accent_wall_enhance128_i8[];
 extern Vtx sliding_door_sliding_door_mesh_layer_1_vtx_0[16];
 extern Gfx sliding_door_sliding_door_mesh_layer_1_tri_0[];
 extern Vtx sliding_door_sliding_door_mesh_layer_1_vtx_1[8];

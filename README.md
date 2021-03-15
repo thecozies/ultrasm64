@@ -1,70 +1,54 @@
-# UltraSM64
+# Lucy's Levitation
+## Created by The Cozies
+![Splash](./lucys_levitation.jpg)
 
-- This repo contains a full decompilation of Super Mario 64 (J), (U), (E), and (SH).
-- Naming and documentation of the source code and data structures are in progress.
-- It has been edited to allow for the usage of the final "N64 OS" library, version ``2.0L``
-- Shindou Rumble Pak code is on for all regions.
-- Targeting the iQue Player is supported.
-- Saving to 32kbyte/256kbit SRAM is supported.
-- Using gzip DEFLATE compression is supported.
-- It has been patched with someone2639's shiftable segments patch
-- Getting HVQM FMV support to work with the game is in progress.
-- Getting UNFLoader (flashcart USB library) to work with the game is in progress.
+In Lucy's Levitation, you progress through a mysterious temple. After returning to the green room in the alt world, the game is over in it's current state. Progressing further isn't worth it due to dizzying visual glitches.
 
-## Multi-Save support
+Lucy's Levitation uses a very minimal amount of SM64's assets. Every single texture and model used in the main gameplay were created by us in this last week, with the exception of few big obvious ones since we were out of time. Music was created by us, font was handpicked, and objects were created from scratch. Our goal was to make it completely visually unique.
 
-The repository supports SRAM in addition to EEPROM. The standard save data functions are #ifdef'd to accommedate this.
+The original goal of this hack on a technical level was to be 100% N64 compatible. While the majority of the game is, unfortunately, a bug with S2D causes an RCP crash on console. This hack will be updated once this bug has been figured out.
 
-To build with SRAM support, run make with ``SAVETYPE=sram``.
+## Movement:
+- Groundpound jump. Press A when your ground pound hits the ground
+- Air dive. Any direction you hold your controller stick, press Z and B while in the air to dive that direction. This is a very important mechanic for crossing large gaps in Lucy's Levitation
+- Water groundpound. Not useful for anything in particular except for quickly decending.
+- Air jump. A certain object will allow you to jump again in the air, allowing you to go much higher and further.
 
-I may attempt FlashRAM in the future.
+## Unique functionality:
+- Global fog system. Going underwater or in certain areas will change the fog settings to better fit the environment.
+- Water surface type: There are several overlapping segments of water, leading to some new layouts!
+- Get the orbs, open the door
 
-## Multi-Console support
+## Credits / other functionality:
+- S2D Text. The main collectable in the game is narrated by someone2639's text engine! We had planned to replace all text with our own font, but time was short. Special thanks to someone2639 for helping me get the font properly imported!
+- Puppycam. Fazana's glorious camera system, this way my first time using it and the various ways you can hook into it is awesome. Its a lot easier to customize than the vanilla cam.
+- anonymous_moose's extended bounds: this level couldn't function without this change!
+- Axollyon's S2D directory: this really helped me figure out what I can do.
+- No save files: Games to short and you use save states either way, don't lie
 
-The repository supports targeting the iQue Player in addition to the N64. The iQue libultra is ***NOT*** compatible with N64 in many ways, so it is currently NOT possible to have one build for both consoles.
+## Todo:
+- Fix last two rooms' nauseating visual glitch
+- Story: 
+    - This current version has no beginning or end. The story has been storyboarded, and some assets have been created.
+    - Cutscenes throughout
+- Audio:
+    - Brand new music by us, rather than picking from our backlog
+    - Voice over: Lucy's voice should sound quite different
+    - Sound effects: replace key item sound effects
+- Visual flare:
+    - Clear indication when Lucy has a second available jump
+    - Facial expressions  & A CUSTOM IDLE ANIMATION THAT DOESN'T LOOK AWKWARD
+    - Better door cutscene
+- Controls:
+    - Assist when jumping up into water
+        - Keep upwards velocity when entering
+        - Only exit water if holding down
+    - Customized camera for wall jumping areas and in general situations
+    - Rework second air jump
 
-To target iQue, run make with the ``CONSOLE=bb`` argument.
-
-## Compression
-
-The repository supports using DEFLATE compression instead of Nintendo's Yay0. This boasts a better compression ratio, but at a slight cost to load times.
-
-On average I'd estimate that the bottleneck on decompression is about 1-2 seconds.
-
-To switch to gzip, run make with the ``COMPRESS=gzip`` argument.
-
-The repo also supports gziping with ``libdeflate-gzip``. This compresses at a slightly better ratio than standard ``gzip``, with no real downside from a decompression standpoint.
-
-To use ``libdeflate-gzip``, first clone the [repo](https://github.com/ebiggers/libdeflate), then make and make install it.
-
-Then run make for sm64 with ``GZIPVER=libdef`` in addition to ``COMPRESS=gzip``
-
-The repo also supports RNC (Rob Northen Compression). RNC has two methods. 
-
-Method 1 is designed to compress as small as possible, while method 2 is designed so that decompression is as fast as possible.
-
-Both methods are fast. Method 1 has better compression than 2, so I suggest using method 1 if using RNC.
-
-To switch to RNC, run make with either ``COMPRESS=rnc1`` or ``COMPRESS=rnc2``, depending on preferred method.
-
-
-## FAQ
-
-Q: Why in the hell are you bundling your own build of ``ld``?
-
-A: Newer binutils (Like the one bundled with Ubuntu, 2.34) break linking with libultra builds due to local asm symbols.
-
-This puts me at a crossroads of either touching leaked code and requiring GCC, or just using an older linker that works just fine.
-
-I went with the latter.
-
-Thanks to "someone2639" for this hacky-ass idea
-
-Q: Will this allow me to use FlashRAM/Transfer Pak/microcode swapping/Other Cool N64 Features?
-
-A: Theoretically, all yes.
-
-## Installation help
-
-
-Go read the original repo README.md
+- Custom objects:
+    - Without spoiling, there were supposed to be quite a few more navigational and hazardous objects.
+- Splash screen/start screen
+- Level design:
+    - Rework second half with new objects/textures
+- Widescreen option

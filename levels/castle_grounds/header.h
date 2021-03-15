@@ -43,4 +43,6 @@ extern const LevelScript level_castle_grounds_entry[];
 
 #include "levels/castle_grounds/header.inc.h"
 
+#include "levels/castle_grounds/palmtree/geo_header.h"
+
 #endif
