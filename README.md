@@ -13,6 +13,7 @@ The original goal of this hack on a technical level was to be 100% N64 compatibl
 - Air dive. Any direction you hold your controller stick, press Z and B while in the air to dive that direction. This is a very important mechanic for crossing large gaps in Lucy's Levitation
 - Water groundpound. Not useful for anything in particular except for quickly decending.
 - Air jump. A certain object will allow you to jump again in the air, allowing you to go much higher and further.
+- Water jump. Jumping out of water is not not terrible. (Its a single jump)
 
 ## Unique functionality:
 - Global fog system. Going underwater or in certain areas will change the fog settings to better fit the environment.

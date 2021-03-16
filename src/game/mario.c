@@ -1810,7 +1810,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         //     gMarioState->pos[1] += 30.0f;
         //     gMarioState->vel[1] = 30.0f;
         //     gMarioState->faceAngle[1] = gMarioState->intendedYaw;
-        //     gMarioState->forwardVel = 1.0f * gMarioState->intendedMag;
+        //     gMarioState->forwardVel = 1.1f * gMarioState->intendedMag;
         //     gMarioState->action = ACT_DOLPHIN_DIVE;
         // }
 

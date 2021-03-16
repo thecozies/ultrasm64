@@ -504,11 +504,11 @@ struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 
 
         // if (curBottomHeight < y - 78.0f) continue;
         // if (curBottomHeight >= y - 78.0f) bottomHeight = curBottomHeight;
-        if (curBottomHeight < y) {
+        if (curBottomHeight < y + 78.0f) {
             if (curBottomHeight > topBottomHeight) topBottomHeight = curBottomHeight;
             continue;
         }
-        if (curBottomHeight >= y) bottomHeight = curBottomHeight;
+        if (curBottomHeight >= y + 78.0f) bottomHeight = curBottomHeight;
     }
 
     // Iterate through the list of water tops until there are no more water tops.

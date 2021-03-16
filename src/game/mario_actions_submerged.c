@@ -203,12 +203,12 @@ static u32 perform_water_step(struct MarioState *m) {
     }
 
     // CTODO: Check if water exit should be capped instead
-    // if (nextPos[1] < m->waterBottomHeight + 100.0f && !canExitWaterWithMomentum) {
-    //     // nextPos[1] = MAX(nextPos[1], m->waterBottomHeight - 80.0f);
-    //     // m->vel[1] = 0.0f;
-    //     nextPos[1] += 2.0f;
-    //     m->vel[1] += 2.0f;
-    // }
+    if (nextPos[1] < m->waterBottomHeight + 25.0f && !canExitWaterWithMomentum) {
+        // nextPos[1] = MAX(nextPos[1], m->waterBottomHeight - 80.0f);
+        // m->vel[1] = 0.0f;
+        nextPos[1] += 3.0f;
+        m->vel[1] += 3.0f;
+    }
 
     stepResult = perform_water_full_step(m, nextPos);
 
