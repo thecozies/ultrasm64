@@ -139,7 +139,7 @@ void scroll_castle_grounds_dl_afakewater_mesh_layer_5_vtx_0() {
 
 void scroll_castle_grounds_dl_awaters_006_mesh_layer_5_vtx_0() {
 	int i = 0;
-	int count = 30;
+	int count = 70;
 	int width = 64 * 0x20;
 	int height = 64 * 0x20;
 
