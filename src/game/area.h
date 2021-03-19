@@ -140,6 +140,7 @@ extern s16 gSavedCourseNum;
 extern s16 gPauseScreenMode;
 extern s16 gSaveOptSelectIndex;
 extern s16 gGoalFadeState;
+extern s8 gIntroTextShowing;
 
 extern struct SpawnInfo *gMarioSpawnInfo;
 
@@ -169,5 +170,6 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
 void render_game(void);
 void set_collected_para(s32 group);
 void set_current_fog_state(s32 fogState);
+void set_next_goal_state(s32 state, s32 nextAlpha);
 
 #endif // AREA_H

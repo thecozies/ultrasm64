@@ -55,5 +55,6 @@ void warp_mario_to_checkpoint(void);
 void init_mario(void);
 void init_mario_from_save_file(void);
 extern s8 gCheckingWaterForMario;
+extern s8 gGameStarted;
 
 #endif // MARIO_H

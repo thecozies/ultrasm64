@@ -35,9 +35,9 @@ const LevelScript level_intro_splash_screen[] = {
 
     TRANSITION(/*transType*/ WARP_TRANSITION_FADE_FROM_COLOR, /*time*/ 35, /*color*/ 0x00, 0x00, 0x00),
     CALL(/*arg*/ 0, /*func*/ lvl_intro_update),
-    SLEEP(/*frames*/ 75),
-    TRANSITION(/*transType*/ WARP_TRANSITION_FADE_INTO_COLOR, /*time*/ 16, /*color*/ 0x00, 0x00, 0x00),
-    SLEEP(/*frames*/ 16),
+    SLEEP(/*frames*/ 150),
+    TRANSITION(/*transType*/ WARP_TRANSITION_FADE_INTO_COLOR, /*time*/ 35, /*color*/ 0x00, 0x00, 0x00),
+    SLEEP(/*frames*/ 35),
     CMD2A(/*unk2*/ 1),
     CLEAR_LEVEL(),
     SLEEP(/*frames*/ 2),

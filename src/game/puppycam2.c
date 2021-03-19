@@ -38,6 +38,7 @@ u16 gPuppyVolumeCount = 0;
 struct MemoryPool *gPuppyMemoryPool;
 s32 gPuppyError = 0;
 s16 gPrevPuppyZoomDist = 0;
+s16 sZoomPitchTargets[3] = {14300, 12650, 11010};
 
 #if defined(VERSION_EU)
 static u8 gPCOptionStringsFR[][64] = {{NC_ANALOGUE_FR}, {NC_CAMX_FR}, {NC_CAMY_FR}, {NC_INVERTX_FR}, {NC_INVERTY_FR}, {NC_CAMC_FR}, {NC_CAMP_FR}, {NC_CAMD_FR}};
@@ -451,28 +452,42 @@ static void puppycam_input_hold(void)
     if (!(gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_YAW_ROTATION))
         return;
 
-    if (!gPuppyCam.options.analogue && gPlayer1Controller->buttonPressed & L_CBUTTONS && gPuppyCam.framesSinceC[0] <= 5)
+    if (!gPuppyCam.options.analogue && gPlayer1Controller->buttonPressed & L_CBUTTONS)
     {
-        gPuppyCam.yawTarget -= 0x4000*ivX;
-        play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gGlobalSoundSource);
+        gPuppyCam.yawTarget -= 0x2000 * ((gPuppyCam.options.invertX*2)-1);
+        gPuppyCam.framesSinceC[0] = 0;
+        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW,gGlobalSoundSource);
     }
-    else
-    if (!gPuppyCam.options.analogue && gPlayer1Controller->buttonPressed & R_CBUTTONS && gPuppyCam.framesSinceC[1] <= 5)
+    else if (!gPuppyCam.options.analogue && gPlayer1Controller->buttonPressed & R_CBUTTONS)
     {
-        gPuppyCam.yawTarget += 0x4000*ivX;
-        play_sound(SOUND_MENU_CAMERA_ZOOM_IN, gGlobalSoundSource);
+        gPuppyCam.yawTarget += 0x2000 * ((gPuppyCam.options.invertX*2)-1);
+        gPuppyCam.framesSinceC[1] = 0;
+        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW,gGlobalSoundSource);
     }
 
-    if ((gPlayer1Controller->buttonDown & L_CBUTTONS && !gPuppyCam.options.analogue) || gPuppyCam.stick2[0] != 0)
+    if (
+        (
+            !gPuppyCam.options.analogue
+            && (gPlayer1Controller->buttonDown & L_JPAD)
+            && gPuppyCam.framesSinceC[0] > 8
+        )
+        || gPuppyCam.stick2[0] != 0
+    )
     {
         gPuppyCam.yawAcceleration -= 40*(gPuppyCam.options.sensitivityX/100.f);
-        gPuppyCam.framesSinceC[0] = 0;
+        // gPuppyCam.framesSinceC[0] = 0;
     }
-    else
-    if ((gPlayer1Controller->buttonDown & R_CBUTTONS && !gPuppyCam.options.analogue) || gPuppyCam.stick2[0] != 0)
+    else if (
+        (
+            !gPuppyCam.options.analogue
+            && (gPlayer1Controller->buttonDown & R_JPAD)
+            && gPuppyCam.framesSinceC[1] > 8
+        )
+        || gPuppyCam.stick2[0] != 0
+    )
     {
         gPuppyCam.yawAcceleration += 40*(gPuppyCam.options.sensitivityX/100.f);
-        gPuppyCam.framesSinceC[1] = 0;
+        // gPuppyCam.framesSinceC[1] = 0;
     }
     else
         gPuppyCam.yawAcceleration = approach_f32_asymptotic(gPuppyCam.yawAcceleration, 0, DECELERATION);
@@ -853,15 +868,38 @@ static void puppycam_input_core(void)
     if (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_8DIR || gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_4DIR)
         puppycam_input_press();
     //Handles R button zooming.
-    if (gPlayer1Controller->buttonPressed & R_TRIG && gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_ZOOM_CHANGE)
+    // if (gPlayer1Controller->buttonPressed & R_TRIG && gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_ZOOM_CHANGE)
+    // {
+    //     gPuppyCam.zoomSet++;
+
+    //     if (gPuppyCam.zoomSet >= 3)
+    //         gPuppyCam.zoomSet = 0;
+
+    //     gPuppyCam.zoomTarget = gPuppyCam.zoomPoints[gPuppyCam.zoomSet];
+    //     play_sound(SOUND_MENU_CLICK_CHANGE_VIEW,gGlobalSoundSource);
+    // }
+
+    if (!gPuppyCam.options.analogue)
     {
-        gPuppyCam.zoomSet++;
-
-        if (gPuppyCam.zoomSet >= 3)
-            gPuppyCam.zoomSet = 0;
-
-        gPuppyCam.zoomTarget = gPuppyCam.zoomPoints[gPuppyCam.zoomSet];
-        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW,gGlobalSoundSource);
+        //Handles vertical inputs.
+        if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
+            gPuppyCam.zoomSet = gPuppyCam.zoomSet == 0 ? 0 : gPuppyCam.zoomSet - 1;
+            gPuppyCam.zoomTarget = gPuppyCam.zoomPoints[gPuppyCam.zoomSet];
+            gPuppyCam.pitchTarget = sZoomPitchTargets[gPuppyCam.zoomSet];
+            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW,gGlobalSoundSource);
+        }
+        else if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
+            gPuppyCam.zoomSet = gPuppyCam.zoomSet == 2 ? 2 : gPuppyCam.zoomSet + 1;
+            gPuppyCam.zoomTarget = gPuppyCam.zoomPoints[gPuppyCam.zoomSet];
+            gPuppyCam.pitchTarget = sZoomPitchTargets[gPuppyCam.zoomSet];
+            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW,gGlobalSoundSource);
+        } else if (gPlayer1Controller->buttonPressed & R_TRIG) {
+            gPuppyCam.zoomSet = gPuppyCam.zoomSet == 0 ? 2 : 0;
+            gPuppyCam.zoomTarget = gPuppyCam.zoomPoints[gPuppyCam.zoomSet];
+            gPuppyCam.pitchTarget = sZoomPitchTargets[gPuppyCam.zoomSet];
+            if (gPuppyCam.zoomSet == 0) gPuppyCam.yawTarget = gMarioState->faceAngle[1]+0x8000;
+            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW,gGlobalSoundSource);
+        }
     }
 
     //Handles L button centering.
@@ -869,16 +907,17 @@ static void puppycam_input_core(void)
     !(gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_8DIR) && !(gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_4DIR) && !(gPlayer1Controller->buttonDown & U_JPAD))
     {
         gPuppyCam.yawTarget = gMarioState->faceAngle[1]+0x8000;
+        gPuppyCam.pitchTarget = sZoomPitchTargets[gPuppyCam.zoomSet];
         play_sound(SOUND_MENU_CLICK_CHANGE_VIEW,gGlobalSoundSource);
     }
 
     if (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_PITCH_ROTATION)
     {
         //Handles vertical inputs.
-        if (gPlayer1Controller->buttonDown & U_CBUTTONS || gPuppyCam.stick2[1] != 0)
+        if (gPlayer1Controller->buttonDown & U_JPAD || gPuppyCam.stick2[1] != 0)
             gPuppyCam.pitchAcceleration -= 15*(gPuppyCam.options.sensitivityY/100.f);
         else
-        if (gPlayer1Controller->buttonDown & D_CBUTTONS || gPuppyCam.stick2[1] != 0)
+        if (gPlayer1Controller->buttonDown & D_JPAD || gPuppyCam.stick2[1] != 0)
             gPuppyCam.pitchAcceleration += 15*(gPuppyCam.options.sensitivityY/100.f);
         else
             gPuppyCam.pitchAcceleration = approach_f32_asymptotic(gPuppyCam.pitchAcceleration, 0, DECELERATION);

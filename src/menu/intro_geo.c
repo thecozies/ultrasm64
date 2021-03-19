@@ -9,6 +9,7 @@
 #include "types.h"
 #include "buffers/framebuffers.h"
 #include "game/game_init.h"
+#include "game/area.h"
 #include "audio/external.h"
 #include "prevent_bss_reordering.h"
 
@@ -59,33 +60,42 @@ Gfx *geo_intro_super_mario_64_logo(s32 state, struct GraphNode *node, UNUSED voi
         dlIter = dl;
 
         // determine scale based on the frame counter
-        if (sIntroFrameCounter >= 0 && sIntroFrameCounter < INTRO_STEPS_ZOOM_IN) {
-            // zooming in
-            scaleX = scaleTable1[sIntroFrameCounter * 3];
-            scaleY = scaleTable1[sIntroFrameCounter * 3 + 1];
-            scaleZ = scaleTable1[sIntroFrameCounter * 3 + 2];
-        } else if (sIntroFrameCounter >= INTRO_STEPS_ZOOM_IN && sIntroFrameCounter < INTRO_STEPS_HOLD_1) {
-            // holding
-            scaleX = 1.0f;
-            scaleY = 1.0f;
-            scaleZ = 1.0f;
-        } else if (sIntroFrameCounter >= INTRO_STEPS_HOLD_1 && sIntroFrameCounter < INTRO_STEPS_ZOOM_OUT) {
-            // zooming out
-            scaleX = scaleTable2[(sIntroFrameCounter - INTRO_STEPS_HOLD_1) * 3];
-            scaleY = scaleTable2[(sIntroFrameCounter - INTRO_STEPS_HOLD_1) * 3 + 1];
-            scaleZ = scaleTable2[(sIntroFrameCounter - INTRO_STEPS_HOLD_1) * 3 + 2];
-        } else {
-            // disappeared
-            scaleX = 0.0f;
-            scaleY = 0.0f;
-            scaleZ = 0.0f;
-        }
-        guScale(scaleMat, scaleX, scaleY, scaleZ);
+        // if (sIntroFrameCounter >= 0 && sIntroFrameCounter < INTRO_STEPS_ZOOM_IN) {
+        //     // zooming in
+        //     scaleX = scaleTable1[sIntroFrameCounter * 3];
+        //     scaleY = scaleTable1[sIntroFrameCounter * 3 + 1];
+        //     scaleZ = scaleTable1[sIntroFrameCounter * 3 + 2];
+        // } else if (sIntroFrameCounter >= INTRO_STEPS_ZOOM_IN && sIntroFrameCounter < INTRO_STEPS_HOLD_1) {
+        //     // holding
+        //     scaleX = 1.0f;
+        //     scaleY = 1.0f;
+        //     scaleZ = 1.0f;
+        // } else if (sIntroFrameCounter >= INTRO_STEPS_HOLD_1 && sIntroFrameCounter < INTRO_STEPS_ZOOM_OUT) {
+        //     // zooming out
+        //     scaleX = scaleTable2[(sIntroFrameCounter - INTRO_STEPS_HOLD_1) * 3];
+        //     scaleY = scaleTable2[(sIntroFrameCounter - INTRO_STEPS_HOLD_1) * 3 + 1];
+        //     scaleZ = scaleTable2[(sIntroFrameCounter - INTRO_STEPS_HOLD_1) * 3 + 2];
+        // } else {
+        //     // disappeared
+        //     scaleX = 0.0f;
+        //     scaleY = 0.0f;
+        //     scaleZ = 0.0f;
+        // }
+        guScale(scaleMat, 0.75f, 0.75f, 0.75f);
 
         gSPMatrix(dlIter++, scaleMat, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-        gSPDisplayList(dlIter++, &intro_seg7_dl_0700B3A0);  // draw model
+                // gSPDisplayList(dlIter++, &intro_seg7_dl_0700B3A0);  // draw model
+
+        // gDPSetEnvColor(dlIter++, 255, 255, 255, 255);
+        gSPDisplayList(dlIter++, &splash_IntroSplash_mesh_layer_1);  // draw model
+        // gSPDisplayList(dlIter++, &splash_material_revert_render_settings);  // draw model
         gSPPopMatrix(dlIter++, G_MTX_MODELVIEW);
         gSPEndDisplayList(dlIter);
+
+        if (sIntroFrameCounter == 35) {
+            gIntroTextShowing = TRUE;
+            set_next_goal_state(1, 0);
+        }
 
         sIntroFrameCounter++;
     }

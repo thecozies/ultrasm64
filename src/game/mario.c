@@ -36,6 +36,7 @@
 u32 unused80339F10;
 s8 filler80339F1C[20];
 s8 gCheckingWaterForMario = FALSE;
+s8 gGameStarted = FALSE;
 
 /**************************************************
  *                    ANIMATIONS                  *
@@ -1891,6 +1892,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
  **************************************************/
 
 void init_mario(void) {
+    gGameStarted = TRUE;
     Vec3s capPos;
     struct Object *capObject;
 
@@ -1988,6 +1990,7 @@ void init_mario(void) {
 }
 
 void init_mario_from_save_file(void) {
+    gGameStarted = TRUE;
     gMarioState->unk00 = 0;
     gMarioState->flags = 0;
     gMarioState->action = 0;

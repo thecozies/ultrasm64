@@ -67,6 +67,9 @@ struct GlobalFog sTrippyFog = { 73, 63, 52, 0xFF, 750, 1100 };
 
 s16 gGoalFadeState = 0;
 s32 sGoalFadeTimer = 0;
+s8 gIntroTextShowing = FALSE;
+s32 gIntroTextTimer = 0;
+s32 gIntroTextPos = 0;
 
 enum FOG_OPTIONS {
     DEFAULT_FOG,
@@ -406,6 +409,9 @@ void set_next_goal_state(s32 state, s32 nextAlpha) {
     gGoalFadeState = state;
     sGoalFadeTimer = 0;
     s2d_alpha = nextAlpha;
+    if (state == NO_GOAL) {
+        gIntroTextShowing = FALSE;
+    }
 }
 
 void set_collected_para(s32 group) {
@@ -414,17 +420,17 @@ void set_collected_para(s32 group) {
     gMarioState->lastParaGroup = group;
 }
 
-s32 update_goals_text(void) {
+s32 update_text_fade(s32 attack, s32 sustain, s32 release) {
     if (gGoalFadeState == NO_GOAL) return FALSE;
     
     if (gGoalFadeState == STARTING_SHOW_GOAL) {
-        if (sGoalFadeTimer >= GOAL_FADE_IN_LEN) set_next_goal_state(FULL_SHOW_GOAL, 255);
+        if (sGoalFadeTimer >= attack) set_next_goal_state(FULL_SHOW_GOAL, 255);
         s2d_alpha = MIN(s2d_alpha + 9, 255);
-    } else if (gGoalFadeState == FULL_SHOW_GOAL && sGoalFadeTimer >= GOAL_SHOW_LEN) {
+    } else if (gGoalFadeState == FULL_SHOW_GOAL && sGoalFadeTimer >= sustain) {
         set_next_goal_state(FADING_SHOW_GOAL, 255);
     } else if (gGoalFadeState == FADING_SHOW_GOAL) { // FADING_SHOW_GOAL
-        if (sGoalFadeTimer > GOAL_FADE_OUT_LEN) set_next_goal_state(NO_GOAL, 0);
-        s2d_alpha = MAX(s2d_alpha - 8, 0);
+        if (sGoalFadeTimer > release) set_next_goal_state(NO_GOAL, 0);
+        s2d_alpha = MAX(s2d_alpha - (255 / release), 0);
     }
 
     sGoalFadeTimer++;
@@ -432,7 +438,7 @@ s32 update_goals_text(void) {
 }
 
 void render_goals(void) {
-    if (update_goals_text() && gMarioState->lastParaGroup != -1) {
+    if (gGameStarted && update_text_fade(GOAL_FADE_IN_LEN, GOAL_SHOW_LEN, GOAL_FADE_OUT_LEN) && gMarioState->lastParaGroup != -1) {
         s2d_init();
         char s1[30];
 
@@ -444,6 +450,17 @@ void render_goals(void) {
         );
         s2d_print_alloc(40, 20, ALIGN_LEFT, s1);
 
+        s2d_stop();
+    }
+}
+
+void render_intro_text(void) {
+    if (gIntroTextShowing && !gGameStarted && update_text_fade(GOAL_FADE_IN_LEN + 15, GOAL_SHOW_LEN, GOAL_FADE_OUT_LEN + 30)) {
+        s2d_init();
+        char s1[] = "Lucy's\nLevitation";
+
+        s2d_print_alloc(40, (int) (SCREEN_HEIGHT - 80), ALIGN_LEFT, s1);
+        gIntroTextPos++;
         s2d_stop();
     }
 }
@@ -552,10 +569,12 @@ void render_game(void) {
         //     render_s2dex();
         // }
         render_goals();
+        render_intro_text();
     } else {
         render_text_labels();
         if (D_8032CE78 != NULL) {
             clear_viewport(D_8032CE78, gWarpTransFBSetColor);
+            render_intro_text();
         } else {
             clear_frame_buffer(gWarpTransFBSetColor);
         }
