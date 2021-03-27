@@ -1,0 +1,5 @@
+temple2 water: #222D31
+
+
+pil set 79A3B2
+corners & side verts 49636C

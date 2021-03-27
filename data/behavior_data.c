@@ -3211,6 +3211,17 @@ const BehaviorScript bhvPalmTree[] = {
     END_LOOP(),
 };
 
+const BehaviorScript bhvTreePalm[] = {
+    BEGIN(OBJ_LIST_POLELIKE),
+    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    SET_INT(oInteractType, INTERACT_POLE),
+    SET_HITBOX_WITH_OFFSET(/*Radius*/ 80, /*Height*/ 1500, /*Downwards offset*/ 1500),
+    SET_INT(oIntangibleTimer, 0),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_pole_base_loop),
+    END_LOOP(),
+};
+
 const BehaviorScript bhvSparkle[] = {
     BEGIN(OBJ_LIST_UNIMPORTANT),
     BILLBOARD(),
@@ -6145,10 +6156,12 @@ const BehaviorScript bhvSlidingDoor[] = {
     BEGIN(OBJ_LIST_SURFACE),
     LOAD_COLLISION_DATA(sliding_door_collision),
     OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO)),
-    DROP_TO_FLOOR(),
+    // DROP_TO_FLOOR(),
     ADD_FLOAT(oPosY, 1),
     SET_HOME(),
     SET_FLOAT(oDrawingDistance, 10000),
+    // CALL_NATIVE(bhv_init_room),
+    CALL_NATIVE(bhv_sliding_door_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_sliding_door_loop),
         CALL_NATIVE(load_object_collision_model),
@@ -6165,5 +6178,16 @@ const BehaviorScript bhvCandle[] = {
     CALL_NATIVE(bhv_init_room),
     BEGIN_LOOP(),
         SET_INT(oInteractStatus, 0),
+    END_LOOP(),
+};
+
+const BehaviorScript bhvCutsceneObj[] = {
+    BEGIN(OBJ_LIST_DEFAULT),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO)),
+    SET_HOME(),
+    SET_INT(oIntangibleTimer, 0),
+    CALL_NATIVE(bhv_init_room),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_cutscene_obj_loop),
     END_LOOP(),
 };

@@ -10,6 +10,9 @@ void bhv_checkpoint_loop(void) {
             gMarioState->checkpointPos[0] = o->oPosX;
             gMarioState->checkpointPos[1] = o->oPosY;
             gMarioState->checkpointPos[2] = o->oPosZ;
+            gMarioState->checkpointAngle[0] = o->oFaceAnglePitch;
+            gMarioState->checkpointAngle[1] = o->oFaceAngleYaw;
+            gMarioState->checkpointAngle[2] = o->oFaceAngleRoll;
         }
     }
 }

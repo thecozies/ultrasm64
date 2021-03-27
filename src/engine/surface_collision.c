@@ -483,7 +483,7 @@ static f32 get_floor_height_at_location(s32 x, s32 z, struct Surface *surf) {
  * Iterate through the list of water floors and find the first water floor under a given point.
  */
 struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z,
-                                            f32 *pheight, f32 *pBottomHeight) {
+                                            f32 *pheight, f32 *pBottomHeight, s32 getForce) {
     register struct Surface *surf;
     struct Surface *floor = NULL;
     struct SurfaceNode *topSurfaceNode = surfaceNode;
@@ -491,6 +491,8 @@ struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 
     f32 height = FLOOR_LOWER_LIMIT;
     f32 bottomHeight = FLOOR_LOWER_LIMIT;
     f32 topBottomHeight = FLOOR_LOWER_LIMIT;
+    s16 bottomForce = 0;
+    if (getForce) gMarioState->waterBottomParam = bottomForce;
 
     // Iterate through the list of water floors until there are no more water floors.
     while (bottomSurfaceNode != NULL) {
@@ -505,7 +507,10 @@ struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 
         // if (curBottomHeight < y - 78.0f) continue;
         // if (curBottomHeight >= y - 78.0f) bottomHeight = curBottomHeight;
         if (curBottomHeight < y + 78.0f) {
-            if (curBottomHeight > topBottomHeight) topBottomHeight = curBottomHeight;
+            if (curBottomHeight > topBottomHeight) {
+                topBottomHeight = curBottomHeight;
+                bottomForce = surf->force;
+            }
             continue;
         }
         if (curBottomHeight >= y + 78.0f) bottomHeight = curBottomHeight;
@@ -530,6 +535,8 @@ struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 
         }
     }
     *pBottomHeight = topBottomHeight;
+
+    if (getForce) gMarioState->waterBottomParam = bottomForce;
 
     return floor;
 }
@@ -674,7 +681,7 @@ f32 find_water_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
 
     // Check for surfaces that are a part of level geometry.
     surfaceList = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WATER].next;
-    floor = find_water_floor_from_list(surfaceList, x, y, z, &height, &bottomheight);
+    floor = find_water_floor_from_list(surfaceList, x, y, z, &height, &bottomheight, gCheckingWaterForMario);
 
     if (floor == NULL) {
         height = FLOOR_LOWER_LIMIT;

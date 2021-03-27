@@ -38,6 +38,11 @@ s8 filler80339F1C[20];
 s8 gCheckingWaterForMario = FALSE;
 s8 gGameStarted = FALSE;
 
+s8 gCurCutscene = 0;
+u32 gCurCutsceneTimer = 0;
+s32 sWarpOp = 0;
+
+
 /**************************************************
  *                    ANIMATIONS                  *
  **************************************************/
@@ -483,6 +488,10 @@ s32 mario_get_floor_class(struct MarioState *m) {
             case SURFACE_NOISE_VERY_SLIPPERY:
             case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
                 floorClass = SURFACE_CLASS_VERY_SLIPPERY;
+                break;
+            case SURFACE_CUTSCENE:
+                floorClass = m->floor->force & 0xFF;
+                if (floorClass == 0x0) floorClass = SURFACE_CLASS_NOT_SLIPPERY;
                 break;
         }
     }
@@ -1487,7 +1496,10 @@ void update_mario_geometry_inputs(struct MarioState *m) {
         }
 
     } else {
-        level_trigger_warp(m, WARP_OP_DEATH);
+        print_text_fmt_int(20, 80, "%d", m->pos[0]);
+        print_text_fmt_int(20, 50, "%d", m->pos[1]);
+        print_text_fmt_int(20, 20, "%d", m->pos[2]);
+        // level_trigger_warp(m, WARP_OP_DEATH);
     }
 }
 
@@ -1766,11 +1778,21 @@ void warp_mario_to_checkpoint(void) {
         gParasitesGrabbed[gMarioState->lastParaGroup] = 0;
     }
     vec3f_copy(gMarioState->pos, gMarioState->checkpointPos);
+    vec3s_copy(gMarioState->faceAngle, gMarioState->checkpointAngle);
     gMarioState->vel[0] = 0.0f;
     gMarioState->vel[1] = 0.0f;
     gMarioState->vel[2] = 0.0f;
     gMarioState->forwardVel = 0.0f;
     set_mario_action(gMarioState, ACT_IDLE, 0);
+}
+
+void slow_warp_mario_to_checkpoint(void) {
+    if (gMarioState->slowDeathCounter++ > 10) {
+        if (gMarioState->lastParaGroup != -1) {
+            gParasitesGrabbed[gMarioState->lastParaGroup] = 0;
+        }
+        set_mario_action(gMarioState, ACT_SLOW_WARP, 0);
+    }
 }
 
 void check_and_set_checkpoint(struct MarioState *m) {
@@ -1781,6 +1803,50 @@ void check_and_set_checkpoint(struct MarioState *m) {
             m->floor->vertex2,
             m->floor->vertex3
         );
+        vec3s_copy(m->checkpointAngle, m->faceAngle);
+    }
+}
+
+void set_current_cutscene(s32 cutscene) {
+    if (gCurCutscene == CUTSCENE_SLIDE && cutscene != CUTSCENE_SLIDE) {
+        set_fov_function(CAM_FOV_DEFAULT);
+    } else if (gCurCutscene != cutscene) {
+        gCurCutsceneTimer = 0;
+    }
+        gCurCutscene = cutscene;
+}
+
+void handle_cutscene(void) {
+    switch (gCurCutscene) {
+        case CUTSCENE_INTRO:
+            // CTODO
+            break;
+        case CUTSCENE_SLIDE:
+            set_fov_function(CAM_FOV_APP_80);
+            break;
+        case CUTSCENE_END:
+            // CTODO
+            break;
+        case NO_CUTSCENE:
+        case CUTSCENE_TOWERCLIMB:
+        default:
+            return;
+    }
+}
+
+void set_delayed_mario_warp(s32 warpOp) {
+    sWarpOp = warpOp;
+}
+
+void execute_mario_warp(void) {
+    // sWarpOp = warpOp;
+    if (sWarpOp) {
+        sWarpOp--;
+        if ((sWarpOp & 0xFFFF) == 0) {
+            level_trigger_warp(gMarioState, sWarpOp >> 16);
+            set_delayed_mario_warp(0);
+            set_current_cutscene(NO_CUTSCENE);
+        }
     }
 }
 
@@ -1802,18 +1868,36 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             return 0;
         }
 
-// // CTODO: DEBUG
+// // // CTODO: DEBUG
 //         if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-//             warp_mario_to_checkpoint();
+//             if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
 //         }
-// // CTODO: DEBUG
-        // if (gMarioState->controller->buttonDown & A_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
-        //     gMarioState->pos[1] += 30.0f;
-        //     gMarioState->vel[1] = 30.0f;
-        //     gMarioState->faceAngle[1] = gMarioState->intendedYaw;
-        //     gMarioState->forwardVel = 1.1f * gMarioState->intendedMag;
-        //     gMarioState->action = ACT_DOLPHIN_DIVE;
-        // }
+//         // if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+//         //     set_current_cutscene(gCurCutscene + 1);
+//         // }
+//         if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+//             if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
+//         }
+//         // if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+//         //     set_current_cutscene(gCurCutscene - 1);
+//         // }
+// // // CTODO: DEBUG
+//         if (gMarioState->controller->buttonDown & A_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
+//             gMarioState->pos[1] += 30.0f;
+//             gMarioState->vel[1] = 30.0f;
+//             gMarioState->faceAngle[1] = gMarioState->intendedYaw;
+//             gMarioState->forwardVel = 1.5f * gMarioState->intendedMag;
+//             gMarioState->action = ACT_DOLPHIN_DIVE;
+//         }
+//         if (gMarioState->controller->buttonDown & B_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
+//             gMarioState->vel[1] = 0.0f;
+//             gMarioState->faceAngle[1] = gMarioState->intendedYaw;
+//             gMarioState->forwardVel = 2.5f * gMarioState->intendedMag;
+//             gMarioState->action = ACT_DOLPHIN_DIVE;
+//         }
+
+        handle_cutscene();
+        execute_mario_warp();
 
         // The function can loop through many action shifts in one frame,
         // which can lead to unexpected sub-frame behavior. Could potentially hang
@@ -1956,6 +2040,12 @@ void init_mario(void) {
     gMarioState->checkpointPos[1] = gMarioState->pos[1];
     gMarioState->checkpointPos[2] = gMarioState->pos[2];
 
+    gMarioState->checkpointAngle[0] = gMarioState->faceAngle[0];
+    gMarioState->checkpointAngle[1] = gMarioState->faceAngle[1];
+    gMarioState->checkpointAngle[2] = gMarioState->faceAngle[2];
+    gMarioState->waterBottomParam = 0;
+    gMarioState->slowDeathCounter = 0;
+
     gMarioState->marioObj->header.gfx.pos[1] = gMarioState->pos[1];
 
     gMarioState->action =
@@ -2012,6 +2102,11 @@ void init_mario_from_save_file(void) {
     gMarioState->checkpointPos[0] = gMarioState->pos[0];
     gMarioState->checkpointPos[1] = gMarioState->pos[1];
     gMarioState->checkpointPos[2] = gMarioState->pos[2];
+    gMarioState->checkpointAngle[0] = gMarioState->faceAngle[0];
+    gMarioState->checkpointAngle[1] = gMarioState->faceAngle[1];
+    gMarioState->checkpointAngle[2] = gMarioState->faceAngle[2];
+    gMarioState->waterBottomParam = 0;
+    gMarioState->slowDeathCounter = 0;
     // CTODO: Check save file
     gMarioState->dolphinPowers = FALSE;
     gMarioState->canAirJump = FALSE;

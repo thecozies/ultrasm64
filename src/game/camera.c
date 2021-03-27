@@ -1484,7 +1484,7 @@ s32 update_fixed_camera(struct Camera *c, Vec3f focus, UNUSED Vec3f pos) {
     vec3f_copy(basePos, sFixedModeBasePosition);
     vec3f_add(basePos, sCastleEntranceOffset);
 
-    if (sMarioGeometry.currFloorType != SURFACE_DEATH_PLANE
+    if ((sMarioGeometry.currFloorType != SURFACE_DEATH_PLANE && sMarioGeometry.currFloorType != SURFACE_SLOW_DEATH_PLANE)
         && sMarioGeometry.currFloorHeight != FLOOR_LOWER_LIMIT) {
         goalHeight = sMarioGeometry.currFloorHeight + basePos[1] + heightOffset;
     } else {
@@ -5290,6 +5290,11 @@ void warp_camera(f32 displacementX, f32 displacementY, f32 displacementZ) {
     vec3f_add(gLakituState.curFocus, displacement);
     vec3f_add(gLakituState.goalPos, displacement);
     vec3f_add(gLakituState.goalFocus, displacement);
+    vec3s_copy(gPuppyCam.pos, gLakituState.curPos);
+    gPuppyCam.targetFloorHeight += displacementY; 
+    gPuppyCam.lastTargetFloorHeight += displacementY;
+    gPuppyCam.floorY[0] += displacementY;
+    gPuppyCam.floorY[1] += displacementY;
     marioStates->waterLevel += displacementY;
 
     vec3f_add(start->focus, displacement);
@@ -11420,7 +11425,7 @@ void approach_fov_45(struct MarioState *m) {
 }
 
 void approach_fov_80(UNUSED struct MarioState *m) {
-    camera_approach_f32_symmetric_bool(&sFOVState.fov, 80.f, 3.5f);
+    camera_approach_f32_symmetric_bool(&sFOVState.fov, 120.f, 0.5f);
 }
 
 /**

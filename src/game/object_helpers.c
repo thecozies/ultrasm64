@@ -145,6 +145,42 @@ Gfx *geo_update_fog(s32 callContext, struct GraphNode *node, UNUSED void *contex
     return dlStart;
 }
 
+Gfx *geo_zbuffer_clear(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 *mtx) {
+    Gfx *dl = NULL;
+    if (callContext == GEO_CONTEXT_RENDER) {
+        Gfx *dlHead = NULL;
+        dl = alloc_display_list(13 * sizeof(*dl));
+        dlHead = dl;
+        gDPPipeSync(dlHead++);
+        gDPSetRenderMode(dlHead++, G_RM_NOOP, G_RM_NOOP2);
+        gDPSetCycleType(dlHead++, G_CYC_FILL);
+        gDPSetDepthSource(dlHead++, G_ZS_PIXEL);
+        gDPSetDepthImage(dlHead++, gPhysicalZBuffer);
+        gDPSetColorImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH, gPhysicalZBuffer);
+        gDPSetFillColor(dlHead++,
+                        GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
+        gDPFillRectangle(dlHead++, 0, BORDER_HEIGHT, SCREEN_WIDTH - 1,
+                        SCREEN_HEIGHT - 1 - BORDER_HEIGHT);
+        gDPPipeSync(dlHead++);
+        gDPSetCycleType(dlHead++, G_CYC_1CYCLE);
+        gDPSetColorImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH,
+                        gPhysicalFrameBuffers[frameBufferIndex]);
+        gDPSetScissor(dlHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
+                  SCREEN_HEIGHT - BORDER_HEIGHT);
+        gSPEndDisplayList(dlHead++);
+    }
+    return dl;
+}
+
+Gfx *geo_backdrop_move(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) {
+    if (callContext == GEO_CONTEXT_RENDER) {
+        ((struct GraphNodeTranslation *) node->next)->translation[0] = gLakituState.pos[0] * .98;
+        ((struct GraphNodeTranslation *) node->next)->translation[1] = gLakituState.pos[1] * .98;
+        ((struct GraphNodeTranslation *) node->next)->translation[2] = gLakituState.pos[2] * .98;
+    }
+    return 0;
+}
+
 /**
  * @bug Every geo function declares the 3 parameters of callContext, node, and
  * the matrix array. This one (see also geo_switch_area) doesn't. When executed,
@@ -1752,7 +1788,7 @@ static void cur_obj_update_floor(void) {
             o->oMoveFlags |= OBJ_MOVE_ABOVE_LAVA;
         }
 #ifndef VERSION_JP
-        else if (floor->type == SURFACE_DEATH_PLANE) {
+        else if (floor->type == SURFACE_DEATH_PLANE || floor->type == SURFACE_SLOW_DEATH_PLANE) {
             //! This misses SURFACE_VERTICAL_WIND (and maybe SURFACE_WARP)
             o->oMoveFlags |= OBJ_MOVE_ABOVE_DEATH_BARRIER;
         }

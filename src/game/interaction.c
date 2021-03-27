@@ -893,7 +893,8 @@ u32 interact_warp(struct MarioState *m, UNUSED u32 interactType, struct Object *
 #endif
 
             mario_stop_riding_object(m);
-            return set_mario_action(m, ACT_DISAPPEARED, (WARP_OP_WARP_OBJECT << 16) + 2);
+            set_delayed_mario_warp((WARP_OP_WARP_OBJECT << 16) + 2);
+            // return set_mario_action(m, ACT_DISAPPEARED, (WARP_OP_WARP_OBJECT << 16) + 2);
         }
     }
 
@@ -1509,7 +1510,12 @@ u32 check_object_grab_mario(struct MarioState *m, UNUSED u32 interactType, struc
 
 u32 interact_pole(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
     s32 actionId = m->action & ACT_ID_MASK;
-    if (actionId >= 0x080 && actionId < 0x0A0) {
+    if (
+        (actionId >= 0x080 && actionId < 0x0A0)
+        || m->action & ACT_FLAG_DIVING
+        || m->action == ACT_SPECIAL_TRIPLE_JUMP
+        || m->action == ACT_FORWARD_ROLLOUT
+    ) {
         if (!(m->prevAction & ACT_FLAG_ON_POLE) || m->usedObj != o) {
 #ifdef VERSION_SH
             f32 velConv = m->forwardVel; // conserve the velocity.
@@ -1816,7 +1822,9 @@ void mario_process_interactions(struct MarioState *m) {
 }
 
 void check_death_barrier(struct MarioState *m) {
-    if (m->pos[1] < m->floorHeight + 2048.0f) {
+    if (m->floor->type == SURFACE_SLOW_DEATH_PLANE) {
+        if (m->pos[1] < m->floorHeight + 2048.0f) slow_warp_mario_to_checkpoint();
+    } else if (m->pos[1] < m->floorHeight + 2048.0f) {
         warp_mario_to_checkpoint();
         // if (level_trigger_warp(m, WARP_OP_WARP_FLOOR) == 20 && !(m->flags & MARIO_UNKNOWN_18)) {
         //     play_sound(SOUND_MARIO_WAAAOOOW, m->marioObj->header.gfx.cameraToObject);
@@ -1866,6 +1874,7 @@ void mario_handle_special_floors(struct MarioState *m) {
         switch (floorType) {
             case SURFACE_DEATH_PLANE:
             case SURFACE_VERTICAL_WIND:
+            case SURFACE_SLOW_DEATH_PLANE:
                 check_death_barrier(m);
                 break;
 
@@ -1879,6 +1888,9 @@ void mario_handle_special_floors(struct MarioState *m) {
 
             case SURFACE_TIMER_END:
                 pss_end_slide(m);
+                break;
+            case SURFACE_CUTSCENE:
+                set_current_cutscene((m->floor->force >> 8) & 0xFF);
                 break;
         }
 

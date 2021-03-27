@@ -76,7 +76,7 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
 
 #pragma GCC diagnostic pop
 
-    if (m->action != ACT_TWIRLING && m->floor->type != SURFACE_BURNING) {
+    if (m->action != ACT_TWIRLING && m->floor->type != SURFACE_BURNING && m->floor->type != SURFACE_CUTSCENE) {
         if (m->vel[1] < -55.0f) {
             if (fallHeight > 3000.0f) {
 #if ENABLE_RUMBLE
@@ -652,6 +652,7 @@ s32 act_side_flip(struct MarioState *m) {
 }
 
 s32 act_wall_kick_air(struct MarioState *m) {
+    m->actionTimer++;
     if (m->input & INPUT_B_PRESSED) {
         return set_mario_action(m, ACT_DIVE, 0);
     }
@@ -1094,6 +1095,13 @@ s32 act_ground_pound(struct MarioState *m) {
         switch (perform_air_step(m, 0)) {
             case AIR_STEP_NONE:
                 if (check_air_jump(m)) return apply_air_jump(m);
+                if (m->input & INPUT_B_PRESSED && m->pos[1] > m->waterLevel) {
+                    m->vel[1] = 24.0f;
+                    m->faceAngle[0] = 0;
+                    m->faceAngle[1] = m->intendedYaw;
+                    mario_set_forward_vel(m, m->forwardVel + 45.0f);
+                    return set_mario_action(m, ACT_DIVE, 0);
+                }
                 break;
             case AIR_STEP_LANDED:
                 if (should_get_stuck_in_ground(m)) {

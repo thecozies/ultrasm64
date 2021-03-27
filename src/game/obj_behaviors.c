@@ -717,6 +717,7 @@ void obj_check_floor_death(s16 collisionFlags, struct Surface *floor) {
                 break;
             //! @BUG Doesn't check for the vertical wind death floor.
             case SURFACE_DEATH_PLANE:
+            case SURFACE_SLOW_DEATH_PLANE:
                 o->oAction = OBJ_ACT_DEATH_PLANE_DEATH;
                 break;
             default:
@@ -840,6 +841,7 @@ s8 UNUSED debug_sequence_tracker(s16 debugInputSequence[]) {
 #include "behaviors/rolling_log.inc.c"
 #include "behaviors/mushroom_1up.inc.c"
 #include "behaviors/parasite.inc.c"
+#include "behaviors/cutscene_obj.inc.c"
 #include "behaviors/controllable_platform.inc.c"
 #include "behaviors/breakable_box_small.inc.c"
 #include "behaviors/snow_mound.inc.c"

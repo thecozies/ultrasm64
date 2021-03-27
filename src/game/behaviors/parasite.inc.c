@@ -1,6 +1,3 @@
-// mushroom_1up.c.inc
-
-// gParasitesGrabbed
 
 void bhv_parasite_interact(void) {
     if (obj_check_if_collided_with_object(o, gMarioObject)) {
@@ -16,10 +13,15 @@ void bhv_parasite_grabbed(void) {
     if (gParasitesGrabbed[parasiteGroup] == 0) {
         cur_obj_change_action(0);
         o->oOpacity = 255;
+        cur_obj_unhide();
     } else if (gParasitesGrabbed[parasiteGroup] == gParasitesGoals[parasiteGroup]) {
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     } else if (o->oOpacity != 0) {
         o->oOpacity -= 15;
+    }
+
+    if (o->oOpacity <= 0) {
+        cur_obj_hide();
     }
 }
 
@@ -35,7 +37,8 @@ void bhv_parasite_loop(void) {
 
 void bhv_parasite_init(void) {
     s32 parasiteGroup = (o->oBehParams >> 16) & 0xFF;
-    gParasitesGoals[parasiteGroup]++;
+    if (gParasitesGoalsSet[parasiteGroup] == FALSE) gParasitesGoals[parasiteGroup]++;
+
     o->oMoveAnglePitch = 0;
     o->oGravity = 0;
     o->oFriction = 0.0f;

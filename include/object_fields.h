@@ -1157,4 +1157,8 @@
 #define /*0x0FC*/ oYoshiChosenHome OBJECT_FIELD_S32(0x1D)
 #define /*0x100*/ oYoshiTargetYaw  OBJECT_FIELD_S32(0x1E)
 
+
+#define /*0x0F4*/ oLateralDistToMario OBJECT_FIELD_F32(0x1C)
+#define /*0x0F8*/ oYDistToHome        OBJECT_FIELD_F32(0x1D)
+
 #endif // OBJECT_FIELDS_H

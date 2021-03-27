@@ -1,0 +1,10 @@
+extern const GeoLayout cloud_dome_geo[];
+extern u8 cloud_dome_water_smooth_ia16[];
+extern u8 cloud_dome_water_smooth_2_ia16[];
+extern Vtx cloud_dome_cloud_dome_mesh_layer_5_vtx_cull[8];
+extern Vtx cloud_dome_cloud_dome_mesh_layer_5_vtx_0[17];
+extern Gfx cloud_dome_cloud_dome_mesh_layer_5_tri_0[];
+extern Gfx mat_cloud_dome_cloud_material_layer5[];
+extern Gfx mat_revert_cloud_dome_cloud_material_layer5[];
+extern Gfx cloud_dome_cloud_dome_mesh_layer_5[];
+extern Gfx cloud_dome_material_revert_render_settings[];

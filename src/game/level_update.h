@@ -66,6 +66,7 @@ extern struct MarioState gMarioStates[];
 extern struct MarioState *gMarioState;
 extern u8 gParasitesGrabbed[16];
 extern u8 gParasitesGoals[16];
+extern s8 gParasitesGoalsSet[16];
 
 extern s16 sCurrPlayMode;
 extern u16 D_80339ECA;

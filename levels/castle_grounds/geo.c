@@ -21,3 +21,5 @@
 #include "levels/castle_grounds/geo.inc.c"
 
 #include "levels/castle_grounds/palmtree/geo.inc.c"
+#include "levels/castle_grounds/sky_dome/geo.inc.c"
+#include "levels/castle_grounds/cloud_dome/geo.inc.c"

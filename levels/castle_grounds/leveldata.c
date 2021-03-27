@@ -34,3 +34,5 @@
 #include "levels/castle_grounds/leveldata.inc.c"
 
 #include "levels/castle_grounds/palmtree/model.inc.c"
+#include "levels/castle_grounds/sky_dome/model.inc.c"
+#include "levels/castle_grounds/cloud_dome/model.inc.c"

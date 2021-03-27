@@ -949,6 +949,10 @@ s32 act_water_ground_pound(struct MarioState *m) {
 
     play_sound_if_no_flag(m, SOUND_ACTION_THROW, MARIO_ACTION_SOUND_PLAYED);
 
+    if (m->input & INPUT_A_PRESSED) {
+        return set_mario_action(m, ACT_BREASTSTROKE, 0);
+    }
+
     if (m->actionState == 0) {
         if (m->actionTimer < 16) {
             yOffset = 10 - m->actionTimer;
@@ -1680,10 +1684,16 @@ static s32 act_hold_metal_water_fall_land(struct MarioState *m) {
 }
 
 static s32 check_common_submerged_cancels(struct MarioState *m) {
+    if (m->waterBottomParam == 1) slow_warp_mario_to_checkpoint();
+
     if (m->pos[1] > m->waterLevel - 80) {
         if (m->waterLevel - 80 > m->floorHeight) {
-            // m->pos[1] = m->waterLevel - 80; //! BUG: Downwarp swimming out of waterfalls
-            return transition_submerged_to_airborne(m);
+            if (m->pos[1] - (m->waterLevel - 80) < 50) {
+                m->pos[1] = m->waterLevel - 80; // lock mario to top if the falloff isn't big enough
+            } else {
+                // m->pos[1] = m->waterLevel - 80; //! BUG: Downwarp swimming out of waterfalls
+                return transition_submerged_to_airborne(m);
+            }
         } else {
             //! If you press B to throw the shell, there is a ~5 frame window
             // where your held object is the shell, but you are not in the

@@ -64,6 +64,7 @@ struct GlobalFog sDefaultFog = { 73, 63, 52, 0xFF, 812, 1000 };
 struct GlobalFog sWaterFog = { 0x33, 0x6C, 0x71, 0xDF, 800, 1000 };
 struct GlobalFog sTemple1Room4Fog = { 73, 63, 52, 0xFF, 812, 1100 };
 struct GlobalFog sTrippyFog = { 73, 63, 52, 0xFF, 750, 1100 };
+struct GlobalFog sTemple2Fog = { 94, 88, 105, 0xDF, 830, 1100 };
 
 s16 gGoalFadeState = 0;
 s32 sGoalFadeTimer = 0;
@@ -75,7 +76,8 @@ enum FOG_OPTIONS {
     DEFAULT_FOG,
     WATER_FOG,
     TEMPLE1_ROOM4_FOG,
-    TRIPPY_FOG
+    TRIPPY_FOG,
+    TEMPLE2_FOG
 };
 
 s8 sCurFog = DEFAULT_FOG;
@@ -489,6 +491,9 @@ void update_fog(void) {
             case TRIPPY_FOG:
                 targetFog = &sTrippyFog;
                 break;
+            case TEMPLE2_FOG:
+                targetFog = &sTemple2Fog;
+                break;
             default:
                 targetFog = &sDefaultFog;
         }
@@ -521,6 +526,7 @@ void render_s2dex(void) {
 
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
+        gCurCutsceneTimer++;
         update_fog();
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
 

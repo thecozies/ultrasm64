@@ -184,6 +184,9 @@ struct MarioState *gMarioState = &gMarioStates[0];
 s8 sWarpCheckpointActive = FALSE;
 u8 gParasitesGrabbed[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 u8 gParasitesGoals[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+s8 gParasitesGoalsSet[16] = {
+    FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE
+};
 
 u8 unused3[4];
 u8 unused4[2];
@@ -557,6 +560,7 @@ void check_instant_warp(void) {
                 gMarioState->pos[0] += warp->displacement[0];
                 gMarioState->pos[1] += warp->displacement[1];
                 gMarioState->pos[2] += warp->displacement[2];
+                gMarioState->peakHeight += warp->displacement[1];
 
                 gMarioState->marioObj->oPosX = gMarioState->pos[0];
                 gMarioState->marioObj->oPosY = gMarioState->pos[1];

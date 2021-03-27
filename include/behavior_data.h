@@ -548,5 +548,7 @@ extern const BehaviorScript bhvSlidingDoor[];
 extern const BehaviorScript bhvCandle[];
 extern const BehaviorScript bhvCheckpoint[];
 extern const BehaviorScript bhvPalmTree[];
+extern const BehaviorScript bhvTreePalm[];
+extern const BehaviorScript bhvCutsceneObj[];
 
 #endif // BEHAVIOR_DATA_H

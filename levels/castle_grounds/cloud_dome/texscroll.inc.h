@@ -1,0 +1,3 @@
+extern void scroll_cloud_dome_cloud_dome_mesh_layer_5_vtx_0();
+extern void scroll_sts_mat_cloud_dome_cloud_material_layer5();
+extern void scroll_castle_grounds_level_geo_cloud_dome();

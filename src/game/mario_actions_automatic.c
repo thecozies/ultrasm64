@@ -108,6 +108,7 @@ s32 set_pole_position(struct MarioState *m, f32 offsetY) {
     vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
     vec3s_set(m->marioObj->header.gfx.angle, m->usedObj->oMoveAnglePitch, m->faceAngle[1],
               m->usedObj->oMoveAngleRoll);
+    if (m->usedObj->oMoveAnglePitch != 0 || m->usedObj->oMoveAngleRoll != 0) m->marioObj->header.gfx.angle[1] += 0x8000;
 
     return result;
 }

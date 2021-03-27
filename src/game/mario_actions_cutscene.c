@@ -2685,6 +2685,56 @@ static s32 check_for_instant_quicksand(struct MarioState *m) {
     return FALSE;
 }
 
+s32 act_slow_warp(struct MarioState *m) {
+    s32 isThere, isThere1, isThere2;
+    f32 speed = 0.08f;
+    m->vel[0] = 0.0f;
+    m->vel[1] = 0.0f;
+    m->vel[2] = 0.0f;
+    m->forwardVel = 0.0f;
+    gPuppyCam.flags &= ~PUPPYCAM_BEHAVIOUR_COLLISION;
+    m->slowDeathCounter = 0;
+
+    // CTODO: do some cool stuff here
+    if (m->actionTimer++ <= 5) return FALSE;
+
+    /*
+        IDK.
+        Maybe it'd be better to lerp the camera position and fade her out before moving
+    */
+
+    m->faceAngle[0] = (s16) approach_f32_asymptotic(m->faceAngle[0], m->checkpointAngle[0], speed);
+    m->faceAngle[1] = (s16) approach_f32_asymptotic(m->faceAngle[1], m->checkpointAngle[1], speed);
+    m->faceAngle[2] = (s16) approach_f32_asymptotic(m->faceAngle[2], m->checkpointAngle[2], speed);
+
+    approach_vec3f_asymptotic(m->pos, m->checkpointPos, speed, speed, speed);
+
+    vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
+    vec3s_copy(m->marioObj->header.gfx.angle, m->faceAngle);
+
+    isThere = ABS(m->pos[0] - m->checkpointPos[0]) < 10.0f;
+    isThere1 = ABS(m->pos[1] - m->checkpointPos[1]) < 10.0f;
+    isThere2 = ABS(m->pos[2] - m->checkpointPos[2]) < 10.0f;
+    gPuppyCam.yawTarget = m->faceAngle[1] + 0x8000;
+
+    if (isThere) print_text_fmt_int(20, 80, "T0 %d", (s32) m->pos[0]);
+    else print_text_fmt_int(20, 80, "%d", (s32) m->pos[0]);
+    if (isThere1) print_text_fmt_int(20, 50, "T1 %d", (s32) m->pos[1]);
+    else print_text_fmt_int(20, 50, "%d", (s32) m->pos[1]);
+    if (isThere2) print_text_fmt_int(20, 20, "T2 %d", (s32) m->pos[2]);
+    else print_text_fmt_int(20, 20, "%d", (s32) m->pos[2]);
+
+    if (isThere && isThere1 && isThere2) {
+        gPuppyCam.flags |= PUPPYCAM_BEHAVIOUR_COLLISION;
+        vec3f_copy(m->pos, m->checkpointPos);
+        vec3s_copy(m->faceAngle, m->checkpointAngle);
+        gPuppyCam.yawTarget = m->faceAngle[1] + 0x8000;
+        return set_mario_action(gMarioState, ACT_IDLE, 0);
+    }
+
+    return FALSE;
+}
+
 s32 mario_execute_cutscene_action(struct MarioState *m) {
     s32 cancel;
 
@@ -2745,6 +2795,7 @@ s32 mario_execute_cutscene_action(struct MarioState *m) {
         case ACT_BUTT_STUCK_IN_GROUND:       cancel = act_butt_stuck_in_ground(m);       break;
         case ACT_FEET_STUCK_IN_GROUND:       cancel = act_feet_stuck_in_ground(m);       break;
         case ACT_PUTTING_ON_CAP:             cancel = act_putting_on_cap(m);             break;
+        case ACT_SLOW_WARP:                  cancel = act_slow_warp(m);                  break;
     }
     /* clang-format on */
 

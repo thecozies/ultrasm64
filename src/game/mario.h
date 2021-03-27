@@ -6,6 +6,14 @@
 #include "macros.h"
 #include "types.h"
 
+
+#define NO_CUTSCENE         0
+#define CUTSCENE_INTRO      1
+#define CUTSCENE_SLIDE      2
+#define CUTSCENE_END        3
+#define CUTSCENE_DOOR_OPEN  4
+#define CUTSCENE_TOWERCLIMB 5
+
 s32 is_anim_at_end(struct MarioState *m);
 s32 is_anim_past_end(struct MarioState *m);
 s16 set_mario_animation(struct MarioState *m, s32 targetAnimID);
@@ -54,7 +62,12 @@ s32 execute_mario_action(UNUSED struct Object *o);
 void warp_mario_to_checkpoint(void);
 void init_mario(void);
 void init_mario_from_save_file(void);
+void set_current_cutscene(s32 cutscene);
+void set_delayed_mario_warp(s32 warpOp);
+void slow_warp_mario_to_checkpoint(void);
 extern s8 gCheckingWaterForMario;
 extern s8 gGameStarted;
+extern s8 gCurCutscene;
+extern u32 gCurCutsceneTimer;
 
 #endif // MARIO_H
