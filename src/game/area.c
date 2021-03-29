@@ -71,6 +71,7 @@ s32 sGoalFadeTimer = 0;
 s8 gIntroTextShowing = FALSE;
 s32 gIntroTextTimer = 0;
 s32 gIntroTextPos = 0;
+s32 gCameraWaterLevel = FLOOR_LOWER_LIMIT;
 
 enum FOG_OPTIONS {
     DEFAULT_FOG,
@@ -422,6 +423,11 @@ void set_collected_para(s32 group) {
     gMarioState->lastParaGroup = group;
 }
 
+void reset_collected_para(void) {
+    set_next_goal_state(STARTING_SHOW_GOAL, 0);
+    gParasitesGrabbed[gMarioState->lastParaGroup] = 0;
+}
+
 s32 update_text_fade(s32 attack, s32 sustain, s32 release) {
     if (gGoalFadeState == NO_GOAL) return FALSE;
     
@@ -472,14 +478,13 @@ void set_current_fog_state(s32 fogState) {
 }
 
 void update_fog(void) {
-    s32 waterLevel;
     struct GlobalFog* targetFog;
 
     gCheckingSurfaceCollisionsForCamera = TRUE;
-    waterLevel = find_water_level(gLakituState.pos[0], gLakituState.pos[2]);
+    gCameraWaterLevel = find_water_level(gLakituState.pos[0], gLakituState.pos[2]);
     gCheckingSurfaceCollisionsForCamera = FALSE;
 
-    if (waterLevel > gLakituState.pos[1]) targetFog = &sWaterFog;
+    if (gCameraWaterLevel > gLakituState.pos[1]) targetFog = &sWaterFog;
     else {
         switch (sCurFog) {
             case WATER_FOG:

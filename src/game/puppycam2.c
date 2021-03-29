@@ -1409,8 +1409,16 @@ static void puppycam_collision(void)
     Vec3f target;
 
     target[0] = gPuppyCam.targetObj->oPosX;
-    target[1] = gPuppyCam.targetObj->oPosY+gPuppyCam.povHeight;
+    target[1] = gPuppyCam.targetObj->oPosY + gPuppyCam.povHeight;
     target[2] = gPuppyCam.targetObj->oPosZ;
+
+    if (
+        (gMarioState->action & ACT_GROUP_MASK) == ACT_GROUP_SUBMERGED &&
+        gMarioState->pos[1] > gMarioState->waterLevel - 150 &&
+        gPuppyCam.pos[1] < gCameraWaterLevel + 80
+    ) {
+        gPuppyCam.pos[1] = approach_f32_asymptotic(target[1], (f32) (gCameraWaterLevel + 80.0f), 0.1f);
+    }
 
     camdir[0] = gPuppyCam.pos[0] - target[0];
     camdir[1] = gPuppyCam.pos[1] - target[1];

@@ -2717,13 +2717,6 @@ s32 act_slow_warp(struct MarioState *m) {
     isThere2 = ABS(m->pos[2] - m->checkpointPos[2]) < 10.0f;
     gPuppyCam.yawTarget = m->faceAngle[1] + 0x8000;
 
-    if (isThere) print_text_fmt_int(20, 80, "T0 %d", (s32) m->pos[0]);
-    else print_text_fmt_int(20, 80, "%d", (s32) m->pos[0]);
-    if (isThere1) print_text_fmt_int(20, 50, "T1 %d", (s32) m->pos[1]);
-    else print_text_fmt_int(20, 50, "%d", (s32) m->pos[1]);
-    if (isThere2) print_text_fmt_int(20, 20, "T2 %d", (s32) m->pos[2]);
-    else print_text_fmt_int(20, 20, "%d", (s32) m->pos[2]);
-
     if (isThere && isThere1 && isThere2) {
         gPuppyCam.flags |= PUPPYCAM_BEHAVIOUR_COLLISION;
         vec3f_copy(m->pos, m->checkpointPos);

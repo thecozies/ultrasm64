@@ -32,6 +32,7 @@
 #include "save_file.h"
 #include "sound_init.h"
 #include "rumble_init.h"
+#include "puppycam2.h"
 
 u32 unused80339F10;
 s8 filler80339F1C[20];
@@ -914,7 +915,10 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
         case ACT_HOLD_WATER_JUMP:
             if (actionArg == 0) {
                 if (m->dolphinPowers) set_mario_vel_based_on_fspeed_grav(m, 64.0f, 1.0f);
-                else set_mario_y_vel_based_on_fspeed(m, 42.0f, 0.0f);
+                else {
+                    set_mario_y_vel_based_on_fspeed(m, 52.0f, 0.0f);
+                    m->forwardVel = MAX(16.0f, m->forwardVel);
+                }
             }
             break;
 
@@ -1292,6 +1296,7 @@ s32 transition_submerged_to_airborne(struct MarioState *m) {
     vec3s_set(m->angleVel, 0, 0, 0);
 
     if (m->heldObj == NULL) {
+        // CTODO: ADD Y VEL for ACT_DIVE
         if (m->input & INPUT_A_DOWN) return set_mario_action(m, ACT_DIVE, 0);
         else return set_mario_action(m, ACT_FREEFALL, 0);
     } else {
@@ -1406,9 +1411,12 @@ void update_mario_button_inputs(struct MarioState *m) {
     }
 
     if (m->input & INPUT_A_PRESSED) {
+        m->doubleA = m->framesSinceA < 5;
         m->framesSinceA = 0;
     } else if (m->framesSinceA < 0xFF) {
         m->framesSinceA += 1;
+    } else {
+        m->doubleA = FALSE;
     }
 
     if (m->input & INPUT_B_PRESSED) {
@@ -1499,6 +1507,7 @@ void update_mario_geometry_inputs(struct MarioState *m) {
         print_text_fmt_int(20, 80, "%d", m->pos[0]);
         print_text_fmt_int(20, 50, "%d", m->pos[1]);
         print_text_fmt_int(20, 20, "%d", m->pos[2]);
+        warp_mario_to_checkpoint();
         // level_trigger_warp(m, WARP_OP_DEATH);
     }
 }
@@ -1774,11 +1783,10 @@ void func_sh_8025574C(void) {
 #endif
 
 void warp_mario_to_checkpoint(void) {
-    if (gMarioState->lastParaGroup != -1) {
-        gParasitesGrabbed[gMarioState->lastParaGroup] = 0;
-    }
+    if (gMarioState->lastParaGroup != -1) reset_collected_para();
     vec3f_copy(gMarioState->pos, gMarioState->checkpointPos);
     vec3s_copy(gMarioState->faceAngle, gMarioState->checkpointAngle);
+    gPuppyCam.yawTarget = gMarioState->checkpointAngle[1] + 0x8000;
     gMarioState->vel[0] = 0.0f;
     gMarioState->vel[1] = 0.0f;
     gMarioState->vel[2] = 0.0f;
@@ -1788,9 +1796,7 @@ void warp_mario_to_checkpoint(void) {
 
 void slow_warp_mario_to_checkpoint(void) {
     if (gMarioState->slowDeathCounter++ > 10) {
-        if (gMarioState->lastParaGroup != -1) {
-            gParasitesGrabbed[gMarioState->lastParaGroup] = 0;
-        }
+        if (gMarioState->lastParaGroup != -1) reset_collected_para();
         set_mario_action(gMarioState, ACT_SLOW_WARP, 0);
     }
 }
@@ -1868,33 +1874,33 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             return 0;
         }
 
-// // // CTODO: DEBUG
-//         if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-//             if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
-//         }
-//         // if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-//         //     set_current_cutscene(gCurCutscene + 1);
-//         // }
-//         if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-//             if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
-//         }
-//         // if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-//         //     set_current_cutscene(gCurCutscene - 1);
-//         // }
-// // // CTODO: DEBUG
-//         if (gMarioState->controller->buttonDown & A_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
-//             gMarioState->pos[1] += 30.0f;
-//             gMarioState->vel[1] = 30.0f;
-//             gMarioState->faceAngle[1] = gMarioState->intendedYaw;
-//             gMarioState->forwardVel = 1.5f * gMarioState->intendedMag;
-//             gMarioState->action = ACT_DOLPHIN_DIVE;
-//         }
-//         if (gMarioState->controller->buttonDown & B_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
-//             gMarioState->vel[1] = 0.0f;
-//             gMarioState->faceAngle[1] = gMarioState->intendedYaw;
-//             gMarioState->forwardVel = 2.5f * gMarioState->intendedMag;
-//             gMarioState->action = ACT_DOLPHIN_DIVE;
-//         }
+// // CTODO: DEBUG
+        if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+            if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
+        }
+        // if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+        //     set_current_cutscene(gCurCutscene + 1);
+        // }
+        if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+            if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
+        }
+        // if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+        //     set_current_cutscene(gCurCutscene - 1);
+        // }
+// // CTODO: DEBUG
+        if (gMarioState->controller->buttonDown & A_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
+            gMarioState->pos[1] += 30.0f;
+            gMarioState->vel[1] = 30.0f;
+            gMarioState->faceAngle[1] = gMarioState->intendedYaw;
+            gMarioState->forwardVel = 2.0f * gMarioState->intendedMag;
+            gMarioState->action = ACT_DOLPHIN_DIVE;
+        }
+        if (gMarioState->controller->buttonDown & B_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
+            gMarioState->vel[1] = 0.0f;
+            gMarioState->faceAngle[1] = gMarioState->intendedYaw;
+            gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
+            gMarioState->action = ACT_DOLPHIN_DIVE;
+        }
 
         handle_cutscene();
         execute_mario_warp();

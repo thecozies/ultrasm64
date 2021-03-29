@@ -149,6 +149,7 @@ extern struct Area *gCurrentArea;
 
 extern s16 gCurrSaveFileNum;
 extern s16 gCurrLevelNum;
+extern s32 gCameraWaterLevel;
 
 extern struct GlobalFog gGlobalFog;
 
@@ -171,5 +172,6 @@ void render_game(void);
 void set_collected_para(s32 group);
 void set_current_fog_state(s32 fogState);
 void set_next_goal_state(s32 state, s32 nextAlpha);
+void reset_collected_para(void);
 
 #endif // AREA_H

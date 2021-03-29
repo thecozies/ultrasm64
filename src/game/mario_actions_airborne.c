@@ -14,6 +14,10 @@
 #include "save_file.h"
 #include "rumble_init.h"
 
+// #define FALL_HEIGHT_SMALL 1550.0f
+#define FALL_HEIGHT_SMALL 1850.0f
+#define FALL_HEIGHT_LARGE 3500.0f
+
 void play_flip_sounds(struct MarioState *m, s16 frame1, s16 frame2, s16 frame3) {
     s32 animFrame = m->marioObj->header.gfx.animInfo.animFrame;
     if (animFrame == frame1 || animFrame == frame2 || animFrame == frame3) {
@@ -25,7 +29,7 @@ void play_far_fall_sound(struct MarioState *m) {
     u32 action = m->action;
     if (!(action & ACT_FLAG_INVULNERABLE) && action != ACT_TWIRLING && action != ACT_FLYING
         && !(m->flags & MARIO_UNKNOWN_18)) {
-        if (m->peakHeight - m->pos[1] > 1150.0f) {
+        if (m->peakHeight - m->pos[1] > FALL_HEIGHT_SMALL) {
             play_sound(SOUND_MARIO_WAAAOOOW, m->marioObj->header.gfx.cameraToObject);
             m->flags |= MARIO_UNKNOWN_18;
         }
@@ -71,14 +75,14 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
     if (m->actionState == ACT_GROUND_POUND) {
         damageHeight = 600.0f;
     } else {
-        damageHeight = 1150.0f;
+        damageHeight = FALL_HEIGHT_SMALL;
     }
 
 #pragma GCC diagnostic pop
 
     if (m->action != ACT_TWIRLING && m->floor->type != SURFACE_BURNING && m->floor->type != SURFACE_CUTSCENE) {
         if (m->vel[1] < -55.0f) {
-            if (fallHeight > 3000.0f) {
+            if (fallHeight > FALL_HEIGHT_LARGE) {
 #if ENABLE_RUMBLE
                 queue_rumble_data(5, 80);
 #endif
@@ -114,7 +118,7 @@ s32 should_get_stuck_in_ground(struct MarioState *m) {
 
     if (floor != NULL && (terrainType == TERRAIN_SNOW || terrainType == TERRAIN_SAND)
         && type != SURFACE_BURNING && SURFACE_IS_NOT_HARD(type)) {
-        if (!(flags & 0x01) && m->peakHeight - m->pos[1] > 1000.0f && floor->normal.y >= 0.8660254f) {
+        if (!(flags & 0x01) && m->peakHeight - m->pos[1] > FALL_HEIGHT_SMALL && floor->normal.y >= 0.8660254f) {
             return TRUE;
         }
     }
@@ -480,6 +484,14 @@ u32 common_air_action_step(struct MarioState *m, u32 landAction, s32 animation, 
 }
 
 s32 act_jump(struct MarioState *m) {
+    if (m->prevAction == ACT_WATER_JUMP) {
+        if (m->actionTimer++ < 8) {
+            m->intendedMag = MAX(5.0f, m->intendedMag);
+            m->intendedYaw = m->faceAngle[1];
+        }
+        m->input |= INPUT_A_DOWN;
+    }
+
     if (check_kick_or_dive_in_air(m)) {
         return TRUE;
     }

@@ -356,6 +356,7 @@ struct MarioState
     s16 waterBottomParam;
     u8 slowDeathCounter;
     s16 wallAngle;
+    s8 doubleA;
 };
 
 #endif // TYPES_H
