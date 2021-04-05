@@ -4,7 +4,7 @@ const GeoLayout castle_grounds_area_3_geo[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
 		GEO_ASM(0, geo_update_fog),
-		GEO_DISPLAY_LIST(1, castle_grounds_dl_aslide_mesh_layer_1),
+		GEO_DISPLAY_LIST(1, castle_grounds_dl_b__SLIDE_Room_001_mesh_layer_1),
 		GEO_DISPLAY_LIST(1, castle_grounds_dl_no_col_mesh_layer_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),

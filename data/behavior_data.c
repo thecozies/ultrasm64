@@ -6145,6 +6145,7 @@ const BehaviorScript bhvParasite[] = {
     OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
     SET_HITBOX_WITH_OFFSET(/*Radius*/ 100, /*Height*/ 150, /*Downwards offset*/ 0),
     SET_FLOAT(oGraphYOffset, 30),
+    SET_HOME(),
     CALL_NATIVE(bhv_parasite_init),
     BEGIN_LOOP(),
         SET_INT(oIntangibleTimer, 0),

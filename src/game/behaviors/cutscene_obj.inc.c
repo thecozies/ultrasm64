@@ -10,7 +10,7 @@
 #define o gCurrentObject
 #endif
 
-void bhv_cutscene_obj_loop(void) {
+void bhv_cutscene_obj_towerclimb(void) {
     o->oLateralDistToMario = ABS(lateral_dist_between_objects(o, gMarioObject));
     o->oPosY = gMarioState->pos[1];
     o->oYDistToHome = o->oPosY - o->oHomeY;
@@ -31,4 +31,35 @@ void bhv_cutscene_obj_loop(void) {
         gPuppyCam.flags |= PUPPYCAM_BEHAVIOUR_COLLISION;
         gPuppyCam.flags &= ~PUPPYCAM_BEHAVIOUR_INPUT_8DIR;
     }
+}
+
+void bhv_cutscene_obj_force_yaw(void) {
+    o->oLateralDistToMario = ABS(lateral_dist_between_objects(o, gMarioObject));
+
+    if (o->oLateralDistToMario < 1700.0f && ABS(gMarioState->pos[1] - o->oPosY) < 1000.0f) {
+        if (gCurCutscene != CUTSCENE_FORCE_YAW) {
+            set_current_cutscene(CUTSCENE_FORCE_YAW);
+        }
+
+        gPuppyCam.yawTarget = o->oFaceAngleYaw + 0x8000;
+        gPuppyCam.flags &= ~PUPPYCAM_BEHAVIOUR_YAW_ROTATION;
+
+    } else if (gCurCutscene == CUTSCENE_FORCE_YAW) {
+        set_current_cutscene(NO_CUTSCENE);
+        gPuppyCam.flags |= PUPPYCAM_BEHAVIOUR_YAW_ROTATION;
+    }
+}
+
+void bhv_cutscene_obj_loop(void) {
+    s32 cutscene = (o->oBehParams >> 16) & 0xFF;
+    // if (current_mario_room_check(o->oRoom)) {
+    switch (cutscene) {
+        case CUTSCENE_TOWERCLIMB:
+            bhv_cutscene_obj_towerclimb();
+            break;
+        case CUTSCENE_FORCE_YAW:
+            bhv_cutscene_obj_force_yaw();
+            break;
+    }
+    // }
 }

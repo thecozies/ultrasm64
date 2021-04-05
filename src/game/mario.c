@@ -915,10 +915,7 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
         case ACT_HOLD_WATER_JUMP:
             if (actionArg == 0) {
                 if (m->dolphinPowers) set_mario_vel_based_on_fspeed_grav(m, 64.0f, 1.0f);
-                else {
-                    set_mario_y_vel_based_on_fspeed(m, 52.0f, 0.0f);
-                    m->forwardVel = MAX(16.0f, m->forwardVel);
-                }
+                else set_mario_y_vel_based_on_fspeed(m, 52.0f, 0.0f);
             }
             break;
 
@@ -1982,9 +1979,10 @@ s32 execute_mario_action(UNUSED struct Object *o) {
  **************************************************/
 
 void init_mario(void) {
-    gGameStarted = TRUE;
     Vec3s capPos;
     struct Object *capObject;
+
+    gGameStarted = TRUE;
 
     unused80339F10 = 0;
 
@@ -2082,6 +2080,10 @@ void init_mario(void) {
         capObject->oForwardVelS32 = 0;
 
         capObject->oMoveAngleYaw = 0;
+    }
+
+    if (gCurrLevelNum == LEVEL_CASTLE_GROUNDS && gCurrAreaIndex == 1) {
+        set_current_cutscene(CUTSCENE_INTRO_TEMPLE);
     }
 }
 

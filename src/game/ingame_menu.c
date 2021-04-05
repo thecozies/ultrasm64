@@ -23,6 +23,7 @@
 #include "text_strings.h"
 #include "types.h"
 #include "puppycam2.h"
+#include "tutorial.h"
 
 u16 gDialogColorFadeTimer;
 s8 gLastDialogLineNum;
@@ -35,6 +36,7 @@ s16 gDialogY; // D_8032F69C
 s16 gCutsceneMsgXOffset;
 s16 gCutsceneMsgYOffset;
 s8 gRedCoinsCollected;
+s8 sWaitingForStick0 = FALSE;
 
 extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;
@@ -2613,9 +2615,9 @@ puppycam_check_pause_buttons();
             gDialogTextAlpha = 0;
             level_set_transition(-1, NULL);
 #ifdef VERSION_JP
-            play_sound(SOUND_MENU_PAUSE, gGlobalSoundSource);
+            // play_sound(SOUND_MENU_PAUSE, gGlobalSoundSource);
 #else
-            play_sound(SOUND_MENU_PAUSE_HIGHPRIO, gGlobalSoundSource);
+            // play_sound(SOUND_MENU_PAUSE_HIGHPRIO, gGlobalSoundSource);
 #endif
 
             if (gCurrCourseNum >= COURSE_MIN && gCurrCourseNum <= COURSE_MAX) {
@@ -2628,12 +2630,12 @@ puppycam_check_pause_buttons();
             break;
         case DIALOG_STATE_VERTICAL:
             shade_screen();
-            render_pause_my_score_coins();
-            render_pause_red_coins();
+            // render_pause_my_score_coins();
+            // render_pause_red_coins();
 
-            if (gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT) {
-                render_pause_course_options(99, 93, &gDialogLineNum, 15);
-            }
+            // if (gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT) {
+            //     render_pause_course_options(99, 93, &gDialogLineNum, 15);
+            // }
 
 #ifdef VERSION_EU
             if (gPlayer3Controller->buttonPressed & (A_BUTTON | Z_TRIG | START_BUTTON))
@@ -2643,7 +2645,7 @@ puppycam_check_pause_buttons();
 #endif
             {
                 level_set_transition(0, NULL);
-                play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
+                // play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
                 gDialogBoxState = DIALOG_STATE_OPENING;
                 gMenuMode = -1;
 
@@ -2658,9 +2660,9 @@ puppycam_check_pause_buttons();
             break;
         case DIALOG_STATE_HORIZONTAL:
             shade_screen();
-            print_hud_pause_colorful_str();
-            render_pause_castle_menu_box(160, 143);
-            render_pause_castle_main_strings(104, 60);
+            // print_hud_pause_colorful_str();
+            // render_pause_castle_menu_box(160, 143);
+            // render_pause_castle_main_strings(104, 60);
 
 #ifdef VERSION_EU
             if (gPlayer3Controller->buttonPressed & (A_BUTTON | Z_TRIG | START_BUTTON))
@@ -2670,7 +2672,7 @@ puppycam_check_pause_buttons();
 #endif
             {
                 level_set_transition(0, NULL);
-                play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
+                // play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
                 gMenuMode = -1;
                 gDialogBoxState = DIALOG_STATE_OPENING;
 
@@ -2689,7 +2691,27 @@ puppycam_check_pause_buttons();
         puppycam_display_options();
     }
 
-    puppycam_render_option_text();
+    // puppycam_render_option_text();
+    if (!gPCOptionOpen) {
+        if (!sWaitingForStick0) {
+            if (gPlayer1Controller->rawStickY > 60 || gPlayer1Controller->buttonPressed & U_JPAD) {
+                prev_tip();
+                if (gPlayer1Controller->rawStickY > 60) sWaitingForStick0 = TRUE;
+            }
+
+            if (gPlayer1Controller->rawStickY < -60 || gPlayer1Controller->buttonPressed & D_JPAD) {
+                next_tip();
+                if (gPlayer1Controller->rawStickY < -60) sWaitingForStick0 = TRUE;
+            }
+        } else if (ABS(gPlayer1Controller->rawStickY) < 4) {
+            sWaitingForStick0 = FALSE;
+        }
+        render_tutorial(TRUE);
+    } else {
+        s2d_init();
+        render_pause_hint_text();
+        s2d_stop();
+    }
     return 0;
 }
 

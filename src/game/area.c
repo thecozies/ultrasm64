@@ -28,6 +28,7 @@
 #include "s2dex/init.h"
 #include "s2dex/s2d_draw.h"
 #include "s2dex/s2d_print.h"
+#include "tutorial.h"
 
 
 struct SpawnInfo gPlayerSpawnInfos[1];
@@ -65,6 +66,7 @@ struct GlobalFog sWaterFog = { 0x33, 0x6C, 0x71, 0xDF, 800, 1000 };
 struct GlobalFog sTemple1Room4Fog = { 73, 63, 52, 0xFF, 812, 1100 };
 struct GlobalFog sTrippyFog = { 73, 63, 52, 0xFF, 750, 1100 };
 struct GlobalFog sTemple2Fog = { 94, 88, 105, 0xDF, 830, 1100 };
+struct GlobalFog sTutorialFog = { 22, 22, 22, 0xFF, 350, 1000 };
 
 s16 gGoalFadeState = 0;
 s32 sGoalFadeTimer = 0;
@@ -72,13 +74,15 @@ s8 gIntroTextShowing = FALSE;
 s32 gIntroTextTimer = 0;
 s32 gIntroTextPos = 0;
 s32 gCameraWaterLevel = FLOOR_LOWER_LIMIT;
+u8 sFadeAlpha = 0;
 
 enum FOG_OPTIONS {
     DEFAULT_FOG,
     WATER_FOG,
     TEMPLE1_ROOM4_FOG,
     TRIPPY_FOG,
-    TEMPLE2_FOG
+    TEMPLE2_FOG,
+    TUTORIAL_FOG,
 };
 
 s8 sCurFog = DEFAULT_FOG;
@@ -411,7 +415,7 @@ void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 b
 void set_next_goal_state(s32 state, s32 nextAlpha) {
     gGoalFadeState = state;
     sGoalFadeTimer = 0;
-    s2d_alpha = nextAlpha;
+    sFadeAlpha = nextAlpha;
     if (state == NO_GOAL) {
         gIntroTextShowing = FALSE;
     }
@@ -433,12 +437,13 @@ s32 update_text_fade(s32 attack, s32 sustain, s32 release) {
     
     if (gGoalFadeState == STARTING_SHOW_GOAL) {
         if (sGoalFadeTimer >= attack) set_next_goal_state(FULL_SHOW_GOAL, 255);
-        s2d_alpha = MIN(s2d_alpha + 9, 255);
+        sFadeAlpha = MIN(sFadeAlpha + 9, 255);
     } else if (gGoalFadeState == FULL_SHOW_GOAL && sGoalFadeTimer >= sustain) {
         set_next_goal_state(FADING_SHOW_GOAL, 255);
+        sFadeAlpha = 255;
     } else if (gGoalFadeState == FADING_SHOW_GOAL) { // FADING_SHOW_GOAL
         if (sGoalFadeTimer > release) set_next_goal_state(NO_GOAL, 0);
-        s2d_alpha = MAX(s2d_alpha - (255 / release), 0);
+        sFadeAlpha = MAX(sFadeAlpha - (255 / release), 0);
     }
 
     sGoalFadeTimer++;
@@ -446,9 +451,17 @@ s32 update_text_fade(s32 attack, s32 sustain, s32 release) {
 }
 
 void render_goals(void) {
-    if (gGameStarted && update_text_fade(GOAL_FADE_IN_LEN, GOAL_SHOW_LEN, GOAL_FADE_OUT_LEN) && gMarioState->lastParaGroup != -1) {
+    if (
+        gGameStarted &&
+        gCurrLevelNum == LEVEL_CASTLE_GROUNDS &&
+        gCurCutscene != CUTSCENE_INTRO_TEMPLE &&
+        !render_tutorial(FALSE) &&
+        update_text_fade(GOAL_FADE_IN_LEN, GOAL_SHOW_LEN, GOAL_FADE_OUT_LEN) &&
+        gMarioState->lastParaGroup != -1
+    ) {
         s2d_init();
         char s1[30];
+        s2d_alpha = sFadeAlpha;
 
         sprintf(
             s1,
@@ -466,6 +479,7 @@ void render_intro_text(void) {
     if (gIntroTextShowing && !gGameStarted && update_text_fade(GOAL_FADE_IN_LEN + 15, GOAL_SHOW_LEN, GOAL_FADE_OUT_LEN + 30)) {
         s2d_init();
         char s1[] = "Lucy's\nLevitation";
+        s2d_alpha = sFadeAlpha;
 
         s2d_print_alloc(40, (int) (SCREEN_HEIGHT - 80), ALIGN_LEFT, s1);
         gIntroTextPos++;
@@ -498,6 +512,9 @@ void update_fog(void) {
                 break;
             case TEMPLE2_FOG:
                 targetFog = &sTemple2Fog;
+                break;
+            case TUTORIAL_FOG:
+                targetFog = &sTutorialFog;
                 break;
             default:
                 targetFog = &sDefaultFog;

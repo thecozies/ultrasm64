@@ -133,6 +133,7 @@ extern struct sPuppyVolume *sPuppyVolumeStack[MAX_PUPPYCAM_VOLUMES];
 extern u16 gPuppyVolumeCount;
 extern struct MemoryPool *gPuppyMemoryPool;
 extern s16 gPrevPuppyZoomDist;
+extern s16 gPrevPuppyTargetYaw;
 extern void puppycam_boot(void);
 extern void puppycam_init(void);
 extern void puppycam_loop(void);
@@ -140,5 +141,6 @@ extern void puppycam_shake(s16 x, s16 y, s16 z);
 extern void find_surface_on_ray(Vec3f orig, Vec3f dir, struct Surface **hit_surface, Vec3f hit_pos);
 extern f32 approach_f32_asymptotic(f32 current, f32 target, f32 multiplier);
 extern void puppycam_default_config(void);
+extern s16 approach_yaw(s16 curYaw, s16 target, f32 speed);
 
 #endif // PUPPYCAM2_H

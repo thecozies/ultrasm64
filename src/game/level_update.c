@@ -29,6 +29,7 @@
 #include "level_table.h"
 #include "course_table.h"
 #include "rumble_init.h"
+#include "tutorial.h"
 
 #define PLAY_MODE_NORMAL 0
 #define PLAY_MODE_PAUSED 2
@@ -222,8 +223,14 @@ u32 pressed_pause(void) {
     u32 val4 = get_dialog_id() >= 0;
     u32 intangible = (gMarioState->action & ACT_FLAG_INTANGIBLE) != 0;
 
-    if (!intangible && !val4 && !gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE
-        && (gPlayer1Controller->buttonPressed & START_BUTTON)) {
+    if (
+        !intangible &&
+        !val4 &&
+        !gWarpTransition.isActive &&
+        sDelayedWarpOp == WARP_OP_NONE &&
+        gTutorialDone &&
+        (gPlayer1Controller->buttonPressed & START_BUTTON)) {
+        reset_tutorial();
         return TRUE;
     }
 
@@ -1206,7 +1213,7 @@ s32 init_level(void) {
                 set_mario_action(gMarioState, ACT_IDLE, 0);
             } else if (!gDebugLevelSelect) {
                 if (gMarioState->action != ACT_UNINITIALIZED) {
-                    set_mario_action(gMarioState, ACT_SLEEPING, 2);
+                    set_mario_action(gMarioState, ACT_WAKING_UP, 0);
                 }
             }
         }

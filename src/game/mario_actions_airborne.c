@@ -484,13 +484,13 @@ u32 common_air_action_step(struct MarioState *m, u32 landAction, s32 animation, 
 }
 
 s32 act_jump(struct MarioState *m) {
-    if (m->prevAction == ACT_WATER_JUMP) {
-        if (m->actionTimer++ < 8) {
-            m->intendedMag = MAX(5.0f, m->intendedMag);
-            m->intendedYaw = m->faceAngle[1];
-        }
-        m->input |= INPUT_A_DOWN;
-    }
+    // if (m->prevAction == ACT_WATER_JUMP) {
+    //     if (m->actionTimer++ < 8) {
+    //         m->intendedMag = MAX(5.0f, m->intendedMag);
+    //         m->intendedYaw = m->faceAngle[1];
+    //     }
+    //     m->input |= INPUT_A_DOWN;
+    // }
 
     if (check_kick_or_dive_in_air(m)) {
         return TRUE;
@@ -1509,7 +1509,8 @@ s32 act_getting_blown(struct MarioState *m) {
     return FALSE;
 }
 
-#define FIRSTY_LAST_FRAME 2
+// #define FIRSTY_LAST_FRAME 2
+#define FIRSTY_LAST_FRAME 4
 
 s32 act_air_hit_wall(struct MarioState *m) {
     if (m->heldObj != NULL) {

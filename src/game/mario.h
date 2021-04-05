@@ -7,12 +7,14 @@
 #include "types.h"
 
 
-#define NO_CUTSCENE         0
-#define CUTSCENE_INTRO      1
-#define CUTSCENE_SLIDE      2
-#define CUTSCENE_END        3
-#define CUTSCENE_DOOR_OPEN  4
-#define CUTSCENE_TOWERCLIMB 5
+#define NO_CUTSCENE            0
+#define CUTSCENE_INTRO         1
+#define CUTSCENE_SLIDE         2
+#define CUTSCENE_END           3
+#define CUTSCENE_DOOR_OPEN     4
+#define CUTSCENE_TOWERCLIMB    5
+#define CUTSCENE_FORCE_YAW     6
+#define CUTSCENE_INTRO_TEMPLE  7
 
 s32 is_anim_at_end(struct MarioState *m);
 s32 is_anim_past_end(struct MarioState *m);

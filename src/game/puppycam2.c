@@ -20,6 +20,7 @@
 #include "behavior_data.h"
 #include "save_file.h"
 #include "mario.h"
+#include "puppyframes.h"
 
 #define OFFSET 30.0f
 #define STEPS 1
@@ -40,6 +41,7 @@ u8 gPCOptionScroll = 0;
 u16 gPuppyVolumeCount = 0;
 struct MemoryPool *gPuppyMemoryPool;
 s32 gPuppyError = 0;
+s16 gPrevPuppyTargetYaw = 0;
 s16 gPrevPuppyZoomDist = 0;
 s16 sZoomPitchTargets[3] = {14300, 12650, 11010};
 s8 sLWasHeld = FALSE;
@@ -149,8 +151,9 @@ void puppycam_boot(void)
     gPuppyMemoryPool = mem_pool_init(MAX_PUPPYCAM_VOLUMES * sizeof(struct sPuppyVolume), MEMORY_POOL_LEFT);
     gPuppyVolumeCount = 0;
     gPuppyCam.enabled = 1;
+    puppycam_default_config();
 
-    puppycam_get_save();
+    // puppycam_get_save();
 }
 
 #if defined(VERSION_EU)
@@ -249,17 +252,17 @@ void puppycam_display_options()
     u16 minvar;
     f32 newcam_sinpos;
 
-    puppycam_display_box(47,83,281,84,0x0,0x0,0x0, 0xFF);
-    puppycam_display_box(47,218,281,219,0x0,0x0,0x0, 0xFF);
-    puppycam_display_box(47,83,48,219,0x0,0x0,0x0, 0xFF);
-    puppycam_display_box(280,83,281,219,0x0,0x0,0x0, 0xFF);
-    puppycam_display_box(271,83,272,219,0x0,0x0,0x0, 0xFF);
+    // puppycam_display_box(47,83,281,84,0x0,0x0,0x0, 0xFF);
+    // puppycam_display_box(47,218,281,219,0x0,0x0,0x0, 0xFF);
+    // puppycam_display_box(47,83,48,219,0x0,0x0,0x0, 0xFF);
+    // puppycam_display_box(280,83,281,219,0x0,0x0,0x0, 0xFF);
+    // puppycam_display_box(271,83,272,219,0x0,0x0,0x0, 0xFF);
 
-    puppycam_display_box(48,84,272,218,0x0,0x0,0x0, 0x50);
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    print_hud_lut_string(HUD_LUT_GLOBAL, 64, 40, (*gPCToggleStringsPtr)[2]);
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
+    puppycam_display_box(48, 84, 272, 218, 0x21, 0x21, 0x21, 0x80);
+    // gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
+    // gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+    // print_hud_lut_string(HUD_LUT_GLOBAL, 64, 40, (*gPCToggleStringsPtr)[2]);
+    // gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 
     if (gPCOptionCap>4)
     {
@@ -317,7 +320,7 @@ void puppycam_check_pause_buttons()
 {
     if (gPlayer1Controller->buttonPressed & R_TRIG)
     {
-        play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
+        // play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
         if (gPCOptionOpen == 0)
         {
             gPCOptionOpen = 1;
@@ -329,7 +332,7 @@ void puppycam_check_pause_buttons()
         else
         {
             gPCOptionOpen = 0;
-            puppycam_set_save();
+            // puppycam_set_save();
         }
     }
 
@@ -345,7 +348,7 @@ void puppycam_check_pause_buttons()
                     case 0: gPCOptionIndex++; gPCOptionTimer += 10; break;
                     default: gPCOptionTimer += 5; break;
                 }
-                play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
+                // play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
                 if (gPlayer1Controller->rawStickY >= 60 || gPlayer1Controller->buttonDown & U_JPAD)
                 {
                     gPCOptionSelected--;
@@ -372,7 +375,7 @@ void puppycam_check_pause_buttons()
                     case 0: gPCOptionIndex++; gPCOptionTimer += 10; break;
                     default: gPCOptionTimer += 5; break;
                 }
-                play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
+                // play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
                 if (gPlayer1Controller->rawStickX >= 60 || gPlayer1Controller->buttonDown & R_JPAD)
                     puppycam_change_setting(1);
                 else
@@ -1067,12 +1070,13 @@ static void puppycam_projection(void)
 {
     Vec3s targetPos, targetPos2, targetPos3;
     u8 panD = (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_PANSHIFT)/8192;
+    u32 isSwimming = gMarioState->action & ACT_FLAG_SWIMMING;
 
     if (
         gPuppyCam.options.turnAggression > 0 &&
         gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_TURN_HELPER &&
         !(gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_8DIR) &&
-        gMarioState->vel[1] == 0.0f &&
+        (gMarioState->vel[1] == 0.0f || (isSwimming && ABS(gMarioState->vel[1]) < 5.0f)) &&
         !(gMarioState->action & ACT_FLAG_BUTT_OR_STOMACH_SLIDE) &&
         !(gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_INPUT_4DIR)
     )
@@ -1151,11 +1155,11 @@ static void puppycam_projection(void)
             gPuppyCam.lastTargetFloorHeight = gPuppyCam.targetObj->oPosY;
             if (gCurCutscene != CUTSCENE_TOWERCLIMB) {
                 gPuppyCam.swimPitch = approach_f32_asymptotic(gPuppyCam.swimPitch,gMarioState->faceAngle[0]/10,0.05f);
-                gPuppyCam.yawTarget  = gMarioState->faceAngle[1] + 0x8000 - approach_s32(
-                    (s16)(gMarioState->faceAngle[1]+0x8000 - gPuppyCam.yawTarget),
-                    0,
-                    1000 * (gMarioState->forwardVel / 32), 1000 * (gMarioState->forwardVel / 32)
-                );
+                // gPuppyCam.yawTarget  = gMarioState->faceAngle[1] + 0x8000 - approach_s32(
+                //     (s16)(gMarioState->faceAngle[1]+0x8000 - gPuppyCam.yawTarget),
+                //     0,
+                //     1000 * (gMarioState->forwardVel / 32), 1000 * (gMarioState->forwardVel / 32)
+                // );
             }
         }
     }
@@ -1298,7 +1302,49 @@ void towerclimb_cutscene(void) {
             0.1f
         );
     }
+}
 
+#define TEMPLE_X_START_OFFSET 2500.0f
+#define TEMPLE_Y_START_OFFSET 1000.0f
+
+enum TEMPLE_INTRO_ACTS {
+    WALKING_DOWN_HALLWAY = 256,
+    WALKING_OUT_OF_HALLWAY = 361,
+    DOOR_SLAM_SHOT_START = 487,
+    DOOR_SLAM_FROM_HALLWAY = 524,
+    DOOR_SHUT_REVERSE_SHOT = 487,
+    TEMPLE_INTRO_FINAL_FRAME = 639
+};
+
+#define TEMPLE_INTRO_LENGTH 640.0f
+
+void temple_intro_cutscene(void) {
+    Vec3f pos;
+    Vec3f focus;
+    if (gCurCutsceneTimer == 0) {
+        enable_time_stop_including_mario();
+    } else if (gCurCutsceneTimer > TEMPLE_INTRO_LENGTH) {
+        set_current_cutscene(NO_CUTSCENE);
+        disable_time_stop_including_mario();
+        return;
+    }
+
+    vec3s_copy(gPuppyCam.pos, temple_intro[gCurCutsceneTimer][0]);
+    vec3s_copy(gPuppyCam.focus, temple_intro[gCurCutsceneTimer][1]);
+    // gPuppyCam.pos[0] = get_relative_position_between_ranges(
+    //     gCurCutsceneTimer,
+    //     0.0f,
+    //     TEMPLE_INTRO_LENGTH,
+    //     gMarioState->pos[0] + TEMPLE_X_START_OFFSET - 500.0f,
+    //     gMarioState->pos[0] - 500.0f
+    // );
+    // gPuppyCam.focus[0] = get_relative_position_between_ranges(
+    //     gCurCutsceneTimer,
+    //     0.0f,
+    //     TEMPLE_INTRO_LENGTH,
+    //     gMarioState->pos[0] + TEMPLE_X_START_OFFSET,
+    //     gMarioState->pos[0]
+    // );
 }
 
 void puppycam_handle_cutscene(void) {
@@ -1311,6 +1357,9 @@ void puppycam_handle_cutscene(void) {
             break;
         case CUTSCENE_TOWERCLIMB:
             towerclimb_cutscene();
+            break;
+        case CUTSCENE_INTRO_TEMPLE:
+            temple_intro_cutscene();
             break;
     }
 } 

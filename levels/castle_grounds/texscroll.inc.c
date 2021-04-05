@@ -1,9 +1,3 @@
-void scroll_sts_mat_castle_grounds_dl_trippy_warp_brick_layer1() {
-	Gfx *mat = segmented_to_virtual(mat_castle_grounds_dl_trippy_warp_brick_layer1);
-	shift_s(mat, 14, PACK_TILESIZE(0, 1));
-	shift_t_down(mat, 14, PACK_TILESIZE(0, 1));
-};
-
 void scroll_castle_grounds_dl_awaters_mesh_layer_5_vtx_0() {
 	int i = 0;
 	int count = 15;
@@ -28,9 +22,9 @@ void scroll_castle_grounds_dl_awaters_mesh_layer_5_vtx_0() {
 
 void scroll_sts_mat_castle_grounds_dl_water_layer5() {
 	Gfx *mat = segmented_to_virtual(mat_castle_grounds_dl_water_layer5);
-	shift_s_down(mat, 14, PACK_TILESIZE(0, 1));
-	shift_s(mat, 22, PACK_TILESIZE(0, 1));
-	shift_t(mat, 22, PACK_TILESIZE(0, 1));
+	shift_s_down(mat, 13, PACK_TILESIZE(0, 1));
+	shift_s(mat, 21, PACK_TILESIZE(0, 1));
+	shift_t(mat, 21, PACK_TILESIZE(0, 1));
 };
 
 void scroll_castle_grounds_dl_awaters_001_mesh_layer_5_vtx_0() {
@@ -77,7 +71,7 @@ void scroll_castle_grounds_dl_awaters_002_mesh_layer_5_vtx_0() {
 	currentY += deltaY;
 }
 
-void scroll_castle_grounds_dl_awaters_003_mesh_layer_5_vtx_0() {
+void scroll_castle_grounds_dl_awaters_004_mesh_layer_5_vtx_0() {
 	int i = 0;
 	int count = 4;
 	int width = 64 * 0x20;
@@ -85,7 +79,7 @@ void scroll_castle_grounds_dl_awaters_003_mesh_layer_5_vtx_0() {
 
 	static int currentY = 0;
 	int deltaY;
-	Vtx *vertices = segmented_to_virtual(castle_grounds_dl_awaters_003_mesh_layer_5_vtx_0);
+	Vtx *vertices = segmented_to_virtual(castle_grounds_dl_awaters_004_mesh_layer_5_vtx_0);
 
 	deltaY = (int)(-0.15000000596046448 * 0x20) % height;
 
@@ -99,7 +93,13 @@ void scroll_castle_grounds_dl_awaters_003_mesh_layer_5_vtx_0() {
 	currentY += deltaY;
 }
 
-void scroll_castle_grounds_dl_awaters_004_mesh_layer_5_vtx_0() {
+void scroll_sts_mat_castle_grounds_dl_trippy_warp_brick_layer1() {
+	Gfx *mat = segmented_to_virtual(mat_castle_grounds_dl_trippy_warp_brick_layer1);
+	shift_s(mat, 14, PACK_TILESIZE(0, 1));
+	shift_t_down(mat, 14, PACK_TILESIZE(0, 1));
+};
+
+void scroll_castle_grounds_dl_awaters_003_mesh_layer_5_vtx_0() {
 	int i = 0;
 	int count = 4;
 	int width = 64 * 0x20;
@@ -107,7 +107,7 @@ void scroll_castle_grounds_dl_awaters_004_mesh_layer_5_vtx_0() {
 
 	static int currentY = 0;
 	int deltaY;
-	Vtx *vertices = segmented_to_virtual(castle_grounds_dl_awaters_004_mesh_layer_5_vtx_0);
+	Vtx *vertices = segmented_to_virtual(castle_grounds_dl_awaters_003_mesh_layer_5_vtx_0);
 
 	deltaY = (int)(-0.15000000596046448 * 0x20) % height;
 
@@ -189,7 +189,7 @@ void scroll_castle_grounds_dl_awaters_006_mesh_layer_5_vtx_0() {
 
 void scroll_castle_grounds_dl_aBlob_mesh_layer_5_vtx_0() {
 	int i = 0;
-	int count = 100;
+	int count = 138;
 	int width = 64 * 0x20;
 	int height = 64 * 0x20;
 
@@ -254,13 +254,13 @@ void scroll_castle_grounds_dl_apurpwaters_001_mesh_layer_5_vtx_0() {
 }
 
 void scroll_castle_grounds() {
-	scroll_sts_mat_castle_grounds_dl_trippy_warp_brick_layer1();
 	scroll_sts_mat_castle_grounds_dl_water_layer5();
+	scroll_sts_mat_castle_grounds_dl_trippy_warp_brick_layer1();
 	scroll_castle_grounds_dl_awaters_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_awaters_001_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_awaters_002_mesh_layer_5_vtx_0();
-	scroll_castle_grounds_dl_awaters_003_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_awaters_004_mesh_layer_5_vtx_0();
+	scroll_castle_grounds_dl_awaters_003_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_afakewater_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_aBlob_001_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_awaters_006_mesh_layer_5_vtx_0();

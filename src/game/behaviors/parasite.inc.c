@@ -14,10 +14,22 @@ void bhv_parasite_grabbed(void) {
         cur_obj_change_action(0);
         o->oOpacity = 255;
         cur_obj_unhide();
+        o->header.gfx.scale[0] = 1.0f;
+        o->header.gfx.scale[1] = 1.0f;
+        o->header.gfx.scale[2] = 1.0f;
+        o->oPosX = o->oHomeX;
+        o->oPosY = o->oHomeY;
+        o->oPosZ = o->oHomeZ;
     } else if (gParasitesGrabbed[parasiteGroup] == gParasitesGoals[parasiteGroup]) {
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     } else if (o->oOpacity != 0) {
-        o->oOpacity -= 15;
+        o->oOpacity = MAX(0, o->oOpacity - 10);
+        o->header.gfx.scale[0] += 0.08f;
+        o->header.gfx.scale[1] += 0.08f;
+        o->header.gfx.scale[2] += 0.08f;
+        o->oPosX = approach_f32_asymptotic(o->header.gfx.pos[0], gMarioState->pos[0], 0.3f);
+        o->oPosY = approach_f32_asymptotic(o->header.gfx.pos[1], gMarioState->pos[1], 0.3f);
+        o->oPosZ = approach_f32_asymptotic(o->header.gfx.pos[2], gMarioState->pos[2], 0.3f);
     }
 
     if (o->oOpacity <= 0) {

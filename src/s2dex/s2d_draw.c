@@ -3,6 +3,7 @@
 #include "mtx.h"
 
 int myScale = 1;
+f32 gS2DScale = 1.0f;
 int myDegrees = 0;
 uObjMtx final_mtx, rot_mtx;
 int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 0;
@@ -70,7 +71,7 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
     // init
     Mat4 tmp, rot, scal, translate;
     guMtxIdentF(tmp);
-    guScaleF(scal, 1.0f, 1.0f, 0);
+    guScaleF(scal, gS2DScale, gS2DScale, 1.0f);
     guRotateF(rot, (f32) myDegrees, 0, 0, 1.0f);
     guTranslateF(translate, x, y, 0);
 

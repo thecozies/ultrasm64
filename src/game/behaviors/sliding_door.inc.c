@@ -28,9 +28,9 @@ void sliding_door_act_1(void) {
     if (o->oTimer == 0) {
         s32 parasiteGroup = (o->oBehParams >> 16) & 0xFF;
         gParasitesGoalsSet[parasiteGroup] = TRUE;
-        // cutscene_object(CUTSCENE_POV_TO_OBJECT_FAST, o);
         gPuppyCam.targetObj2 = o;
         gPrevPuppyZoomDist = gPuppyCam.zoomTarget;
+        gPrevPuppyTargetYaw = gPuppyCam.yawTarget;
         gPuppyCam.zoomTarget = o->oDistanceToMario + 1000;
         enable_time_stop_including_mario();
         set_current_cutscene(CUTSCENE_DOOR_OPEN);
@@ -55,9 +55,7 @@ void sliding_door_act_1(void) {
     {
         o->oPosY += (direction * SLIDING_DOOR_VELY_1);
         spawn_mist_particles_variable(0, 0, 45.0f);
-        // gPuppyCam.targetObj = o;
-        // gPuppyCam.targetObj2 = NULL;
-        // play jolt sound
+        // play sound for door getting loose
     }
 
     if (ABS(o->oHomeY - o->oPosY) >= SLIDING_DOOR_GOAL_HEIGHT)
@@ -66,11 +64,14 @@ void sliding_door_act_1(void) {
     }
     else if (ABS(o->oHomeY - o->oPosY) >= SLIDING_DOOR_CUTSCENE_END_HEIGHT)
     {
-        gPuppyCam.targetObj2 = NULL;
-        gObjCutsceneDone = TRUE;
-        gPuppyCam.zoomTarget = gPrevPuppyZoomDist;
-        disable_time_stop_including_mario();
-        set_current_cutscene(NO_CUTSCENE);
+        if (gPuppyCam.targetObj2 != NULL) {
+            gPuppyCam.targetObj2 = NULL;
+            gObjCutsceneDone = TRUE;
+            gPuppyCam.zoomTarget = gPrevPuppyZoomDist;
+            gPuppyCam.yawTarget = gPrevPuppyTargetYaw;
+            disable_time_stop_including_mario();
+            set_current_cutscene(NO_CUTSCENE);
+        }
     }
 }
 
@@ -99,8 +100,10 @@ void bhv_sliding_door_loop(void) {
 
 void bhv_sliding_door_init(void) {
     s32 parasiteGroup = (o->oBehParams >> 16) & 0xFF;
+    s32 cutsceneIndex = (o->oBehParams >> 24) & 0xFF;
 
     if (
+        !cutsceneIndex &&
         gParasitesGoalsSet[parasiteGroup] &&
         gParasitesGrabbed[parasiteGroup] > 0 &&
         gParasitesGoals[parasiteGroup] == gParasitesGrabbed[parasiteGroup]
@@ -110,4 +113,8 @@ void bhv_sliding_door_init(void) {
         o->oAction = 3;
     }
     o->oTimer = 0;
+    if (cutsceneIndex) {
+        o->oPosY += SLIDING_DOOR_GOAL_HEIGHT;
+        o->oAction = 3;
+    }
 }

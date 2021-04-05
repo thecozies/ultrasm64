@@ -15,6 +15,7 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 	int orig_x = x;
 	int orig_y = y;
 	int line = 0;
+	int dummyAlpha = 0;
 
 	if (*p == '\0') return;
 
@@ -38,7 +39,7 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 		switch (current_char) {
 			case CH_SCALE:
 				CH_SKIP(p);
-				myScale = s2d_atoi(p, &p);
+				gS2DScale = (f32) s2d_atoi(p, &p);
 				break;
 			case CH_ROT:
 				CH_SKIP(p);
@@ -74,7 +75,7 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 				s2d_blue = s2d_atoi(p, &p);
 				CH_SKIP(p);	CH_SKIP(p);
 				
-				s2d_alpha = s2d_atoi(p, &p);
+				dummyAlpha = s2d_atoi(p, &p);
 				break;
 			case CH_DROPSHADOW:
 				drop_shadow ^= 1;
@@ -92,14 +93,14 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 					case ALIGN_RIGHT:
 						x = orig_x - s2d_width(str, line, len);
 				}
-				y += TEX_HEIGHT / TEX_RES;
+				y += (int) (TEX_HEIGHT * gS2DScale);
 				break;
 			case '\t':
 				x += TAB_WIDTH_H / TEX_RES;
 				break;
 			case '\v':
 				x += TAB_WIDTH_V / TEX_RES;
-				y += TEX_HEIGHT / TEX_RES;
+				y += (int) (TEX_HEIGHT * gS2DScale);
 				break;
 			// case CH_SEPARATOR:
 			// 	CH_SKIP(p);
@@ -107,20 +108,21 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 			case CH_RESET:
 				s2d_red = s2d_green = s2d_blue = 255;
 				drop_shadow = FALSE;
-				myScale = 1;
+				gS2DScale = 1.0f;
 				myDegrees = 0;
 				break;
 			default:
 				if (current_char != '\0' && current_char != CH_SEPARATOR) {
 					draw_s2d_glyph(current_char, x, y, (buf++));
-					(x += (s2d_kerning_table[current_char] * myScale));
+					// (x += (int) (((f32) s2d_kerning_table[current_char]) * gS2DScale));
+					x += s2d_kerning_table[current_char] * (gS2DScale * 1.2f);
 				}
 		}
 		if (*p == '\0') break;
 		p++;
 		tmp_len++;
 	} while (tmp_len < len);
-	myScale = 1;
+	gS2DScale = 1.0f;
 	myDegrees = 0;
 }
 
@@ -158,7 +160,7 @@ int s2d_width(const char *str, int line, int len) {
 		switch (current_char) {
 			case CH_SCALE:
 				CH_SKIP(p);
-				scale = s2d_atoi(p, &p);
+				gS2DScale = (f32) s2d_atoi(p, &p);
 				break;
 			case CH_ROT:
 				CH_SKIP(p);
@@ -198,7 +200,8 @@ int s2d_width(const char *str, int line, int len) {
 				break;
 			default:
 				if (current_char != '\0' && curLine == line)
-					width += s2d_kerning_table[current_char] * scale;
+					// width += (int) (((f32) s2d_kerning_table[current_char]) * gS2DScale);
+					width += s2d_kerning_table[current_char] * (gS2DScale * 1.2f);
 		}
 		if (*p == '\0') break;
 		p++;

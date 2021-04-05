@@ -5,6 +5,7 @@ const GeoLayout castle_grounds_area_4_geo[] = {
 	GEO_OPEN_NODE(),
 		GEO_ASM(0, geo_update_fog),
 		GEO_DISPLAY_LIST(1, castle_grounds_dl_a_ROOM3_mesh_layer_1),
+		GEO_DISPLAY_LIST(4, castle_grounds_dl_a_ROOM3_mesh_layer_4),
 		GEO_DISPLAY_LIST(5, castle_grounds_dl_aBlob_mesh_layer_5),
 		GEO_DISPLAY_LIST(5, castle_grounds_dl_apurpwaters_007_mesh_layer_5),
 		GEO_DISPLAY_LIST(1, castle_grounds_dl_bigolBlocks_mesh_layer_1),
@@ -39,8 +40,9 @@ const GeoLayout castle_grounds_area_4[] = {
 				GEO_CLOSE_NODE(),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
-		GEO_DISPLAY_LIST(5, castle_grounds_dl_material_revert_render_settings),
 		GEO_DISPLAY_LIST(1, castle_grounds_dl_material_revert_render_settings),
+		GEO_DISPLAY_LIST(4, castle_grounds_dl_material_revert_render_settings),
+		GEO_DISPLAY_LIST(5, castle_grounds_dl_material_revert_render_settings),
 	GEO_CLOSE_NODE(),
 	GEO_END(),
 };
