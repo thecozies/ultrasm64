@@ -28,6 +28,7 @@
 #include "s2dex/init.h"
 #include "s2dex/s2d_draw.h"
 #include "s2dex/s2d_print.h"
+// #include "s2dex/s2d_buffer.h"
 #include "tutorial.h"
 
 
@@ -67,14 +68,21 @@ struct GlobalFog sTemple1Room4Fog = { 73, 63, 52, 0xFF, 812, 1100 };
 struct GlobalFog sTrippyFog = { 73, 63, 52, 0xFF, 750, 1100 };
 struct GlobalFog sTemple2Fog = { 94, 88, 105, 0xDF, 830, 1100 };
 struct GlobalFog sTutorialFog = { 22, 22, 22, 0xFF, 350, 1000 };
+struct GlobalFog sEndFog = { 74, 68, 85, 0xDF, 830, 1100 };
+struct GlobalFog sEndTunnelFog = { 24, 20, 28, 0xFF, 750, 1000 };
+struct GlobalFog sEndFinalFog = { 114, 108, 125, 0xDF, 900, 1100 };
 
 s16 gGoalFadeState = 0;
 s32 sGoalFadeTimer = 0;
 s8 gIntroTextShowing = FALSE;
 s32 gIntroTextTimer = 0;
-s32 gIntroTextPos = 0;
+// s32 gIntroTextPos = 0;
 s32 gCameraWaterLevel = FLOOR_LOWER_LIMIT;
 u8 sFadeAlpha = 0;
+
+char sGameTitle[18] = "Lucy's\nLevitation";
+s32 sTimesRenderedText = 0;
+
 
 enum FOG_OPTIONS {
     DEFAULT_FOG,
@@ -83,6 +91,9 @@ enum FOG_OPTIONS {
     TRIPPY_FOG,
     TEMPLE2_FOG,
     TUTORIAL_FOG,
+    END_FOG,
+    END_TUNNEL_FOG,
+    END_FINAL_FOG,
 };
 
 s8 sCurFog = DEFAULT_FOG;
@@ -127,8 +138,8 @@ Vp D_8032CF00 = { {
 } };
 
 
-char myString[] = "Where am I\n"
-                "                    ";
+// char myString[] = "Where am I\n"
+//                 "                    ";
 // char myString[] = "This is a " SCALE "2" "test string!\n"
 //                 "\tThis is " COLOR "255 0 0 0" "Colorful text!";
 
@@ -476,16 +487,33 @@ void render_goals(void) {
 }
 
 void render_intro_text(void) {
-    if (gIntroTextShowing && !gGameStarted && update_text_fade(GOAL_FADE_IN_LEN + 15, GOAL_SHOW_LEN, GOAL_FADE_OUT_LEN + 30)) {
+    if (
+        gIntroTextShowing &&
+        !gGameStarted &&
+        update_text_fade(GOAL_FADE_IN_LEN + 15, GOAL_SHOW_LEN, GOAL_FADE_OUT_LEN + 30)
+    ) {
+        // char s1[] = "Lucy's\nLevitation";
         s2d_init();
-        char s1[] = "Lucy's\nLevitation";
         s2d_alpha = sFadeAlpha;
 
-        s2d_print_alloc(40, (int) (SCREEN_HEIGHT - 80), ALIGN_LEFT, s1);
-        gIntroTextPos++;
+        s2d_print_alloc(40, (int) (SCREEN_HEIGHT - 80), ALIGN_LEFT, sGameTitle);
+        // gIntroTextPos++;
         s2d_stop();
+        sTimesRenderedText++;
     }
 }
+
+// deferred
+// void render_intro_text(void) {
+//     if (
+//         gIntroTextShowing &&
+//         !gGameStarted &&
+//         update_text_fade(GOAL_FADE_IN_LEN + 15, GOAL_SHOW_LEN, GOAL_FADE_OUT_LEN + 30)
+//     ) {
+//         s2d_print_deferred(40, (int) (SCREEN_HEIGHT - 80), ALIGN_LEFT, sFadeAlpha, sGameTitle);
+//         sTimesRenderedText++;
+//     }
+// }
 
 void set_current_fog_state(s32 fogState) {
     sCurFog = fogState;
@@ -516,6 +544,15 @@ void update_fog(void) {
             case TUTORIAL_FOG:
                 targetFog = &sTutorialFog;
                 break;
+            case END_FOG:
+                targetFog = &sEndFog;
+                break;
+            case END_TUNNEL_FOG:
+                targetFog = &sEndTunnelFog;
+                break;
+            case END_FINAL_FOG:
+                targetFog = &sEndFinalFog;
+                break;
             default:
                 targetFog = &sDefaultFog;
         }
@@ -530,26 +567,17 @@ void update_fog(void) {
 }
 
 void render_s2dex(void) {
-    // return;
-    // initialized S2DEX; only needed once before all prints
-    s2d_init();
-    // uObjMtx *buffer;
-    char s1[30];
-
-    // substitute with a different alloc function as neccesary
-    // buffer = alloc_display_list(0x200 * sizeof(uObjMtx));
-    sprintf(s1, "goals: %d\ngrabbed: %d", gParasitesGoals[0], gParasitesGrabbed[0]);
-    s2d_print_alloc(40, 20, ALIGN_LEFT, s1);
-    // s2d_print(20, 20, ALIGN_LEFT, s1, buffer);
-
-    // reloads the original microcode; only needed once after all prints
-    s2d_stop();
+    if (gIntroTextShowing || gGameStarted) {
+        s2d_init();
+        s2d_handle_deferred();
+        s2d_stop();
+    }
 }
 
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
         gCurCutsceneTimer++;
-        update_fog();
+        if (gGameStarted) update_fog();
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
 
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));
@@ -559,6 +587,7 @@ void render_game(void) {
         render_hud();
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        // print_text_fmt_int(10, 10, "%d", sTimesRenderedText);
         render_text_labels();
         do_cutscene_handler();
         print_displaying_credits_entry();
@@ -598,11 +627,12 @@ void render_game(void) {
         // }
         render_goals();
         render_intro_text();
+        // render_s2dex();
     } else {
         render_text_labels();
         if (D_8032CE78 != NULL) {
             clear_viewport(D_8032CE78, gWarpTransFBSetColor);
-            render_intro_text();
+            // render_intro_text();
         } else {
             clear_frame_buffer(gWarpTransFBSetColor);
         }

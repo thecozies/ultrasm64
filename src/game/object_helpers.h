@@ -168,6 +168,7 @@ void cur_obj_disable(void);
 void cur_obj_become_intangible(void);
 void cur_obj_become_tangible(void);
 void obj_become_tangible(struct Object *obj);
+void cur_obj_update_floor(void);
 void cur_obj_update_floor_height(void);
 struct Surface *cur_obj_update_floor_height_and_get_floor(void);
 void cur_obj_apply_drag_xz(f32 dragStrength);

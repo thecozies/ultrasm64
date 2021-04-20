@@ -12,14 +12,34 @@ s32 is_sliding_door_face_up(void) {
     return o->oFaceAnglePitch == 0 && o->oFaceAngleRoll == 0;
 }
 
+void sliding_door_act_4(void) {
+    if (o->oFloorRoom != gMarioCurrentRoom) {
+        o->oPosY = approach_f32_asymptotic(o->oPosY, o->oHomeY, 0.1f);
+    } else if (o->oPosY != o->oHomeY + SLIDING_DOOR_GOAL_HEIGHT) {
+        o->oPosY = approach_f32_asymptotic(
+            o->oPosY,
+            o->oHomeY + SLIDING_DOOR_GOAL_HEIGHT,
+            0.05f
+        );
+    }
+    return;
+}
+
 void sliding_door_act_3(void) {
+    if ((o->oBehParams >> 24) & 0xFF && gCurCutscene == 7) {
+        if (gCurCutsceneTimer >= 550) {
+            o->oVelY = MAX(o->oVelY - 0.6f, -40.0f);
+            o->oPosY = MAX(o->oPosY + o->oVelY, o->oHomeY);
+        }
+    }
     return;
 }
 
 void sliding_door_act_2(void) {
+    s32 otherRoomClosesDoor = ((o->oBehParams >> 24) & 0xFF == 0xFF);
     o->oForwardVel = 0.0f;
     o->oVelY = 0.0f;
-    o->oAction = 3;
+    o->oAction = (otherRoomClosesDoor) ? 4 : 3;
 }
 
 void sliding_door_act_1(void) {
@@ -91,8 +111,13 @@ void sliding_door_act_0(void) {
     }
 }
 
-void (*sSlidingDoorActions[])(void) = { sliding_door_act_0, sliding_door_act_1,
-                                          sliding_door_act_2, sliding_door_act_3 };
+void (*sSlidingDoorActions[])(void) = {
+    sliding_door_act_0,
+    sliding_door_act_1,
+    sliding_door_act_2,
+    sliding_door_act_3,
+    sliding_door_act_4
+};
 
 void bhv_sliding_door_loop(void) {
     cur_obj_call_action_function(sSlidingDoorActions);
@@ -101,6 +126,13 @@ void bhv_sliding_door_loop(void) {
 void bhv_sliding_door_init(void) {
     s32 parasiteGroup = (o->oBehParams >> 16) & 0xFF;
     s32 cutsceneIndex = (o->oBehParams >> 24) & 0xFF;
+
+    if (cutsceneIndex && cutsceneIndex < 0xFF) {
+        o->oPosY += SLIDING_DOOR_GOAL_HEIGHT;
+        o->oAction = 3;
+        return;
+    }
+    cur_obj_update_floor();
 
     if (
         !cutsceneIndex &&
@@ -113,8 +145,5 @@ void bhv_sliding_door_init(void) {
         o->oAction = 3;
     }
     o->oTimer = 0;
-    if (cutsceneIndex) {
-        o->oPosY += SLIDING_DOOR_GOAL_HEIGHT;
-        o->oAction = 3;
-    }
+    return;
 }

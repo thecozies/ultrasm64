@@ -29,7 +29,7 @@
 
 s8 D_8032F0A0[] = { -8, 8, -4, 4 };
 s16 D_8032F0A4[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
-static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
+static s8 sLevelsWithRooms[] = { LEVEL_CASTLE_GROUNDS, LEVEL_PSS, LEVEL_CASTLE, LEVEL_HMC, -1 };
 
 static s32 clear_move_flag(u32 *, s32);
 
@@ -133,12 +133,14 @@ Gfx *geo_update_fog(s32 callContext, struct GraphNode *node, UNUSED void *contex
     dlStart = NULL;
 
     if (callContext == GEO_CONTEXT_RENDER) {
-        dlStart = alloc_display_list(sizeof(Gfx) * 3);
+        s32 setEnv = gCurrLevelNum == LEVEL_PSS;
+        dlStart = alloc_display_list(sizeof(Gfx) * (setEnv ? 4 : 3));
         
 
         dlHead = dlStart;
         gDPSetFogColor(dlHead++, gGlobalFog.r, gGlobalFog.g, gGlobalFog.b, gGlobalFog.a);
         gSPFogPosition(dlHead++, gGlobalFog.low, gGlobalFog.high);
+        if (setEnv) gDPSetEnvColor(dlHead++, 0, 0, 0, 0);
         gSPEndDisplayList(dlHead);
     }
 
@@ -149,7 +151,7 @@ Gfx *geo_zbuffer_clear(s32 callContext, UNUSED struct GraphNode *node, UNUSED Ma
     Gfx *dl = NULL;
     if (callContext == GEO_CONTEXT_RENDER) {
         Gfx *dlHead = NULL;
-        dl = alloc_display_list(13 * sizeof(*dl));
+        dl = alloc_display_list(12 * sizeof(*dl));
         dlHead = dl;
         gDPPipeSync(dlHead++);
         gDPSetRenderMode(dlHead++, G_RM_NOOP, G_RM_NOOP2);
@@ -165,8 +167,8 @@ Gfx *geo_zbuffer_clear(s32 callContext, UNUSED struct GraphNode *node, UNUSED Ma
         gDPSetCycleType(dlHead++, G_CYC_1CYCLE);
         gDPSetColorImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH,
                         gPhysicalFrameBuffers[frameBufferIndex]);
-        gDPSetScissor(dlHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
-                  SCREEN_HEIGHT - BORDER_HEIGHT);
+        // gDPSetScissor(dlHead++, G_SC_NON_INTERLACE, 0, BORDER_HEIGHT, SCREEN_WIDTH,
+        //           SCREEN_HEIGHT - BORDER_HEIGHT);
         gSPEndDisplayList(dlHead++);
     }
     return dl;
@@ -1782,7 +1784,7 @@ s32 cur_obj_resolve_wall_collisions(void) {
     return FALSE;
 }
 
-static void cur_obj_update_floor(void) {
+void cur_obj_update_floor(void) {
     struct Surface *floor = cur_obj_update_floor_height_and_get_floor();
     o->oFloor = floor;
 

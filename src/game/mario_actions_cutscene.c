@@ -27,6 +27,7 @@
 #include "seq_ids.h"
 #include "sound_init.h"
 #include "rumble_init.h"
+#include "mario_actions_moving.h"
 
 // TODO: put this elsewhere
 enum SaveOption { SAVE_OPT_SAVE_AND_CONTINUE = 1, SAVE_OPT_SAVE_AND_QUIT, SAVE_OPT_CONTINUE_DONT_SAVE };
@@ -2170,6 +2171,50 @@ static void end_peach_cutscene_run_to_peach(struct MarioState *m) {
     m->particleFlags |= PARTICLE_DUST;
 }
 
+// lucy walks in to the temple
+s32 act_temple_1_intro(struct MarioState *m) {
+    struct Surface *surf;
+    m->actionTimer++;
+
+    if (gCurCutsceneTimer == 584) m->actionState = 3;
+
+    if (m->actionState == 0) {
+        if ((m->pos[0] += 8.1f) >= -1438.0f) {
+            m->pos[0] = -1438.0f;
+            m->actionState = 1;
+        }
+
+        m->pos[1] = find_floor(m->pos[0], m->pos[1], m->pos[2], &surf);
+        m->intendedMag = 8.1f;
+
+        anim_and_audio_for_walk(m);
+
+        vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
+        return FALSE;
+    } else {
+        switch (m->actionState) {
+            case 1:
+                set_custom_mario_animation(m, LUCY_TO_IDLE_ANIM);
+                m->marioObj->header.gfx.angle[1] = m->faceAngle[1];
+                if (is_anim_at_end(m)) m->actionState = 2;
+                break;
+
+            case 2:
+                set_custom_mario_animation(m, LUCY_IDLE_ANIM);
+                break;
+            case 3:
+                set_mario_animation(m, MARIO_ANIM_TURNING_PART2);
+                if (is_anim_at_end(m)) {
+                    m->actionState = 1;
+                    m->faceAngle[1] += 0x8000;
+                }
+                break;
+        }
+        return FALSE;
+    }
+
+}
+
 // dialog 1
 // "Mario!"
 // "The power of the Stars is restored to the castle..."
@@ -2789,6 +2834,7 @@ s32 mario_execute_cutscene_action(struct MarioState *m) {
         case ACT_FEET_STUCK_IN_GROUND:       cancel = act_feet_stuck_in_ground(m);       break;
         case ACT_PUTTING_ON_CAP:             cancel = act_putting_on_cap(m);             break;
         case ACT_SLOW_WARP:                  cancel = act_slow_warp(m);                  break;
+        case ACT_TEMPLE_1_INTRO:             cancel = act_temple_1_intro(m);             break;
     }
     /* clang-format on */
 

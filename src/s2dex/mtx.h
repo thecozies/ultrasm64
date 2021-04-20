@@ -23,3 +23,5 @@ extern void mat2_translate(uObjMtx *m, int x, int y);
 extern void mat2_rotate(uObjMtx *dst, f32 degrees);
 
 extern void mat2_translate_vec(uObjMtx *m, f32 degrees, f32 mag);
+
+extern void gu_to_gs2dex(uObjMtx *m1, Mat4 m2);

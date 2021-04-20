@@ -9,7 +9,71 @@
 #include "s2d_print.h"
 #include "s2d_ustdlib.h"
 
-void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len) {
+static int s2d_width(const char *str, int line, int len) {
+	char *p = str;
+	int tmp_len = 0;
+	int curLine = 0;
+	int width = 0;
+	int scale = 1;
+
+	if (*p == '\0') return width;
+
+	do {
+		char current_char = *p;
+		switch (current_char) {
+			case CH_SCALE:
+				CH_SKIP(p);
+				gS2DScale = (f32) s2d_atoi(p, &p);
+				break;
+			case CH_ROT:
+				CH_SKIP(p);
+				s2d_atoi(p, &p);
+				break;
+			case CH_TRANSLATE:
+				CH_SKIP(p);
+				s2d_atoi(p, &p);
+				curLine++;
+				CH_SKIP(p);
+				CH_SKIP(p);
+				s2d_atoi(p, &p);
+				break;
+			case CH_COLOR:
+				CH_SKIP(p);
+				s2d_atoi(p, &p);
+				CH_SKIP(p); CH_SKIP(p);
+				s2d_atoi(p, &p);
+				CH_SKIP(p); CH_SKIP(p);
+				s2d_atoi(p, &p);
+				CH_SKIP(p); CH_SKIP(p);
+				s2d_atoi(p, &p);
+				break;
+			case CH_DROPSHADOW:
+			case CH_RESET:
+				break;
+			case '\n':
+				curLine++;
+				break;
+			case '\t':
+				if (curLine == line)
+					width += TAB_WIDTH_H / TEX_RES;
+				break;
+			case '\v':
+				if (curLine == line)
+					width += TAB_WIDTH_V / TEX_RES;
+				break;
+			default:
+				if (current_char != '\0' && curLine == line)
+					// width += (int) (((f32) s2d_kerning_table[current_char]) * gS2DScale);
+					width += s2d_kerning_table[(int) current_char] * (gS2DScale * 1.2f);
+		}
+		if (*p == '\0') break;
+		p++;
+		tmp_len++;
+	} while (tmp_len < len && curLine <= line);
+	return width;
+}
+
+static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len) {
 	char *p = str;
 	int tmp_len = 0;
 	int orig_x = x;
@@ -115,7 +179,7 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 				if (current_char != '\0' && current_char != CH_SEPARATOR) {
 					draw_s2d_glyph(current_char, x, y, (buf++));
 					// (x += (int) (((f32) s2d_kerning_table[current_char]) * gS2DScale));
-					x += s2d_kerning_table[current_char] * (gS2DScale * 1.2f);
+					(x += s2d_kerning_table[(int) current_char] * (gS2DScale * 1.2f));
 				}
 		}
 		if (*p == '\0') break;
@@ -127,16 +191,31 @@ void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len
 }
 
 void s2d_print(int x, int y, int align, const char *str, uObjMtx *buf) {
+	if (s2d_check_align(align) != 0) return;
+	if (s2d_check_str(str)     != 0) return;
+
 	s2d_snprint(x, y, align, str, buf, s2d_strlen(str));
 }
 
 void s2d_print_alloc(int x, int y, int align, const char *str) {
-	uObjMtx *b = alloc(sizeof(uObjMtx) * s2d_strlen(str));
-	s2d_snprint(x, y, align, str, b, s2d_strlen(str));
+	int len;
+
+	if (s2d_check_align(align) != 0) return;
+	if (s2d_check_str(str)     != 0) return;
+
+	len = s2d_strlen(str);
+
+	uObjMtx *b = alloc(sizeof(uObjMtx) * len);
+	s2d_snprint(x, y, align, str, b, len);
 }
 
 void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int *pos) {
-	int len = s2d_strlen(str);
+	int len;
+
+	if (s2d_check_align(align) != 0) return;
+	if (s2d_check_str(str)     != 0) return;
+
+	len = s2d_strlen(str);
 
 	s2d_snprint(x, y, align, str, buf, *pos);
 	if (s2d_timer % 2 == 0) {
@@ -144,70 +223,6 @@ void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int 
 			(*pos)++;
 		}
 	}
-}
-
-int s2d_width(const char *str, int line, int len) {
-	char *p = str;
-	int tmp_len = 0;
-	int curLine = 0;
-	int width = 0;
-	int scale = 1;
-
-	if (*p == '\0') return width;
-
-	do {
-		char current_char = *p;
-		switch (current_char) {
-			case CH_SCALE:
-				CH_SKIP(p);
-				gS2DScale = (f32) s2d_atoi(p, &p);
-				break;
-			case CH_ROT:
-				CH_SKIP(p);
-				s2d_atoi(p, &p);
-				break;
-			case CH_TRANSLATE:
-				CH_SKIP(p);
-				s2d_atoi(p, &p);
-				curLine++;
-				CH_SKIP(p);
-				CH_SKIP(p);
-				s2d_atoi(p, &p);
-				break;
-			case CH_COLOR:
-				CH_SKIP(p);
-				s2d_atoi(p, &p);
-				CH_SKIP(p); CH_SKIP(p);
-				s2d_atoi(p, &p);
-				CH_SKIP(p); CH_SKIP(p);
-				s2d_atoi(p, &p);
-				CH_SKIP(p); CH_SKIP(p);
-				s2d_atoi(p, &p);
-				break;
-			case CH_DROPSHADOW:
-			case CH_RESET:
-				break;
-			case '\n':
-				curLine++;
-				break;
-			case '\t':
-				if (curLine == line)
-					width += TAB_WIDTH_H / TEX_RES;
-				break;
-			case '\v':
-				if (curLine == line)
-					width += TAB_WIDTH_V / TEX_RES;
-				break;
-			default:
-				if (current_char != '\0' && curLine == line)
-					// width += (int) (((f32) s2d_kerning_table[current_char]) * gS2DScale);
-					width += s2d_kerning_table[current_char] * (gS2DScale * 1.2f);
-		}
-		if (*p == '\0') break;
-		p++;
-		tmp_len++;
-	} while (tmp_len < len && curLine <= line);
-	return width;
 }
 
 // void s2d_vsprint(int x, int y, int align, uObjMtx *buf, const char *str, ...) {

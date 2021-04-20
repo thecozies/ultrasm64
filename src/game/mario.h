@@ -16,6 +16,13 @@
 #define CUTSCENE_FORCE_YAW     6
 #define CUTSCENE_INTRO_TEMPLE  7
 
+
+#define LUCY_IDLE_ANIM                  0
+#define LUCY_TO_IDLE_ANIM               1
+#define LUCY_SITTING_ANIM               2
+#define LUCY_SITTING_LOOKING_OVER_ANIM  3
+#define LUCY_HAPPY_DANCE_ANIM           4
+
 s32 is_anim_at_end(struct MarioState *m);
 s32 is_anim_past_end(struct MarioState *m);
 s16 set_mario_animation(struct MarioState *m, s32 targetAnimID);

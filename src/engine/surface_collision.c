@@ -347,18 +347,18 @@ f32 find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface **pceil) {
 /**
  * Find the height of the highest floor below an object.
  */
-f32 unused_obj_find_floor_height(struct Object *obj) {
-    struct Surface *floor;
-    f32 floorHeight = find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
-    return floorHeight;
-}
+// f32 unused_obj_find_floor_height(struct Object *obj) {
+//     struct Surface *floor;
+//     f32 floorHeight = find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
+//     return floorHeight;
+// }
 
 /**
  * Basically a local variable that passes through floor geo info.
  */
 struct FloorGeometry sFloorGeo;
 
-static u8 unused8038BE50[0x40];
+// static u8 unused8038BE50[0x40];
 
 /**
  * Return the floor height underneath (xPos, yPos, zPos) and populate `floorGeo`
@@ -456,7 +456,7 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
     return floor;
 }
 
-static s16 check_within_triangle_bounds(s32 x, s32 z, struct Surface *surf) {
+s16 check_within_triangle_bounds(s32 x, s32 z, struct Surface *surf) {
     register s32 x1, z1, x2, z2, x3, z3;
     x1 = surf->vertex1[0];
     z1 = surf->vertex1[2];
@@ -475,70 +475,8 @@ static s16 check_within_triangle_bounds(s32 x, s32 z, struct Surface *surf) {
 }
 
 // Find the height of the floor at a given location
-static f32 get_floor_height_at_location(s32 x, s32 z, struct Surface *surf) {
+f32 get_floor_height_at_location(s32 x, s32 z, struct Surface *surf) {
     return -(x * surf->normal.x + surf->normal.z * z + surf->originOffset) / surf->normal.y;
-}
-
-/**
- * Iterate through the list of water floors and find the first water floor under a given point.
- */
-struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z,
-                                            f32 *pheight, f32 *pBottomHeight, s32 getForce) {
-    register struct Surface *surf;
-    struct Surface *floor = NULL;
-    struct SurfaceNode *topSurfaceNode = surfaceNode;
-    struct SurfaceNode *bottomSurfaceNode = surfaceNode;
-    f32 height = FLOOR_LOWER_LIMIT;
-    f32 bottomHeight = FLOOR_LOWER_LIMIT;
-    f32 topBottomHeight = FLOOR_LOWER_LIMIT;
-    s16 bottomForce = 0;
-    if (getForce) gMarioState->waterBottomParam = bottomForce;
-
-    // Iterate through the list of water floors until there are no more water floors.
-    while (bottomSurfaceNode != NULL) {
-        f32 curBottomHeight = FLOOR_LOWER_LIMIT;
-        surf = bottomSurfaceNode->surface;
-        bottomSurfaceNode = bottomSurfaceNode->next;
-
-        if (surf->type != SURFACE_NEW_WATER_BOTTOM || !check_within_triangle_bounds(x, z, surf)) continue;
-
-        curBottomHeight = get_floor_height_at_location(x, z, surf);
-
-        // if (curBottomHeight < y - 78.0f) continue;
-        // if (curBottomHeight >= y - 78.0f) bottomHeight = curBottomHeight;
-        if (curBottomHeight < y + 78.0f) {
-            if (curBottomHeight > topBottomHeight) {
-                topBottomHeight = curBottomHeight;
-                bottomForce = surf->force;
-            }
-            continue;
-        }
-        if (curBottomHeight >= y + 78.0f) bottomHeight = curBottomHeight;
-    }
-
-    // Iterate through the list of water tops until there are no more water tops.
-    while (topSurfaceNode != NULL) {
-        f32 curHeight = FLOOR_LOWER_LIMIT;
-        surf = topSurfaceNode->surface;
-        topSurfaceNode = topSurfaceNode->next;
-
-        if (surf->type == SURFACE_NEW_WATER_BOTTOM || !check_within_triangle_bounds(x, z, surf)) continue;
-
-        curHeight = get_floor_height_at_location(x, z, surf);
-
-        if (bottomHeight != FLOOR_LOWER_LIMIT && curHeight > bottomHeight) continue;
-
-        if (curHeight > height) {
-            height = curHeight;
-            *pheight = curHeight;
-            floor = surf;
-        }
-    }
-    *pBottomHeight = topBottomHeight;
-
-    if (getForce) gMarioState->waterBottomParam = bottomForce;
-
-    return floor;
 }
 
 /**
@@ -556,27 +494,27 @@ f32 find_floor_height(f32 x, f32 y, f32 z) {
  * Find the highest dynamic floor under a given position. Perhaps originally static
  * and dynamic floors were checked separately.
  */
-f32 unused_find_dynamic_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
-    struct SurfaceNode *surfaceList;
-    struct Surface *floor;
-    f32 floorHeight = FLOOR_LOWER_LIMIT;
+// f32 unused_find_dynamic_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
+//     struct SurfaceNode *surfaceList;
+//     struct Surface *floor;
+//     f32 floorHeight = FLOOR_LOWER_LIMIT;
 
-    // Would normally cause PUs, but dynamic floors unload at that range.
-    s16 x = (s16) xPos;
-    s16 y = (s16) yPos;
-    s16 z = (s16) zPos;
+//     // Would normally cause PUs, but dynamic floors unload at that range.
+//     s16 x = (s16) xPos;
+//     s16 y = (s16) yPos;
+//     s16 z = (s16) zPos;
 
-    // Each level is split into cells to limit load, find the appropriate cell.
-    s16 cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
-    s16 cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+//     // Each level is split into cells to limit load, find the appropriate cell.
+//     s16 cellX = ((x + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
+//     s16 cellZ = ((z + LEVEL_BOUNDARY_MAX) / CELL_SIZE) & NUM_CELLS_INDEX;
 
-    surfaceList = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
-    floor = find_floor_from_list(surfaceList, x, y, z, &floorHeight);
+//     surfaceList = gDynamicSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_FLOORS].next;
+//     floor = find_floor_from_list(surfaceList, x, y, z, &floorHeight);
 
-    *pfloor = floor;
+//     *pfloor = floor;
 
-    return floorHeight;
-}
+//     return floorHeight;
+// }
 
 /**
  * Find the highest floor under a given position and return the height.
@@ -652,6 +590,83 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
     return height;
 }
 
+f32 dum_dum_dum(void) {
+    return 0.0f;
+}
+
+/**
+ * Iterate through the list of water floors and find the first water bottom under a given point.
+ */
+f32 find_water_bottom_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z) {
+    register struct Surface *surf;
+    struct SurfaceNode *bottomSurfaceNode = surfaceNode;
+    f32 bottomHeight = FLOOR_LOWER_LIMIT;
+    f32 topBottomHeight = FLOOR_LOWER_LIMIT;
+    s32 bottomForce = 0;
+
+    // Iterate through the list of water floors until there are no more water floors.
+    while (bottomSurfaceNode != NULL) {
+        f32 curBottomHeight = FLOOR_LOWER_LIMIT;
+
+        surf = bottomSurfaceNode->surface;
+        bottomSurfaceNode = bottomSurfaceNode->next;
+
+        if (surf->type != SURFACE_NEW_WATER_BOTTOM || !check_within_triangle_bounds(x, z, surf)) continue;
+
+        curBottomHeight = get_floor_height_at_location(x, z, surf);
+
+        if (curBottomHeight < y + 78.0f) {
+            if (curBottomHeight > topBottomHeight) {
+                topBottomHeight = curBottomHeight;
+                bottomForce = surf->force;
+            }
+            continue;
+        }
+        if (curBottomHeight >= y + 78.0f) bottomHeight = curBottomHeight;
+    }
+
+    if (gCheckingWaterForMario) {
+        gMarioState->waterBottomHeight = topBottomHeight;
+        gMarioState->waterBottomParam = bottomForce;
+    }
+
+    return bottomHeight;
+}
+
+/**
+ * Iterate through the list of water floors and find the first water floor under a given point.
+ */
+struct Surface *find_water_floor_from_list(struct SurfaceNode *surfaceNode, s32 x, s32 y, s32 z,
+                                            f32 *pheight) {
+    register struct Surface *surf;
+    struct Surface *floor = NULL;
+    struct SurfaceNode *topSurfaceNode = surfaceNode;
+
+    f32 height = FLOOR_LOWER_LIMIT;
+    f32 bottomHeight = find_water_bottom_from_list(surfaceNode, x, y, z);
+
+    // Iterate through the list of water tops until there are no more water tops.
+    while (topSurfaceNode != NULL) {
+        f32 curHeight = FLOOR_LOWER_LIMIT;
+        surf = topSurfaceNode->surface;
+        topSurfaceNode = topSurfaceNode->next;
+
+        if (surf->type == SURFACE_NEW_WATER_BOTTOM || !check_within_triangle_bounds(x, z, surf)) continue;
+
+        curHeight = get_floor_height_at_location(x, z, surf);
+
+        if (bottomHeight != FLOOR_LOWER_LIMIT && curHeight > bottomHeight) continue;
+
+        if (curHeight > height) {
+            height = curHeight;
+            *pheight = curHeight;
+            floor = surf;
+        }
+    }
+
+    return floor;
+}
+
 /**
  * Find the highest water floor under a given position and return the height.
  */
@@ -662,7 +677,6 @@ f32 find_water_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
     struct SurfaceNode *surfaceList;
 
     f32 height = FLOOR_LOWER_LIMIT;
-    f32 bottomheight = FLOOR_LOWER_LIMIT;
 
     s16 x = (s16) xPos;
     s16 y = (s16) yPos;
@@ -681,17 +695,12 @@ f32 find_water_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
 
     // Check for surfaces that are a part of level geometry.
     surfaceList = gStaticSurfacePartition[cellZ][cellX][SPATIAL_PARTITION_WATER].next;
-    floor = find_water_floor_from_list(surfaceList, x, y, z, &height, &bottomheight, gCheckingWaterForMario);
+    floor = find_water_floor_from_list(surfaceList, x, y, z, &height);
 
     if (floor == NULL) {
         height = FLOOR_LOWER_LIMIT;
-        bottomheight = FLOOR_LOWER_LIMIT;
     } else {
         *pfloor = floor;
-    }
-
-    if (gCheckingWaterForMario) {
-        gMarioState->waterBottomHeight = bottomheight;
     }
 
     return height;
@@ -834,113 +843,113 @@ f32 find_poison_gas_level(f32 x, f32 z) {
 /**
  * Finds the length of a surface list for debug purposes.
  */
-static s32 surface_list_length(struct SurfaceNode *list) {
-    s32 count = 0;
+// static s32 surface_list_length(struct SurfaceNode *list) {
+//     s32 count = 0;
 
-    while (list != NULL) {
-        list = list->next;
-        count++;
-    }
+//     while (list != NULL) {
+//         list = list->next;
+//         count++;
+//     }
 
-    return count;
-}
+//     return count;
+// }
 
 /**
  * Print the area,number of walls, how many times they were called,
  * and some allocation information.
  */
-void debug_surface_list_info(f32 xPos, f32 zPos) {
-    struct SurfaceNode *list;
-    s32 numFloors = 0;
-    s32 numWalls = 0;
-    s32 numCeils = 0;
+// void debug_surface_list_info(f32 xPos, f32 zPos) {
+//     struct SurfaceNode *list;
+//     s32 numFloors = 0;
+//     s32 numWalls = 0;
+//     s32 numCeils = 0;
 
-    s32 cellX = (xPos + LEVEL_BOUNDARY_MAX) / CELL_SIZE;
-    s32 cellZ = (zPos + LEVEL_BOUNDARY_MAX) / CELL_SIZE;
+//     s32 cellX = (xPos + LEVEL_BOUNDARY_MAX) / CELL_SIZE;
+//     s32 cellZ = (zPos + LEVEL_BOUNDARY_MAX) / CELL_SIZE;
 
-    list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_FLOORS].next;
-    numFloors += surface_list_length(list);
+//     list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_FLOORS].next;
+//     numFloors += surface_list_length(list);
 
-    list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_FLOORS].next;
-    numFloors += surface_list_length(list);
+//     list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_FLOORS].next;
+//     numFloors += surface_list_length(list);
 
-    list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_WALLS].next;
-    numWalls += surface_list_length(list);
+//     list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_WALLS].next;
+//     numWalls += surface_list_length(list);
 
-    list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_WALLS].next;
-    numWalls += surface_list_length(list);
+//     list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_WALLS].next;
+//     numWalls += surface_list_length(list);
 
-    list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_CEILS].next;
-    numCeils += surface_list_length(list);
+//     list = gStaticSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_CEILS].next;
+//     numCeils += surface_list_length(list);
 
-    list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_CEILS].next;
-    numCeils += surface_list_length(list);
+//     list = gDynamicSurfacePartition[cellZ & NUM_CELLS_INDEX][cellX & NUM_CELLS_INDEX][SPATIAL_PARTITION_CEILS].next;
+//     numCeils += surface_list_length(list);
 
-    print_debug_top_down_mapinfo("area   %x", cellZ * NUM_CELLS + cellX);
+//     print_debug_top_down_mapinfo("area   %x", cellZ * NUM_CELLS + cellX);
 
-    // Names represent ground, walls, and roofs as found in SMS.
-    print_debug_top_down_mapinfo("dg %d", numFloors);
-    print_debug_top_down_mapinfo("dw %d", numWalls);
-    print_debug_top_down_mapinfo("dr %d", numCeils);
+//     // Names represent ground, walls, and roofs as found in SMS.
+//     print_debug_top_down_mapinfo("dg %d", numFloors);
+//     print_debug_top_down_mapinfo("dw %d", numWalls);
+//     print_debug_top_down_mapinfo("dr %d", numCeils);
 
-    set_text_array_x_y(80, -3);
+//     set_text_array_x_y(80, -3);
 
-    print_debug_top_down_mapinfo("%d", gNumCalls.floor);
-    print_debug_top_down_mapinfo("%d", gNumCalls.wall);
-    print_debug_top_down_mapinfo("%d", gNumCalls.ceil);
+//     print_debug_top_down_mapinfo("%d", gNumCalls.floor);
+//     print_debug_top_down_mapinfo("%d", gNumCalls.wall);
+//     print_debug_top_down_mapinfo("%d", gNumCalls.ceil);
 
-    set_text_array_x_y(-80, 0);
+//     set_text_array_x_y(-80, 0);
 
-    // listal- List Allocated?, statbg- Static Background?, movebg- Moving Background?
-    print_debug_top_down_mapinfo("listal %d", gSurfaceNodesAllocated);
-    print_debug_top_down_mapinfo("statbg %d", gNumStaticSurfaces);
-    print_debug_top_down_mapinfo("movebg %d", gSurfacesAllocated - gNumStaticSurfaces);
+//     // listal- List Allocated?, statbg- Static Background?, movebg- Moving Background?
+//     print_debug_top_down_mapinfo("listal %d", gSurfaceNodesAllocated);
+//     print_debug_top_down_mapinfo("statbg %d", gNumStaticSurfaces);
+//     print_debug_top_down_mapinfo("movebg %d", gSurfacesAllocated - gNumStaticSurfaces);
 
-    gNumCalls.floor = 0;
-    gNumCalls.ceil = 0;
-    gNumCalls.wall = 0;
-}
+//     gNumCalls.floor = 0;
+//     gNumCalls.ceil = 0;
+//     gNumCalls.wall = 0;
+// }
 
 /**
  * An unused function that finds and interacts with any type of surface.
  * Perhaps an original implementation of surfaces before they were more specialized.
  */
-s32 unused_resolve_floor_or_ceil_collisions(s32 checkCeil, f32 *px, f32 *py, f32 *pz, f32 radius,
-                                            struct Surface **psurface, f32 *surfaceHeight) {
-    f32 nx, ny, nz, oo;
-    f32 x = *px;
-    f32 y = *py;
-    f32 z = *pz;
-    f32 offset, distance;
+// s32 unused_resolve_floor_or_ceil_collisions(s32 checkCeil, f32 *px, f32 *py, f32 *pz, f32 radius,
+//                                             struct Surface **psurface, f32 *surfaceHeight) {
+//     f32 nx, ny, nz, oo;
+//     f32 x = *px;
+//     f32 y = *py;
+//     f32 z = *pz;
+//     f32 offset, distance;
 
-    *psurface = NULL;
+//     *psurface = NULL;
 
-    if (checkCeil) {
-        *surfaceHeight = find_ceil(x, y, z, psurface);
-    } else {
-        *surfaceHeight = find_floor(x, y, z, psurface);
-    }
+//     if (checkCeil) {
+//         *surfaceHeight = find_ceil(x, y, z, psurface);
+//     } else {
+//         *surfaceHeight = find_floor(x, y, z, psurface);
+//     }
 
-    if (*psurface == NULL) {
-        return -1;
-    }
+//     if (*psurface == NULL) {
+//         return -1;
+//     }
 
-    nx = (*psurface)->normal.x;
-    ny = (*psurface)->normal.y;
-    nz = (*psurface)->normal.z;
-    oo = (*psurface)->originOffset;
+//     nx = (*psurface)->normal.x;
+//     ny = (*psurface)->normal.y;
+//     nz = (*psurface)->normal.z;
+//     oo = (*psurface)->originOffset;
 
-    offset = nx * x + ny * y + nz * z + oo;
-    distance = offset >= 0 ? offset : -offset;
+//     offset = nx * x + ny * y + nz * z + oo;
+//     distance = offset >= 0 ? offset : -offset;
 
-    // Interesting surface interaction that should be surf type independent.
-    if (distance < radius) {
-        *px += nx * (radius - offset);
-        *py += ny * (radius - offset);
-        *pz += nz * (radius - offset);
+//     // Interesting surface interaction that should be surf type independent.
+//     if (distance < radius) {
+//         *px += nx * (radius - offset);
+//         *py += ny * (radius - offset);
+//         *pz += nz * (radius - offset);
 
-        return 1;
-    }
+//         return 1;
+//     }
 
-    return 0;
-}
+//     return 0;
+// }

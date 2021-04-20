@@ -1,5 +1,26 @@
 
 void bhv_parasite_interact(void) {
+    if (gCurrLevelNum == LEVEL_PSS) {
+        if (o->oRoom != -1) {
+            if (gMarioCurrentRoom == o->oRoom) o->oOpacity = MIN(255, o->oOpacity + 10);
+            else o->oOpacity = 0;
+        } else {
+            if (o->oDistanceToMario >= 5000) o->oOpacity = 0;
+            else if (o->oDistanceToMario < 300) o->oOpacity = 255;
+            else {
+                o->oOpacity = (int) MAX(0, MIN(255, get_relative_position_between_ranges(
+                    o->oDistanceToMario,
+                    300.0f,
+                    5000.0f,
+                    255,
+                    0
+                )));
+            }
+        }
+    } else {
+        o->oOpacity = 255;
+    }
+
     if (obj_check_if_collided_with_object(o, gMarioObject)) {
         set_collected_para((o->oBehParams >> 16) & 0xFF);
 
@@ -55,5 +76,6 @@ void bhv_parasite_init(void) {
     o->oGravity = 0;
     o->oFriction = 0.0f;
     o->oBuoyancy = 0.0f;
-    o->oOpacity = 255;
+    if (parasiteGroup >= 1) o->oOpacity = 0;
+    else o->oOpacity = 255;
 }

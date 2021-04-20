@@ -15,7 +15,7 @@
 #include "game/object_list_processor.h"
 #include "surface_load.h"
 
-s32 unused8038BE90;
+// s32 unused8038BE90;
 
 /**
  * Partitions for course and object surfaces. The arrays represent
@@ -35,7 +35,7 @@ struct Surface *sSurfacePool;
  */
 s16 sSurfacePoolSize;
 
-u8 unused8038EEA8[0x30];
+// u8 unused8038EEA8[0x30];
 
 u8 gSurfacePoolError = 0;
 
@@ -271,14 +271,14 @@ static s16 upper_cell_index(s32 coord) {
  */
 static void add_surface(struct Surface *surface, s32 dynamic) {
     // minY/maxY maybe? s32 instead of s16, though.
-    UNUSED s32 unused1, unused2;
+    // UNUSED s32 unused1, unused2;
     s16 minX, minZ, maxX, maxZ;
 
     s16 minCellX, minCellZ, maxCellX, maxCellZ;
 
     s16 cellZ, cellX;
     // cellY maybe? s32 instead of s16, though.
-    UNUSED s32 unused3 = 0;
+    // UNUSED s32 unused3 = 0;
 
     minX = min_3(surface->vertex1[0], surface->vertex2[0], surface->vertex3[0]);
     minZ = min_3(surface->vertex1[2], surface->vertex2[2], surface->vertex3[2]);
@@ -485,8 +485,8 @@ static void load_static_surfaces(s16 **data, s16 *vertexData, s16 surfaceType, s
  */
 static s16 *read_vertex_data(s16 **data) {
     s32 numVertices;
-    UNUSED s16 unused1[3];
-    UNUSED s16 unused2[3];
+    // UNUSED s16 unused1[3];
+    // UNUSED s16 unused2[3];
     s16 *vertexData;
 
     numVertices = *(*data);
@@ -602,7 +602,7 @@ void load_area_terrain(s16 index, s16 *data, s8 *surfaceRooms, s16 *macroObjects
 
     // Initialize the data for this.
     gEnvironmentRegions = NULL;
-    unused8038BE90 = 0;
+    // unused8038BE90 = 0;
     gSurfaceNodesAllocated = 0;
     gSurfacesAllocated = 0;
 
@@ -661,8 +661,8 @@ void clear_dynamic_surfaces(void) {
     }
 }
 
-static void unused_80383604(void) {
-}
+// static void unused_80383604(void) {
+// }
 
 /**
  * Applies an object's transformation to the object's vertices.

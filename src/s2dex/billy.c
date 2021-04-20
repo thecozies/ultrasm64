@@ -5,6 +5,8 @@
 #include "geo_commands.h"
 #include "make_const_nonconst.h"
 
+Gfx billy_align_00[] = {gsSPEndDisplayList()};
+
 // size = 1024
 ALIGNED8 u8 billy_tex_space[] = {
 	0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0, 0XF0,
@@ -6629,7 +6631,8 @@ ALIGNED8 u8 billy_tex_spaces[] = {
 };
 Gfx billy_align_95[] = {gsSPEndDisplayList()};
 
-uObjTxtr billy_tex[] = {
+// uObjTxtr billy_tex[] = {
+uObjTxtrBlock_t billy_tex[128] = {
 	{
 		G_OBJLT_TXTRBLOCK,
 		(u64 *) &billy_tex_space, /* image */
@@ -6638,7 +6641,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6648,7 +6651,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6658,7 +6661,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6668,7 +6671,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6678,7 +6681,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6688,7 +6691,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6698,7 +6701,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6708,7 +6711,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6718,7 +6721,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6728,7 +6731,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6738,7 +6741,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6748,7 +6751,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6758,7 +6761,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6768,7 +6771,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6778,7 +6781,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6788,7 +6791,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6798,7 +6801,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6808,7 +6811,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6818,7 +6821,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6828,7 +6831,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6838,7 +6841,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6848,7 +6851,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6858,7 +6861,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6868,7 +6871,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6878,7 +6881,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6888,7 +6891,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6898,7 +6901,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6908,7 +6911,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6918,7 +6921,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6928,7 +6931,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6938,7 +6941,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6948,7 +6951,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6958,7 +6961,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_space, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6968,7 +6971,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_exclamation, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6978,7 +6981,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_double_quote, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6988,7 +6991,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_octothorp, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -6998,7 +7001,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_dollar, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7008,7 +7011,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_percent, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7018,7 +7021,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_ampersand, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7028,7 +7031,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_single_quote, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7038,7 +7041,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_left_paren, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7048,7 +7051,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_right_paren, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7058,7 +7061,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_asterisk, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7068,7 +7071,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_plus, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7078,7 +7081,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_comma, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7088,7 +7091,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_minus, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7098,7 +7101,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_period, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7108,7 +7111,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_forward_slash, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7118,7 +7121,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_0, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7128,7 +7131,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_1, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7138,7 +7141,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_2, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7148,7 +7151,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_3, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7158,7 +7161,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_4, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7168,7 +7171,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_5, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7178,7 +7181,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_6, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7188,7 +7191,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_7, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7198,7 +7201,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_8, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7208,7 +7211,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_9, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7218,7 +7221,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_colon, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7228,7 +7231,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_semi_colon, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7238,7 +7241,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_left_angle_bracket, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7248,7 +7251,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_equals, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7258,7 +7261,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_right_angle_bracket, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7268,7 +7271,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_question_mark, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7278,7 +7281,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_at, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7288,7 +7291,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_A, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7298,7 +7301,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_B, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7308,7 +7311,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_C, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7318,7 +7321,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_D, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7328,7 +7331,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_E, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7338,7 +7341,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_F, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7348,7 +7351,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_G, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7358,7 +7361,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_H, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7368,7 +7371,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_I, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7378,7 +7381,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_J, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7388,7 +7391,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_K, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7398,7 +7401,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_L, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7408,7 +7411,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_M, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7418,7 +7421,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_N, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7428,7 +7431,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_O, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7438,7 +7441,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_P, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7448,7 +7451,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_Q, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7458,7 +7461,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_R, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7468,7 +7471,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_S, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7478,7 +7481,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_T, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7488,7 +7491,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_U, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7498,7 +7501,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_V, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7508,7 +7511,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_W, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7518,7 +7521,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_X, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7528,7 +7531,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_Y, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7538,7 +7541,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_upper_Z, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7548,7 +7551,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_left_square_bracket, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7558,7 +7561,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_backslash, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7568,7 +7571,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_right_square_bracket, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7578,7 +7581,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_caret, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7588,7 +7591,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_underscore, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7598,7 +7601,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_tick, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7608,7 +7611,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_a, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7618,7 +7621,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_b, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7628,7 +7631,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_c, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7638,7 +7641,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_d, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7648,7 +7651,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_e, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7658,7 +7661,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_f, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7668,7 +7671,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_g, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7678,7 +7681,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_h, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7688,7 +7691,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_i, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7698,7 +7701,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_j, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7708,7 +7711,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_k, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7718,7 +7721,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_l, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7728,7 +7731,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_m, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7738,7 +7741,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_n, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7748,7 +7751,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_o, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7758,7 +7761,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_p, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7768,7 +7771,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_q, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7778,7 +7781,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_r, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7788,7 +7791,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_s, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7798,7 +7801,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_t, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7808,7 +7811,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_u, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7818,7 +7821,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_v, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7828,7 +7831,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_w, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7838,7 +7841,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_x, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7848,7 +7851,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_y, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7858,7 +7861,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_z, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7868,7 +7871,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_left_curly_bracket, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7878,7 +7881,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_pipe, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7888,7 +7891,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_right_curly_bracket, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7898,7 +7901,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_tilde, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 	{
 		G_OBJLT_TXTRBLOCK,
@@ -7908,7 +7911,7 @@ uObjTxtr billy_tex[] = {
 		GS_TB_TLINE(32, G_IM_SIZ_8b),  /* tline   */
 		0, /* sid */
 		(u32) &billy_tex_spaces, /* flag */
-		0xFFFFFFFF, /* mask */
+		-1, /* mask */
 	},
 };
 

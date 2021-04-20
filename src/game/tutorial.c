@@ -78,7 +78,7 @@
 #define TITLE_PAUSE             COLOR_RED    "start"        COLOR_WHITE
 
 #define TUTORIAL_FADE_IN_LEN 30
-#define TUTORIAL_SHOW_LEN 300
+#define TUTORIAL_SHOW_LEN 200
 #define TUTORIAL_FADE_OUT_LEN 20
 
 #define AIR_TIPS 3
@@ -94,8 +94,8 @@ char sTitleExtra[] = TITLE_EXTRA;
 
 char sAirText[AIR_TIPS][198] = {
     "Groundpound jump.\n"
-    "Press " TITLE_A_BUTTON " when\n"
-    "your ground pound hits the ground.",
+    "Press " TITLE_A_BUTTON " when your ground pound\n"
+    "hits the ground.",
 
     "Air dive. Any direction you hold your\n"
     "controller stick, hold " TITLE_Z_BUTTON " and press " TITLE_B_BUTTON "\n"
@@ -140,7 +140,7 @@ char sExtraText[EXTRA_TIPS][198] = {
     "Press " TITLE_PAUSE " to see these tips again." 
 };
 
-char sSkipText[] = "Press " TITLE_PAUSE " to skip.";
+char sSkipText[] = "Skip: " TITLE_PAUSE;
 char sPauseText[] =
     COLOR_GREY "Up: " COLOR_WHITE "Prev tip\n"
     COLOR_GREY "Down: " COLOR_WHITE "Next tip";

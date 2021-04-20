@@ -421,7 +421,7 @@ void init_mario_after_warp(void) {
 
     switch (marioSpawnType) {
         case MARIO_SPAWN_UNKNOWN_03:
-            play_transition(WARP_TRANSITION_FADE_FROM_STAR, 0x10, 0x00, 0x00, 0x00);
+            play_transition(WARP_TRANSITION_FADE_FROM_COLOR, 0x10, 0x00, 0x00, 0x00);
             break;
         case MARIO_SPAWN_DOOR_WARP:
             play_transition(WARP_TRANSITION_FADE_FROM_CIRCLE, 0x10, 0x00, 0x00, 0x00);
@@ -439,7 +439,7 @@ void init_mario_after_warp(void) {
             play_transition(WARP_TRANSITION_FADE_FROM_COLOR, 0x10, 0x00, 0x00, 0x00);
             break;
         default:
-            play_transition(WARP_TRANSITION_FADE_FROM_STAR, 0x10, 0x00, 0x00, 0x00);
+            play_transition(WARP_TRANSITION_FADE_FROM_COLOR, 0x10, 0x00, 0x00, 0x00);
             break;
     }
 
@@ -720,6 +720,7 @@ void initiate_painting_warp(void) {
  */
 s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
     s32 val04 = TRUE;
+    s32 isBlackFade = FALSE;
 
     if (sDelayedWarpOp == WARP_OP_NONE) {
         m->invincTimer = -1;
@@ -806,9 +807,11 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
             case WARP_OP_WARP_OBJECT:
                 sDelayedWarpTimer = 20;
                 sSourceWarpNodeId = (m->usedObj->oBehParams & 0x00FF0000) >> 16;
+                isBlackFade = sSourceWarpNodeId == 0x0F;
                 val04 = !music_changed_through_warp(sSourceWarpNodeId);
                 // play_transition(WARP_TRANSITION_FADE_INTO_STAR, 0x14, 0x00, 0x00, 0x00);
-                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0xFF, 0xFF, 0xFF);
+                if (isBlackFade) play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0x00, 0x00, 0x00);
+                else play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0xFF, 0xFF, 0xFF);
                 break;
 
             case WARP_OP_CREDITS_START:
@@ -842,6 +845,10 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
 void initiate_delayed_warp(void) {
     struct ObjectWarpNode *warpNode;
     s32 destWarpNode;
+
+    if (sDelayedWarpOp != WARP_OP_NONE) {
+        set_current_cutscene(NO_CUTSCENE);
+    }
 
     if (sDelayedWarpOp != WARP_OP_NONE && --sDelayedWarpTimer == 0) {
         reset_dialog_render_state();

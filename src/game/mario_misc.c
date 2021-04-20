@@ -428,18 +428,18 @@ Gfx *geo_switch_mario_hand(s32 callContext, struct GraphNode *node, UNUSED Mat4 
     struct MarioBodyState *bodyState = &gBodyStates[0];
 
     if (callContext == GEO_CONTEXT_RENDER) {
-        if (bodyState->handState == MARIO_HAND_FISTS) {
-            // switch between fists (0) and open (1)
-            switchCase->selectedCase = ((bodyState->action & ACT_FLAG_SWIMMING_OR_FLYING) != 0);
-        } else {
-            if (switchCase->numCases == 0) {
-                switchCase->selectedCase =
-                    (bodyState->handState < 5) ? bodyState->handState : MARIO_HAND_OPEN;
-            } else {
-                switchCase->selectedCase =
-                    (bodyState->handState < 2) ? bodyState->handState : MARIO_HAND_FISTS;
-            }
-        }
+        switchCase->selectedCase = MARIO_HAND_FISTS;
+        // if (bodyState->handState == MARIO_HAND_FISTS) {
+        //     // switch between fists (0) and open (1)
+        // } else {
+        //     if (switchCase->numCases == 0) {
+        //         switchCase->selectedCase =
+        //             (bodyState->handState < 5) ? bodyState->handState : MARIO_HAND_FISTS;
+        //     } else {
+        //         switchCase->selectedCase =
+        //             (bodyState->handState < 2) ? bodyState->handState : MARIO_HAND_FISTS;
+        //     }
+        // }
     }
     return NULL;
 }

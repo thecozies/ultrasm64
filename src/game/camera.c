@@ -5291,6 +5291,7 @@ void warp_camera(f32 displacementX, f32 displacementY, f32 displacementZ) {
     vec3f_add(gLakituState.goalPos, displacement);
     vec3f_add(gLakituState.goalFocus, displacement);
     vec3s_copy(gPuppyCam.pos, gLakituState.curPos);
+    vec3s_copy(gPuppyCam.focus, gLakituState.curFocus);
     gPuppyCam.targetFloorHeight += displacementY; 
     gPuppyCam.lastTargetFloorHeight += displacementY;
     gPuppyCam.floorY[0] += displacementY;
@@ -6404,6 +6405,9 @@ struct CameraTrigger sCamBBH[] = {
  * Each table is terminated with NULL_TRIGGER
  */
 struct CameraTrigger sCamCastleGrounds[] = {
+	NULL_TRIGGER
+};
+struct CameraTrigger sCamPSS[] = {
 	NULL_TRIGGER
 };
 struct CameraTrigger *sCameraTriggers[LEVEL_COUNT + 1] = {
@@ -11367,11 +11371,11 @@ void approach_fov_20(UNUSED struct MarioState *m) {
 }
 
 void set_fov_45(UNUSED struct MarioState *m) {
-    sFOVState.fov = 45.f;
+    sFOVState.fov = 54.f;
 }
 
 void set_fov_29(UNUSED struct MarioState *m) {
-    sFOVState.fov = 29.f;
+    sFOVState.fov = 25.f;
 }
 
 void zoom_fov_30(UNUSED struct MarioState *m) {

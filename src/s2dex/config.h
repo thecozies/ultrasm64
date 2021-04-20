@@ -4,7 +4,9 @@
 #define const
 
 // include your font header here
+#include <ultra64.h>
 #include "billy.h"
+#include "game/game_init.h"
 
 // get your font symbols defined here
 #define s2d_font            billy_obj

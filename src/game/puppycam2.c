@@ -47,6 +47,7 @@ s16 sZoomPitchTargets[3] = {14300, 12650, 11010};
 s8 sLWasHeld = FALSE;
 s8 sWaitForLUnheld = FALSE;
 s32 sMovingFramesSinceSnap = SNAP_HOLD_LENGTH + 1;
+static Vp sCutsceneVp = { { { 640, 480, 511, 0 }, { 640, 480, 511, 0 } } };
 
 #if defined(VERSION_EU)
 static u8 gPCOptionStringsFR[][64] = {{NC_ANALOGUE_FR}, {NC_CAMX_FR}, {NC_CAMY_FR}, {NC_INVERTX_FR}, {NC_INVERTY_FR}, {NC_CAMC_FR}, {NC_CAMP_FR}, {NC_CAMD_FR}};
@@ -1228,6 +1229,12 @@ static void puppycam_projection(void)
 #define DOOR_LERP_END 75
 
 void door_cutscene(void) {
+    sCutsceneVp.vp.vscale[0] = 640;
+    sCutsceneVp.vp.vscale[1] = 360;
+    sCutsceneVp.vp.vtrans[0] = 640;
+    sCutsceneVp.vp.vtrans[1] = 480;
+    override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
+
     if (gCurCutsceneTimer >= DOOR_LERP_START) {
         struct Surface *surf;
         Vec3f camdir;
@@ -1308,25 +1315,60 @@ void towerclimb_cutscene(void) {
 #define TEMPLE_Y_START_OFFSET 1000.0f
 
 enum TEMPLE_INTRO_ACTS {
-    WALKING_DOWN_HALLWAY = 256,
-    WALKING_OUT_OF_HALLWAY = 361,
-    DOOR_SLAM_SHOT_START = 487,
-    DOOR_SLAM_FROM_HALLWAY = 524,
-    DOOR_SHUT_REVERSE_SHOT = 487,
-    TEMPLE_INTRO_FINAL_FRAME = 639
+    SHOW_TITLE_SCREEN = 214,
+    WALKING_DOWN_HALLWAY = 316,
+    WALKING_OUT_OF_HALLWAY = 421,
+    DOOR_SLAM_SHOT_START = 547,
+    DOOR_SLAM_FROM_HALLWAY = 584,
+    DOOR_SHUT_REVERSE_SHOT = 637,
+    TEMPLE_INTRO_FINAL_FRAME = 749
 };
 
-#define TEMPLE_INTRO_LENGTH 640.0f
+#define TEMPLE_INTRO_LENGTH 749.0f
 
 void temple_intro_cutscene(void) {
     Vec3f pos;
     Vec3f focus;
+
+    sCutsceneVp.vp.vscale[0] = 640;
+    sCutsceneVp.vp.vscale[1] = 360;
+    sCutsceneVp.vp.vtrans[0] = 640;
+    sCutsceneVp.vp.vtrans[1] = 480;
+    override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
+
+    if (
+        gCurCutsceneTimer < TEMPLE_INTRO_LENGTH - 10 &&
+        gPlayer1Controller->buttonDown & START_BUTTON &&
+        gPlayer1Controller->buttonPressed & A_BUTTON
+    ) {
+        gCurCutsceneTimer = TEMPLE_INTRO_LENGTH - 20;
+        gMarioState->pos[0] = -1558.0f;
+    }
+
     if (gCurCutsceneTimer == 0) {
-        enable_time_stop_including_mario();
-    } else if (gCurCutsceneTimer > TEMPLE_INTRO_LENGTH) {
+        set_mario_action(gMarioState, ACT_TEMPLE_1_INTRO, 0);
+        gMarioState->pos[0] -= 5000.0f;
+        gMarioState->pos[1] += 100.0f;
+        // enable_time_stop_including_mario();
+        set_fov_function(CAM_FOV_SET_45);
+    }
+    else if (gCurCutsceneTimer > TEMPLE_INTRO_LENGTH) {
         set_current_cutscene(NO_CUTSCENE);
-        disable_time_stop_including_mario();
+        set_mario_action(gMarioState, ACT_IDLE, 2);
+        // disable_time_stop_including_mario();
+        set_fov_function(CAM_FOV_DEFAULT);
         return;
+    }
+    else if (gCurCutsceneTimer > TEMPLE_INTRO_LENGTH - 1) {
+        gMarioState->pos[0] += 200.0f;
+        gMarioState->marioObj->header.gfx.pos[0] = gMarioState->pos[0];
+        return;
+    }
+    else if (gCurCutsceneTimer >= SHOW_TITLE_SCREEN && gCurCutsceneTimer < WALKING_DOWN_HALLWAY) {
+        print_text_centered(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "Lucys levitation");
+    }
+    else if (gCurCutsceneTimer == DOOR_SLAM_SHOT_START - 1) {
+        gMarioState->pos[0] = -1558.0f;
     }
 
     vec3s_copy(gPuppyCam.pos, temple_intro[gCurCutsceneTimer][0]);

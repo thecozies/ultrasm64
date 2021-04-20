@@ -32,3 +32,5 @@
 #include "parasite/model.inc.c"
 #include "parasite/anims/data.inc.c"
 #include "parasite/anims/table.inc.c"
+#include "mario/anims/data.inc.c"
+#include "mario/anims/table.inc.c"

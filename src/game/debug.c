@@ -240,7 +240,7 @@ void print_checkinfo(void) {
 }
 
 void print_surfaceinfo(void) {
-    debug_surface_list_info(gMarioObject->oPosX, gMarioObject->oPosZ);
+    // debug_surface_list_info(gMarioObject->oPosX, gMarioObject->oPosZ);
 }
 
 void print_stageinfo(void) {

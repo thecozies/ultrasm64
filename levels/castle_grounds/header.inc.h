@@ -54,7 +54,7 @@ extern Vtx castle_grounds_dl_shared_hallway_mesh_layer_1_vtx_0[28];
 extern Gfx castle_grounds_dl_shared_hallway_mesh_layer_1_tri_0[];
 extern Vtx castle_grounds_dl_shared_hallway_mesh_layer_1_vtx_1[8];
 extern Gfx castle_grounds_dl_shared_hallway_mesh_layer_1_tri_1[];
-extern Vtx castle_grounds_dl_a_ROOM_mesh_vtx_0[476];
+extern Vtx castle_grounds_dl_a_ROOM_mesh_vtx_0[473];
 extern Gfx castle_grounds_dl_a_ROOM_mesh_tri_0[];
 extern Vtx castle_grounds_dl_a_ROOM_mesh_layer_1_vtx_0[295];
 extern Gfx castle_grounds_dl_a_ROOM_mesh_layer_1_tri_0[];

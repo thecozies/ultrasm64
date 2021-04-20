@@ -262,6 +262,7 @@ extern const Gfx mario_cap_wings[];
 extern const Gfx mario_cap_wings_transparent[];
 extern const Gfx mario_metal_cap_wings[];
 extern const Gfx mario_metal_cap_wings_transparent[];
+extern Lights1 mario_clothes_lights;
 
 // sparkle
 extern const GeoLayout sparkles_geo[];
@@ -354,4 +355,6 @@ extern const Gfx white_particle_small_unused_dl[];
 
 
 #include "parasite/anim_header.h"
+
+#include "mario/anim_header.h"
 #endif

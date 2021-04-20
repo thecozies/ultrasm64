@@ -6,6 +6,7 @@
 #include "behavior_data.h"
 #include "camera.h"
 #include "engine/math_util.h"
+#include "engine/behavior_script.h"
 #include "interaction.h"
 #include "level_update.h"
 #include "mario.h"
@@ -133,19 +134,28 @@ s32 act_idle(struct MarioState *m) {
     } else {
         switch (m->actionState) {
             case 0:
-                set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_LEFT);
+                set_custom_mario_animation(m, LUCY_TO_IDLE_ANIM);
                 break;
 
             case 1:
-                set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_RIGHT);
+                set_custom_mario_animation(m, LUCY_IDLE_ANIM);
+
+                if (is_anim_at_end(m) && random_u16() < 2000) { // 3% chance
+                    m->actionState = 3;
+                }
                 break;
 
             case 2:
-                set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_CENTER);
+                set_custom_mario_animation(m, LUCY_IDLE_ANIM);
+                break;
+
+            case 3:
+                set_custom_mario_animation(m, LUCY_HAPPY_DANCE_ANIM);
+                if (is_anim_at_end(m)) m->actionState = 1;
                 break;
         }
 
-        if (is_anim_at_end(m)) {
+        if (is_anim_at_end(m) && m->actionState != 3) {
             // Fall asleep after 10 head turning cycles.
             // act_start_sleeping is triggered earlier in the function
             // when actionState == 3. This happens when Mario's done
@@ -154,7 +164,7 @@ s32 act_idle(struct MarioState *m) {
             // and that he's gone through 10 cycles before sleeping.
             // actionTimer is used to track how many cycles have passed.
             if (++m->actionState == 3) {
-                m->actionState = 0;
+                m->actionState = 1;
                 // f32 deltaYOfFloorBehindMario = m->pos[1] - find_floor_height_relative_polar(m, -0x8000, 60.0f);
                 // if (deltaYOfFloorBehindMario < -24.0f || 24.0f < deltaYOfFloorBehindMario || m->floor->flags & SURFACE_FLAG_DYNAMIC) {
                 //     m->actionState = 0;

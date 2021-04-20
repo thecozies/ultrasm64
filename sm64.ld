@@ -260,7 +260,7 @@ SECTIONS
       */libz.a:*.o(.bss*);
 #endif
 
-      . = ALIGN(0x8);
+      . = ALIGN(0x100);
    }
    END_NOLOAD(main)
    _mainSegmentNoloadSizeLo = SIZEOF (.main.noload) & 0xffff;

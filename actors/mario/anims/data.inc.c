@@ -1,0 +1,5 @@
+#include "anim_lucy_idle.inc.c"
+#include "anim_lucy_to_idle.inc.c"
+#include "anim_lucy_sitting.inc.c"
+#include "anim_lucy_sitting_looking_over.inc.c"
+#include "anim_lucy_happy_dance.inc.c"

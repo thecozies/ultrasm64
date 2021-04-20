@@ -1811,15 +1811,15 @@ const BehaviorScript bhvCcmTouchedStarSpawn[] = {
     END_LOOP(),
 };
 
-const BehaviorScript bhvUnusedPoundablePlatform[] = {
-    BEGIN(OBJ_LIST_SURFACE),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    LOAD_COLLISION_DATA(sl_seg7_collision_pound_explodes),
-    SET_HOME(),
-    BEGIN_LOOP(),
-        CALL_NATIVE(bhv_unused_poundable_platform),
-    END_LOOP(),
-};
+// const BehaviorScript bhvUnusedPoundablePlatform[] = {
+//     BEGIN(OBJ_LIST_SURFACE),
+//     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+//     LOAD_COLLISION_DATA(sl_seg7_collision_pound_explodes),
+//     SET_HOME(),
+//     BEGIN_LOOP(),
+//         CALL_NATIVE(bhv_unused_poundable_platform),
+//     END_LOOP(),
+// };
 
 const BehaviorScript bhvBetaTrampolineTop[] = {
     BEGIN(OBJ_LIST_SURFACE),
@@ -3206,6 +3206,7 @@ const BehaviorScript bhvPalmTree[] = {
     SET_INT(oInteractType, INTERACT_POLE),
     SET_HITBOX(/*Radius*/ 80, /*Height*/ 1500),
     SET_INT(oIntangibleTimer, 0),
+    CALL_NATIVE(bhv_init_room),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_pole_base_loop),
     END_LOOP(),
@@ -6146,6 +6147,20 @@ const BehaviorScript bhvParasite[] = {
     SET_HITBOX_WITH_OFFSET(/*Radius*/ 100, /*Height*/ 150, /*Downwards offset*/ 0),
     SET_FLOAT(oGraphYOffset, 30),
     SET_HOME(),
+    CALL_NATIVE(bhv_init_room),
+    CALL_NATIVE(bhv_parasite_init),
+    BEGIN_LOOP(),
+        SET_INT(oIntangibleTimer, 0),
+        CALL_NATIVE(bhv_parasite_loop),
+    END_LOOP(),
+};
+
+const BehaviorScript bhvParasiteNoRoom[] = {
+    BEGIN(OBJ_LIST_LEVEL),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO)),
+    SET_HITBOX_WITH_OFFSET(/*Radius*/ 100, /*Height*/ 150, /*Downwards offset*/ 0),
+    SET_FLOAT(oGraphYOffset, 30),
+    SET_HOME(),
     CALL_NATIVE(bhv_parasite_init),
     BEGIN_LOOP(),
         SET_INT(oIntangibleTimer, 0),
@@ -6161,7 +6176,22 @@ const BehaviorScript bhvSlidingDoor[] = {
     ADD_FLOAT(oPosY, 1),
     SET_HOME(),
     SET_FLOAT(oDrawingDistance, 10000),
-    // CALL_NATIVE(bhv_init_room),
+    CALL_NATIVE(bhv_init_room),
+    CALL_NATIVE(bhv_sliding_door_init),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_sliding_door_loop),
+        CALL_NATIVE(load_object_collision_model),
+    END_LOOP(),
+};
+
+const BehaviorScript bhvSlidingDoorNoRoom[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    LOAD_COLLISION_DATA(sliding_door_collision),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO | OBJ_FLAG_ACTIVE_FROM_AFAR | OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO)),
+    // DROP_TO_FLOOR(),
+    ADD_FLOAT(oPosY, 1),
+    SET_HOME(),
+    SET_FLOAT(oDrawingDistance, 10000),
     CALL_NATIVE(bhv_sliding_door_init),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_sliding_door_loop),

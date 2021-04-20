@@ -24,6 +24,7 @@
 #include "mario_actions_submerged.h"
 #include "mario_misc.h"
 #include "mario_step.h"
+#include "level_update.h"
 #include "memory.h"
 #include "object_fields.h"
 #include "object_helpers.h"
@@ -33,6 +34,7 @@
 #include "sound_init.h"
 #include "rumble_init.h"
 #include "puppycam2.h"
+#include "actors/group0.h"
 
 u32 unused80339F10;
 s8 filler80339F1C[20];
@@ -99,33 +101,30 @@ s16 set_mario_animation(struct MarioState *m, s32 targetAnimID) {
 }
 
 s16 set_custom_mario_animation(struct MarioState *m, s32 targetAnimID) {
-    return TRUE;
-    // CTODO: Get custom anims
+    struct Object *o = m->marioObj;
 
-    // struct Object *o = m->marioObj;
+    if (o->header.gfx.animInfo.animID != targetAnimID) {
+        struct Animation **animPtrAddr = &mario_anims[targetAnimID];
+        struct Animation **animSegmented = segmented_to_virtual(animPtrAddr);
+        struct Animation *targetAnim = segmented_to_virtual(*animSegmented);
 
-    // if (o->header.gfx.animInfo.animID != targetAnimID) {
-    //     struct Animation **animPtrAddr = &mario_anims[targetAnimID];
-    //     struct Animation **animSegmented = segmented_to_virtual(animPtrAddr);
-    //     struct Animation *targetAnim = segmented_to_virtual(*animSegmented);
+        o->header.gfx.animInfo.animID = targetAnimID;
+        o->header.gfx.animInfo.curAnim = targetAnim;
+        o->header.gfx.animInfo.animAccel = 0;
+        o->header.gfx.animInfo.animYTrans = m->unkB0;
 
-    //     o->header.gfx.animInfo.animID = targetAnimID;
-    //     o->header.gfx.animInfo.curAnim = targetAnim;
-    //     o->header.gfx.animInfo.animAccel = 0;
-    //     o->header.gfx.animInfo.animYTrans = m->unkB0;
+        if (targetAnim->flags & ANIM_FLAG_2) {
+            o->header.gfx.animInfo.animFrame = targetAnim->startFrame;
+        } else {
+            if (targetAnim->flags & ANIM_FLAG_FORWARD) {
+                o->header.gfx.animInfo.animFrame = targetAnim->startFrame + 1;
+            } else {
+                o->header.gfx.animInfo.animFrame = targetAnim->startFrame - 1;
+            }
+        }
+    }
 
-    //     if (targetAnim->flags & ANIM_FLAG_2) {
-    //         o->header.gfx.animInfo.animFrame = targetAnim->startFrame;
-    //     } else {
-    //         if (targetAnim->flags & ANIM_FLAG_FORWARD) {
-    //             o->header.gfx.animInfo.animFrame = targetAnim->startFrame + 1;
-    //         } else {
-    //             o->header.gfx.animInfo.animFrame = targetAnim->startFrame - 1;
-    //         }
-    //     }
-    // }
-
-    // return o->header.gfx.animInfo.animFrame;
+    return o->header.gfx.animInfo.animFrame;
 }
 
 /**
@@ -165,35 +164,32 @@ s16 set_mario_anim_with_accel(struct MarioState *m, s32 targetAnimID, s32 accel)
 }
 
 s16 set_custom_mario_animation_accel(struct MarioState *m, s32 targetAnimID, s32 accel) {
-    return TRUE;
-    // CTODO: Get custom anims
+    struct Object *o = m->marioObj;
 
-    // struct Object *o = m->marioObj;
+    if (o->header.gfx.animInfo.animID != targetAnimID) {
+        struct Animation **animPtrAddr = &mario_anims[targetAnimID];
+        struct Animation **animSegmented = segmented_to_virtual(animPtrAddr);
+        struct Animation *targetAnim = segmented_to_virtual(*animSegmented);
 
-    // if (o->header.gfx.animInfo.animID != targetAnimID) {
-    //     struct Animation **animPtrAddr = &mario_anims[targetAnimID];
-    //     struct Animation **animSegmented = segmented_to_virtual(animPtrAddr);
-    //     struct Animation *targetAnim = segmented_to_virtual(*animSegmented);
+        o->header.gfx.animInfo.animID = targetAnimID;
+        o->header.gfx.animInfo.curAnim = targetAnim;
+        o->header.gfx.animInfo.animAccel = 0;
+        o->header.gfx.animInfo.animYTrans = m->unkB0;
 
-    //     o->header.gfx.animInfo.animID = targetAnimID;
-    //     o->header.gfx.animInfo.curAnim = targetAnim;
-    //     o->header.gfx.animInfo.animAccel = 0;
-    //     o->header.gfx.animInfo.animYTrans = m->unkB0;
+        if (targetAnim->flags & ANIM_FLAG_2) {
+            o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10);
+        } else {
+            if (targetAnim->flags & ANIM_FLAG_FORWARD) {
+                o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10) + accel;
+            } else {
+                o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10) - accel;
+            }
+        }
 
-    //     if (targetAnim->flags & ANIM_FLAG_2) {
-    //         o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10);
-    //     } else {
-    //         if (targetAnim->flags & ANIM_FLAG_FORWARD) {
-    //             o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10) + accel;
-    //         } else {
-    //             o->header.gfx.animInfo.animFrameAccelAssist = (targetAnim->startFrame << 0x10) - accel;
-    //         }
-    //     }
+        o->header.gfx.animInfo.animFrame = (o->header.gfx.animInfo.animFrameAccelAssist >> 0x10);
+    }
 
-    //     o->header.gfx.animInfo.animFrame = (o->header.gfx.animInfo.animFrameAccelAssist >> 0x10);
-    // }
-
-    // return o->header.gfx.animInfo.animFrame;
+    return o->header.gfx.animInfo.animFrame;
 }
 
 /**
@@ -1853,6 +1849,74 @@ void execute_mario_warp(void) {
     }
 }
 
+// #433D0D
+#define MAIN_CLOTHES_R 0x43
+#define MAIN_CLOTHES_G 0x3D
+#define MAIN_CLOTHES_B 0x0D
+#define MAIN_CLOTHES_R2 0x21
+#define MAIN_CLOTHES_G2 0x1E
+#define MAIN_CLOTHES_B2 0x06
+
+#define SUB_CLOTHES_R 0x0D
+#define SUB_CLOTHES_G 0x3D
+#define SUB_CLOTHES_B 0x43
+#define SUB_CLOTHES_R2 0x06
+#define SUB_CLOTHES_G2 0x1E
+#define SUB_CLOTHES_B2 0x21
+
+// #e3d2ff #6e47ae
+#define RING_CLOTHES_R 0xE3
+#define RING_CLOTHES_G 0xD2
+#define RING_CLOTHES_B 0xFF
+#define RING_CLOTHES_R2 0x6E
+#define RING_CLOTHES_G2 0x47
+#define RING_CLOTHES_B2 0xAE
+
+void set_color(unsigned char vec[3], unsigned char r, unsigned char g, unsigned char b) {
+    vec[0] = r;
+    vec[1] = g;
+    vec[2] = b;
+}
+
+void update_clothes_colors(void) {
+    Lights1 *clothes = segmented_to_virtual(&mario_clothes_lights);
+
+    if (gMarioState->canAirJump) {
+        unsigned char r, g, b, ra, ga, ba;
+        r = approach_f32_asymptotic(clothes->l->l.col[0], RING_CLOTHES_R, 0.25f);
+        g = approach_f32_asymptotic(clothes->l->l.col[1], RING_CLOTHES_G, 0.25f);
+        b = approach_f32_asymptotic(clothes->l->l.col[2], RING_CLOTHES_B, 0.25f);
+        ra = approach_f32_asymptotic(clothes->a.l.col[0], RING_CLOTHES_R2, 0.25f);
+        ga = approach_f32_asymptotic(clothes->a.l.col[1], RING_CLOTHES_G2, 0.25f);
+        ba = approach_f32_asymptotic(clothes->a.l.col[2], RING_CLOTHES_B2, 0.25f);
+        set_color(clothes->a.l.col, ra, ga, ba);
+        set_color(clothes->a.l.colc, ra, ga, ba);
+        set_color(clothes->l->l.col, r, g, b);
+        set_color(clothes->l->l.colc, r, g, b);
+        return;
+    }
+
+    set_color(clothes->a.l.col, MAIN_CLOTHES_R2, MAIN_CLOTHES_G2, MAIN_CLOTHES_B2);
+    set_color(clothes->a.l.colc, MAIN_CLOTHES_R2, MAIN_CLOTHES_G2, MAIN_CLOTHES_B2);
+    set_color(clothes->l->l.col, MAIN_CLOTHES_R, MAIN_CLOTHES_G, MAIN_CLOTHES_B);
+    set_color(clothes->l->l.colc, MAIN_CLOTHES_R, MAIN_CLOTHES_G, MAIN_CLOTHES_B);
+
+    // switch(gCurrAreaIndex) {
+    // case 2:
+    // case 4:
+    // case 5:
+    //     set_color(clothes->a.l.col, SUB_CLOTHES_R2, SUB_CLOTHES_G2, SUB_CLOTHES_B2);
+    //     set_color(clothes->a.l.colc, SUB_CLOTHES_R2, SUB_CLOTHES_G2, SUB_CLOTHES_B2);
+    //     set_color(clothes->l->l.col, SUB_CLOTHES_R, SUB_CLOTHES_G, SUB_CLOTHES_B);
+    //     set_color(clothes->l->l.colc, SUB_CLOTHES_R, SUB_CLOTHES_G, SUB_CLOTHES_B);
+    //     break;
+    // default:
+
+    //     // #433D0D
+    //     break;
+    // }
+}
+
 /**
  * Main function for executing Mario's behavior.
  */
@@ -1861,6 +1925,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
 
     if (gMarioState->action) {
         gMarioState->marioObj->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+        update_clothes_colors();
         mario_reset_bodystate(gMarioState);
         update_mario_inputs(gMarioState);
         mario_handle_special_floors(gMarioState);
@@ -1871,6 +1936,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             return 0;
         }
 
+#if FALSE
 // // CTODO: DEBUG
         if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
             if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
@@ -1880,6 +1946,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         // }
         if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
             if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
+            initiate_warp(LEVEL_PSS, 0, 0x0A, 0);
         }
         // if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
         //     set_current_cutscene(gCurCutscene - 1);
@@ -1898,6 +1965,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
             gMarioState->action = ACT_DOLPHIN_DIVE;
         }
+#endif
 
         handle_cutscene();
         execute_mario_warp();

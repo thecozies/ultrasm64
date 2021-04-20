@@ -2,6 +2,8 @@
 #include "config.h"
 #include "mtx.h"
 
+#include "engine/math_util.h"
+
 int myScale = 1;
 f32 gS2DScale = 1.0f;
 int myDegrees = 0;
@@ -85,6 +87,7 @@ void mtx_pipeline2(uObjMtx *m, int x, int y) {
         mat2_translate_vec(m, -(myDegrees) * M_DTOR, 1);
     }
 
+    gDPPipeSync(gdl_head++);
     gSPObjMatrix(gdl_head++, m);
 }
 
@@ -108,6 +111,7 @@ void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
         gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     }
 
+    gDPPipeSync(gdl_head++);
     gSPObjSprite(gdl_head++, &s2d_font);
 }
 

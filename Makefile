@@ -87,7 +87,7 @@ ifeq      ($(VERSION),jp)
   VERSION_JP_US  ?= true
 else ifeq ($(VERSION),us)
   DEFINES   += VERSION_US=1
-  OPT_FLAGS := -g
+  OPT_FLAGS := -g3
   GRUCODE   ?= f3dzex
   VERSION_JP_US  ?= true
 else ifeq ($(VERSION),eu)
