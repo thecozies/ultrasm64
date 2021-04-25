@@ -28,10 +28,16 @@
             "release_rate": 10,
             "envelope": "envelope",
             "sound": "24_custom_temple_two"
+        },
+        "inst2": {
+            "release_rate": 10,
+            "envelope": "envelope",
+            "sound": "25_custom_camping"
         }
     },
     "instrument_list": [
         "inst0",
-        "inst1"
+        "inst1",
+        "inst2"
     ]
 }
