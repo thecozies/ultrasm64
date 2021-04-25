@@ -71,6 +71,7 @@ struct GlobalFog sTutorialFog = { 22, 22, 22, 0xFF, 350, 1000 };
 struct GlobalFog sEndFog = { 74, 68, 85, 0xDF, 830, 1100 };
 struct GlobalFog sEndTunnelFog = { 24, 20, 28, 0xFF, 750, 1000 };
 struct GlobalFog sEndFinalFog = { 114, 108, 125, 0xDF, 900, 1100 };
+struct GlobalFog sCampFog = { 0x17, 0x17, 0x17, 0xDF, 800, 1000 };
 
 s16 gGoalFadeState = 0;
 s32 sGoalFadeTimer = 0;
@@ -94,6 +95,7 @@ enum FOG_OPTIONS {
     END_FOG,
     END_TUNNEL_FOG,
     END_FINAL_FOG,
+    CAMP_FOG,
 };
 
 s8 sCurFog = DEFAULT_FOG;
@@ -486,17 +488,22 @@ void render_goals(void) {
     }
 }
 
+#define INTRO_FADE_IN_LEN 45
+#define INTRO_FADE_OUT_LEN 35
+#define INTRO_FADE_HOLD_LEN (TEMPLE_INTRO_WALKING_DOWN_HALLWAY - TEMPLE_INTRO_SHOW_TITLE_SCREEN - INTRO_FADE_OUT_LEN - INTRO_FADE_IN_LEN - 5)
+
 void render_intro_text(void) {
     if (
-        gIntroTextShowing &&
-        !gGameStarted &&
-        update_text_fade(GOAL_FADE_IN_LEN + 15, GOAL_SHOW_LEN, GOAL_FADE_OUT_LEN + 30)
+        gCurCutscene == CUTSCENE_INTRO_TEMPLE &&
+        gCurCutsceneTimer >= TEMPLE_INTRO_SHOW_TITLE_SCREEN &&
+        gCurCutsceneTimer < TEMPLE_INTRO_WALKING_DOWN_HALLWAY &&
+        update_text_fade(INTRO_FADE_IN_LEN, INTRO_FADE_HOLD_LEN, INTRO_FADE_OUT_LEN)
     ) {
         // char s1[] = "Lucy's\nLevitation";
         s2d_init();
         s2d_alpha = sFadeAlpha;
 
-        s2d_print_alloc(40, (int) (SCREEN_HEIGHT - 80), ALIGN_LEFT, sGameTitle);
+        s2d_print_alloc((SCREEN_WIDTH / 2) + 10, (SCREEN_HEIGHT / 4), ALIGN_CENTER, sGameTitle);
         // gIntroTextPos++;
         s2d_stop();
         sTimesRenderedText++;
@@ -521,6 +528,7 @@ void set_current_fog_state(s32 fogState) {
 
 void update_fog(void) {
     struct GlobalFog* targetFog;
+    if (gCurrLevelNum == LEVEL_CASTLE_COURTYARD && sCurFog != CAMP_FOG) set_current_fog_state(CAMP_FOG);
 
     gCheckingSurfaceCollisionsForCamera = TRUE;
     gCameraWaterLevel = find_water_level(gLakituState.pos[0], gLakituState.pos[2]);
@@ -552,6 +560,9 @@ void update_fog(void) {
                 break;
             case END_FINAL_FOG:
                 targetFog = &sEndFinalFog;
+                break;
+            case CAMP_FOG:
+                targetFog = &sCampFog;
                 break;
             default:
                 targetFog = &sDefaultFog;

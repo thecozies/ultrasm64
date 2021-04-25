@@ -357,6 +357,8 @@ struct MarioState
     u8 slowDeathCounter;
     s16 wallAngle;
     s8 doubleA;
+    s16 warpYaw;
+    s8 warpAngleSet;
 };
 
 #endif // TYPES_H

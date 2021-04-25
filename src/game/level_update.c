@@ -11,6 +11,7 @@
 #include "main.h"
 #include "engine/math_util.h"
 #include "engine/graph_node.h"
+#include "engine/behavior_script.h"
 #include "area.h"
 #include "save_file.h"
 #include "sound_init.h"
@@ -183,11 +184,18 @@ s8 gNeverEnteredCastle;
 
 struct MarioState *gMarioState = &gMarioStates[0];
 s8 sWarpCheckpointActive = FALSE;
-u8 gParasitesGrabbed[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-u8 gParasitesGoals[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-s8 gParasitesGoalsSet[16] = {
-    FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE
+u8 gParasitesGrabbed[17] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+u8 gParasitesGoals[17] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+s8 gParasitesGoalsSet[17] = {
+    FALSE, FALSE, FALSE, FALSE,
+    FALSE, FALSE, FALSE, FALSE,
+    FALSE, FALSE, FALSE, FALSE,
+    FALSE, FALSE, FALSE, FALSE,
+    FALSE
 };
+
+u8 gFireValue = 0;
+u8 gFireAlpha = 0;
 
 u8 unused3[4];
 u8 unused4[2];
@@ -454,29 +462,29 @@ void init_mario_after_warp(void) {
             play_cap_music(SEQUENCE_ARGS(4, SEQ_EVENT_POWERUP));
         }
 
-#ifndef VERSION_JP
-        if (gCurrLevelNum == LEVEL_BOB
-            && get_current_background_music() != SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE)
-            && sTimerRunning) {
-            play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE), 0);
-        }
-#endif
+// #ifndef VERSION_JP
+//         if (gCurrLevelNum == LEVEL_BOB
+//             && get_current_background_music() != SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE)
+//             && sTimerRunning) {
+//             play_music(SEQ_PLAYER_LEVEL, SEQUENCE_ARGS(4, SEQ_LEVEL_SLIDE), 0);
+//         }
+// #endif
 
-        if (sWarpDest.levelNum == LEVEL_CASTLE && sWarpDest.areaIdx == 1
-#ifndef VERSION_JP
-            && (sWarpDest.nodeId == 31 || sWarpDest.nodeId == 32)
-#else
-            && sWarpDest.nodeId == 31
-#endif
-        )
-            play_sound(SOUND_MENU_MARIO_CASTLE_WARP, gGlobalSoundSource);
-#ifndef VERSION_JP
-        if (sWarpDest.levelNum == LEVEL_CASTLE_GROUNDS && sWarpDest.areaIdx == 1
-            && (sWarpDest.nodeId == 7 || sWarpDest.nodeId == 10 || sWarpDest.nodeId == 20
-                || sWarpDest.nodeId == 30)) {
-            play_sound(SOUND_MENU_MARIO_CASTLE_WARP, gGlobalSoundSource);
-        }
-#endif
+//         if (sWarpDest.levelNum == LEVEL_CASTLE && sWarpDest.areaIdx == 1
+// #ifndef VERSION_JP
+//             && (sWarpDest.nodeId == 31 || sWarpDest.nodeId == 32)
+// #else
+//             && sWarpDest.nodeId == 31
+// #endif
+//         )
+//             play_sound(SOUND_MENU_MARIO_CASTLE_WARP, gGlobalSoundSource);
+// #ifndef VERSION_JP
+//         if (sWarpDest.levelNum == LEVEL_CASTLE_GROUNDS && sWarpDest.areaIdx == 1
+//             && (sWarpDest.nodeId == 7 || sWarpDest.nodeId == 10 || sWarpDest.nodeId == 20
+//                 || sWarpDest.nodeId == 30)) {
+//             play_sound(SOUND_MENU_MARIO_CASTLE_WARP, gGlobalSoundSource);
+//         }
+// #endif
     }
 }
 
@@ -807,7 +815,7 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
             case WARP_OP_WARP_OBJECT:
                 sDelayedWarpTimer = 20;
                 sSourceWarpNodeId = (m->usedObj->oBehParams & 0x00FF0000) >> 16;
-                isBlackFade = sSourceWarpNodeId == 0x0F;
+                isBlackFade = sSourceWarpNodeId == 0x0F || gCurrLevelNum == LEVEL_CASTLE_COURTYARD;
                 val04 = !music_changed_through_warp(sSourceWarpNodeId);
                 // play_transition(WARP_TRANSITION_FADE_INTO_STAR, 0x14, 0x00, 0x00, 0x00);
                 if (isBlackFade) play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0x00, 0x00, 0x00);
@@ -989,6 +997,36 @@ void basic_update(UNUSED s16 *arg) {
     }
 }
 
+#define FIRE_RATE_MIN       0x1000
+#define FIRE_RATE_MINF      4096.0f
+#define FIRE_RATE_VARIANCE  (4096.0f * 2.5f)
+#define BASE_AMPLITUDE      20.0f
+#define AMPLITUDE_VARIANCE  8.0f
+#define AMPLITUDE_MAX       (BASE_AMPLITUDE + AMPLITUDE_VARIANCE)
+
+void adjust_fire_env(void) {
+    static int rate = FIRE_RATE_MIN;
+	static int currentX = 0;
+	static int timeX = 0;
+	static f32 amplitudeX = BASE_AMPLITUDE;
+    f32 ampVarianceCurve;
+
+    amplitudeX = BASE_AMPLITUDE + (sins(timeX / 4) * AMPLITUDE_VARIANCE);
+    ampVarianceCurve = 0.5f + (0.5f * (amplitudeX / AMPLITUDE_MAX));
+
+    currentX = (int) ((amplitudeX * 0.5f) * (sins(timeX) + 1.0f));
+    timeX += rate;
+    if (currentX < (amplitudeX * 0.4f)) {
+        rate = (int) MAX(
+            FIRE_RATE_MIN,
+            FIRE_RATE_MINF + (random_float() * (FIRE_RATE_VARIANCE * ampVarianceCurve))
+        );
+    }
+
+    gFireAlpha = (u8) MAX(0, currentX);
+    gFireValue = (u8) MAX(0, (amplitudeX - gFireAlpha));
+}
+
 s32 play_mode_normal(void) {
     if (gCurrDemoInput != NULL) {
         print_intro_text();
@@ -1014,6 +1052,8 @@ s32 play_mode_normal(void) {
     if (gCurrentArea != NULL) {
         update_camera(gCurrentArea->camera);
     }
+
+    if (gCurrLevelNum == LEVEL_CASTLE_COURTYARD) adjust_fire_env();
 
     initiate_painting_warp();
     initiate_delayed_warp();

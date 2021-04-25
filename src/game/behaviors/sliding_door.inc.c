@@ -28,8 +28,13 @@ void sliding_door_act_4(void) {
 void sliding_door_act_3(void) {
     if ((o->oBehParams >> 24) & 0xFF && gCurCutscene == 7) {
         if (gCurCutsceneTimer >= 550) {
-            o->oVelY = MAX(o->oVelY - 0.6f, -40.0f);
-            o->oPosY = MAX(o->oPosY + o->oVelY, o->oHomeY);
+            if (o->oPosY > o->oHomeY) {
+                o->oVelY = MAX(o->oVelY - 0.6f, -40.0f);
+                o->oPosY = MAX(o->oPosY + o->oVelY, o->oHomeY);
+                if (o->oPosY == o->oHomeY) {
+                    spawn_mist_particles_variable(0, 0, 45.0f);
+                }
+            }
         }
     }
     return;
@@ -127,7 +132,7 @@ void bhv_sliding_door_init(void) {
     s32 parasiteGroup = (o->oBehParams >> 16) & 0xFF;
     s32 cutsceneIndex = (o->oBehParams >> 24) & 0xFF;
 
-    if (cutsceneIndex && cutsceneIndex < 0xFF) {
+    if (cutsceneIndex && cutsceneIndex < 0xFF && cutsceneIndex != 0x10) {
         o->oPosY += SLIDING_DOOR_GOAL_HEIGHT;
         o->oAction = 3;
         return;

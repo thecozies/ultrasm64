@@ -1,4 +1,7 @@
 
+
+#define FIRST_ORB_END_Z -1026.0f
+
 void bhv_parasite_interact(void) {
     if (gCurrLevelNum == LEVEL_PSS) {
         if (o->oRoom != -1) {
@@ -19,6 +22,10 @@ void bhv_parasite_interact(void) {
         }
     } else {
         o->oOpacity = 255;
+    }
+
+    if (gCurrLevelNum == LEVEL_CASTLE_COURTYARD && gCurCutsceneTimer >= CUTSCENE_INTRO_ORB_APPEAR) {
+        o->oPosZ = approach_f32_asymptotic(o->oPosZ, FIRST_ORB_END_Z, 0.05f);
     }
 
     if (obj_check_if_collided_with_object(o, gMarioObject)) {

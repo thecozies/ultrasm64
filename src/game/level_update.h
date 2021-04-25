@@ -64,9 +64,9 @@ extern struct CreditsEntry *gCurrCreditsEntry;
 
 extern struct MarioState gMarioStates[];
 extern struct MarioState *gMarioState;
-extern u8 gParasitesGrabbed[16];
-extern u8 gParasitesGoals[16];
-extern s8 gParasitesGoalsSet[16];
+extern u8 gParasitesGrabbed[17];
+extern u8 gParasitesGoals[17];
+extern s8 gParasitesGoalsSet[17];
 
 extern s16 sCurrPlayMode;
 extern u16 D_80339ECA;
@@ -91,6 +91,9 @@ extern s16 sSourceWarpNodeId;
 extern s32 sDelayedWarpArg;
 extern u8 unused4[2];
 extern s8 sTimerRunning;
+
+extern u8 gFireValue;
+extern u8 gFireAlpha;
 
 struct HudDisplay {
     /*0x00*/ s16 lives;

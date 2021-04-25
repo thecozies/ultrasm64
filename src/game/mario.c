@@ -44,6 +44,7 @@ s8 gGameStarted = FALSE;
 s8 gCurCutscene = 0;
 u32 gCurCutsceneTimer = 0;
 s32 sWarpOp = 0;
+s8 sIntroCutsceneDone = FALSE;
 
 
 /**************************************************
@@ -953,7 +954,7 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
             break;
 
         case ACT_LAVA_BOOST:
-            m->vel[1] = 84.0f;
+            m->vel[1] = 20.0f;
             if (actionArg == 0) {
                 m->forwardVel = 0.0f;
             }
@@ -1826,9 +1827,14 @@ void handle_cutscene(void) {
         case CUTSCENE_END:
             // CTODO
             break;
-        case NO_CUTSCENE:
         case CUTSCENE_TOWERCLIMB:
+            // CTODO
+            break;
+        case NO_CUTSCENE:
         default:
+            if (!sIntroCutsceneDone && gCurrLevelNum == LEVEL_CASTLE_COURTYARD) {
+                set_current_cutscene(CUTSCENE_INTRO);
+            }
             return;
     }
 }
@@ -1839,6 +1845,12 @@ void set_delayed_mario_warp(s32 warpOp) {
 
 void execute_mario_warp(void) {
     // sWarpOp = warpOp;
+    if (gMarioState->warpAngleSet) {
+        gMarioState->intendedYaw = gMarioState->warpYaw;
+        gMarioState->intendedMag = 8.0f;
+        gMarioState->input = INPUT_NONZERO_ANALOG;
+    }
+
     if (sWarpOp) {
         sWarpOp--;
         if ((sWarpOp & 0xFFFF) == 0) {
@@ -1929,14 +1941,14 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         mario_reset_bodystate(gMarioState);
         update_mario_inputs(gMarioState);
         mario_handle_special_floors(gMarioState);
-        mario_process_interactions(gMarioState);
+        if (!gMarioState->warpAngleSet) mario_process_interactions(gMarioState);
 
         // If Mario is OOB, stop executing actions.
         if (gMarioState->floor == NULL) {
             return 0;
         }
 
-#if FALSE
+// #if FALSE
 // // CTODO: DEBUG
         if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
             if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
@@ -1965,7 +1977,8 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
             gMarioState->action = ACT_DOLPHIN_DIVE;
         }
-#endif
+        // print_text_fmt_int(20, 20, "%d", (s32) gMarioState->pos[2]);
+// #endif
 
         handle_cutscene();
         execute_mario_warp();
@@ -2064,6 +2077,7 @@ void init_mario(void) {
     // CTODO: Check save file
     gMarioState->dolphinPowers = FALSE;
     gMarioState->canAirJump = FALSE;
+    gMarioState->warpAngleSet = FALSE;
 
     gMarioState->invincTimer = 0;
 
@@ -2152,6 +2166,7 @@ void init_mario(void) {
 
     if (gCurrLevelNum == LEVEL_CASTLE_GROUNDS && gCurrAreaIndex == 1) {
         set_current_cutscene(CUTSCENE_INTRO_TEMPLE);
+        set_current_fog_state(0);
     }
 }
 
@@ -2195,4 +2210,6 @@ void init_mario_from_save_file(void) {
 
     gHudDisplay.coins = 0;
     gHudDisplay.wedges = 8;
+
+    gMarioState->warpAngleSet = FALSE;
 }

@@ -80,5 +80,6 @@ void spline_get_weights(Vec4f result, f32 t, UNUSED s32 c);
 void anim_spline_init(Vec4s *keyFrames);
 s32 anim_spline_poll(Vec3f result);
 f32 get_relative_position_between_ranges(f32 x, f32 fromA, f32 toA, f32 fromB, f32 toB);
+// f32 smooth_interp(f32 y0, f32 y1, f32 y2, f32 y3, f32 mu);
 
 #endif // MATH_UTIL_H

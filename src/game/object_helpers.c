@@ -128,19 +128,51 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
 
 Gfx *geo_update_fog(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     Gfx *dlStart, *dlHead;
-    s32 objectOpacity;
+    struct GraphNodeGenerated *currentGraphNode;
 
     dlStart = NULL;
 
     if (callContext == GEO_CONTEXT_RENDER) {
         s32 setEnv = gCurrLevelNum == LEVEL_PSS;
+        currentGraphNode = (struct GraphNodeGenerated *) node;
+
+        if (currentGraphNode->parameter != 0) {
+            currentGraphNode->fnNode.node.flags =
+                (currentGraphNode->parameter << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
+        }
+
         dlStart = alloc_display_list(sizeof(Gfx) * (setEnv ? 4 : 3));
-        
 
         dlHead = dlStart;
         gDPSetFogColor(dlHead++, gGlobalFog.r, gGlobalFog.g, gGlobalFog.b, gGlobalFog.a);
         gSPFogPosition(dlHead++, gGlobalFog.low, gGlobalFog.high);
         if (setEnv) gDPSetEnvColor(dlHead++, 0, 0, 0, 0);
+        gSPEndDisplayList(dlHead);
+    }
+
+    return dlStart;
+}
+
+Gfx *geo_set_fire_env(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    Gfx *dlStart, *dlHead;
+    struct GraphNodeGenerated *currentGraphNode;
+
+    dlStart = NULL;
+
+    // You'd set the flags to 7 << 8 to make it affect layer 7
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        currentGraphNode = (struct GraphNodeGenerated *) node;
+
+        if (currentGraphNode->parameter != 0) {
+            currentGraphNode->fnNode.node.flags =
+                (currentGraphNode->parameter << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
+        }
+    
+        dlStart = alloc_display_list(sizeof(Gfx) * 2);
+
+        dlHead = dlStart;
+        gDPSetEnvColor(dlHead++, gFireValue, gFireValue, gFireValue, gFireAlpha);
         gSPEndDisplayList(dlHead);
     }
 

@@ -1314,16 +1314,6 @@ void towerclimb_cutscene(void) {
 #define TEMPLE_X_START_OFFSET 2500.0f
 #define TEMPLE_Y_START_OFFSET 1000.0f
 
-enum TEMPLE_INTRO_ACTS {
-    SHOW_TITLE_SCREEN = 214,
-    WALKING_DOWN_HALLWAY = 316,
-    WALKING_OUT_OF_HALLWAY = 421,
-    DOOR_SLAM_SHOT_START = 547,
-    DOOR_SLAM_FROM_HALLWAY = 584,
-    DOOR_SHUT_REVERSE_SHOT = 637,
-    TEMPLE_INTRO_FINAL_FRAME = 749
-};
-
 #define TEMPLE_INTRO_LENGTH 749.0f
 
 void temple_intro_cutscene(void) {
@@ -1364,10 +1354,7 @@ void temple_intro_cutscene(void) {
         gMarioState->marioObj->header.gfx.pos[0] = gMarioState->pos[0];
         return;
     }
-    else if (gCurCutsceneTimer >= SHOW_TITLE_SCREEN && gCurCutsceneTimer < WALKING_DOWN_HALLWAY) {
-        print_text_centered(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "Lucys levitation");
-    }
-    else if (gCurCutsceneTimer == DOOR_SLAM_SHOT_START - 1) {
+    else if (gCurCutsceneTimer == TEMPLE_INTRO_DOOR_SLAM_SHOT_START - 1) {
         gMarioState->pos[0] = -1558.0f;
     }
 

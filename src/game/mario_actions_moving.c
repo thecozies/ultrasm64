@@ -1304,7 +1304,7 @@ s32 act_burning_ground(struct MarioState *m) {
     }
 
     m->marioObj->oMarioBurnTimer += 2;
-    if (m->marioObj->oMarioBurnTimer > 160) {
+    if (m->marioObj->oMarioBurnTimer > 80) {
         return set_mario_action(m, ACT_WALKING, 0);
     }
 
@@ -1339,10 +1339,10 @@ s32 act_burning_ground(struct MarioState *m) {
     m->particleFlags |= PARTICLE_FIRE;
     play_sound(SOUND_MOVING_LAVA_BURN, m->marioObj->header.gfx.cameraToObject);
 
-    m->health -= 10;
-    if (m->health < 0x100) {
-        set_mario_action(m, ACT_STANDING_DEATH, 0);
-    }
+    // m->health -= 10;
+    // if (m->health < 0x100) {
+    //     set_mario_action(m, ACT_STANDING_DEATH, 0);
+    // }
 
     m->marioBodyState->eyeState = MARIO_EYES_DEAD;
 #if ENABLE_RUMBLE

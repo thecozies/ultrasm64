@@ -876,20 +876,22 @@ u32 interact_warp(struct MarioState *m, UNUSED u32 interactType, struct Object *
             o->oInteractStatus = INT_STATUS_INTERACTED;
             m->interactObj = o;
             m->usedObj = o;
+            m->warpYaw = o->oFaceAngleYaw;
+            m->warpAngleSet = TRUE;
 
 #if ENABLE_RUMBLE
             if (o->collisionData == segmented_to_virtual(warp_pipe_seg3_collision_03009AC8)) {
-                play_sound(SOUND_MENU_ENTER_PIPE, m->marioObj->header.gfx.cameraToObject);
+                // play_sound(SOUND_MENU_ENTER_PIPE, m->marioObj->header.gfx.cameraToObject);
                 queue_rumble_data(15, 80);
             } else {
-                play_sound(SOUND_MENU_ENTER_HOLE, m->marioObj->header.gfx.cameraToObject);
+                // play_sound(SOUND_MENU_ENTER_HOLE, m->marioObj->header.gfx.cameraToObject);
                 queue_rumble_data(12, 80);
             }
 #else
-            play_sound(o->collisionData == segmented_to_virtual(warp_pipe_seg3_collision_03009AC8)
-                           ? SOUND_MENU_ENTER_PIPE
-                           : SOUND_MENU_ENTER_HOLE,
-                       m->marioObj->header.gfx.cameraToObject);
+            // play_sound(o->collisionData == segmented_to_virtual(warp_pipe_seg3_collision_03009AC8)
+                    //        ? SOUND_MENU_ENTER_PIPE
+                    //        : SOUND_MENU_ENTER_HOLE,
+                    //    m->marioObj->header.gfx.cameraToObject);
 #endif
 
             mario_stop_riding_object(m);
@@ -1897,7 +1899,9 @@ void mario_handle_special_floors(struct MarioState *m) {
         if (!(m->action & ACT_FLAG_AIR) && !(m->action & ACT_FLAG_SWIMMING)) {
             switch (floorType) {
                 case SURFACE_BURNING:
-                    check_lava_boost(m);
+                    m->marioObj->oMarioBurnTimer = 0;
+                    set_mario_action(m, ACT_BURNING_JUMP, 1);
+                    // check_lava_boost(m);
                     break;
             }
         }
