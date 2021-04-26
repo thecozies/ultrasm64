@@ -1834,6 +1834,7 @@ void handle_cutscene(void) {
         default:
             if (!sIntroCutsceneDone && gCurrLevelNum == LEVEL_CASTLE_COURTYARD) {
                 set_current_cutscene(CUTSCENE_INTRO);
+                set_mario_action(gMarioState, ACT_CAMP_INTRO, 0);
             }
             return;
     }
@@ -1948,7 +1949,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             return 0;
         }
 
-#if FALSE
+// #if FALSE
 // // CTODO: DEBUG
         if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
             if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
@@ -1977,8 +1978,10 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
             gMarioState->action = ACT_DOLPHIN_DIVE;
         }
+        // print_text_fmt_int(20, 80, "%d", (s32) gMarioState->pos[0]);
+        // print_text_fmt_int(20, 50, "%d", (s32) gMarioState->pos[1]);
         // print_text_fmt_int(20, 20, "%d", (s32) gMarioState->pos[2]);
-#endif
+// #endif
 
         handle_cutscene();
         execute_mario_warp();

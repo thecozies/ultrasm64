@@ -2212,7 +2212,42 @@ s32 act_temple_1_intro(struct MarioState *m) {
         }
         return FALSE;
     }
+}
 
+// lucy walks in to the temple
+s32 act_camp_intro(struct MarioState *m) {
+    struct Surface *surf;
+
+    if (m->actionTimer++ == 0) {
+        m->pos[0] = 193.0f;
+        m->pos[1] -= 40.0f;
+        m->pos[2] = 339.0f;
+        vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
+    }
+
+    switch (m->actionState)
+    {
+    case 0:
+        set_custom_mario_animation(m, LUCY_SITTING_ANIM);
+        if (m->actionTimer == CUTSCENE_INTRO_LUCY_LOOKS_OVER) {
+            m->actionState = 1;
+        }
+        break;
+
+    case 1:
+        set_custom_mario_animation(m, LUCY_SITTING_LOOKING_OVER_ANIM);
+        if (is_anim_at_end(m)) {
+            m->actionState = 2;
+            m->pos[1] = find_floor(m->pos[0], m->pos[1] + 100.0f, m->pos[2], &surf);
+            vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
+        }
+        break;
+    
+    default:
+        set_mario_action(m, ACT_IDLE, 0);
+        break;
+    }
+    return FALSE;
 }
 
 // dialog 1
@@ -2835,6 +2870,7 @@ s32 mario_execute_cutscene_action(struct MarioState *m) {
         case ACT_PUTTING_ON_CAP:             cancel = act_putting_on_cap(m);             break;
         case ACT_SLOW_WARP:                  cancel = act_slow_warp(m);                  break;
         case ACT_TEMPLE_1_INTRO:             cancel = act_temple_1_intro(m);             break;
+        case ACT_CAMP_INTRO:                 cancel = act_camp_intro(m);                 break;
     }
     /* clang-format on */
 
