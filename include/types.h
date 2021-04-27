@@ -359,6 +359,9 @@ struct MarioState
     s8 doubleA;
     s16 warpYaw;
     s8 warpAngleSet;
+    u8 eyeState;
+    u8 lastEyeState;
+    u8 mouthState;
 };
 
 #endif // TYPES_H

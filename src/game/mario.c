@@ -35,6 +35,7 @@
 #include "rumble_init.h"
 #include "puppycam2.h"
 #include "actors/group0.h"
+#include "engine/behavior_script.h"
 
 u32 unused80339F10;
 s8 filler80339F1C[20];
@@ -1808,6 +1809,11 @@ void check_and_set_checkpoint(struct MarioState *m) {
 }
 
 void set_current_cutscene(s32 cutscene) {
+    if (gCurCutscene == CUTSCENE_INTRO && !sIntroCutsceneDone && cutscene == NO_CUTSCENE) {
+        sIntroCutsceneDone = TRUE;
+        set_fov_function(CAM_FOV_DEFAULT);
+    }
+
     if (gCurCutscene == CUTSCENE_SLIDE && cutscene != CUTSCENE_SLIDE) {
         set_fov_function(CAM_FOV_DEFAULT);
     } else if (gCurCutscene != cutscene) {
@@ -1819,7 +1825,7 @@ void set_current_cutscene(s32 cutscene) {
 void handle_cutscene(void) {
     switch (gCurCutscene) {
         case CUTSCENE_INTRO:
-            // CTODO
+            set_fov_function(CAM_FOV_SET_45);
             break;
         case CUTSCENE_SLIDE:
             set_fov_function(CAM_FOV_APP_80);
@@ -1930,6 +1936,48 @@ void update_clothes_colors(void) {
     // }
 }
 
+void set_lucy_eye_state(struct MarioState *m, s32 state) {
+    m->lastEyeState = m->eyeState;
+    m->eyeState = state;
+}
+
+void set_lucy_mouth_state(struct MarioState *m, s32 state) {
+    m->mouthState = state;
+}
+
+void handle_lucy_blinks(struct MarioState *m) {
+    switch (m->eyeState)
+    {
+    case LUCY_EYE_SHUT:
+        set_lucy_eye_state(m, LUCY_EYE_HALF);
+        break;
+    case LUCY_EYE_HALF:
+        set_lucy_eye_state(m, m->lastEyeState == LUCY_EYE_OPEN ? LUCY_EYE_SHUT : LUCY_EYE_OPEN);
+        break;
+    case LUCY_EYE_OPEN:
+        if ((random_float() * 20.0f) < 0.5f) {
+            set_lucy_eye_state(m, LUCY_EYE_HALF);
+        }
+        break;
+    }
+}
+
+void handle_lucy_action_mouths(struct MarioState *m) {
+    switch (gMarioState->action & ACT_GROUP_MASK)
+    {
+    case ACT_GROUP_AIRBORNE:
+        if (m->vel[1] > 0.0f) set_lucy_mouth_state(m, LUCY_MOUTH_HAPPY_OPEN);
+        else set_lucy_mouth_state(m, LUCY_MOUTH_OPEN);
+        break;
+    // case ACT_GROUP_MOVING:
+    //     set_lucy_mouth_state(m, LUCY_MOUTH_SMILE);
+    //     break;
+    case ACT_GROUP_SUBMERGED:
+    default:
+        set_lucy_mouth_state(m, LUCY_MOUTH_CLOSED);
+    }
+}
+
 /**
  * Main function for executing Mario's behavior.
  */
@@ -1978,13 +2026,19 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
             gMarioState->action = ACT_DOLPHIN_DIVE;
         }
-        // print_text_fmt_int(20, 80, "%d", (s32) gMarioState->pos[0]);
-        // print_text_fmt_int(20, 50, "%d", (s32) gMarioState->pos[1]);
-        // print_text_fmt_int(20, 20, "%d", (s32) gMarioState->pos[2]);
+        print_text_fmt_int(20, 80, "%d", (s32) gPuppyCam.focus[0]);
+        print_text_fmt_int(20, 50, "%d", (s32) gPuppyCam.focus[1]);
+        print_text_fmt_int(20, 20, "%d", (s32) gPuppyCam.focus[2]);
+        print_text_fmt_int(80, 80, "%d", (s32) gPuppyCam.pos[0]);
+        print_text_fmt_int(80, 50, "%d", (s32) gPuppyCam.pos[1]);
+        print_text_fmt_int(80, 20, "%d", (s32) gPuppyCam.pos[2]);
+        if (gMarioState->controller->buttonDown & START_BUTTON && gCurCutscene > NO_CUTSCENE) gCurCutsceneTimer++;
 // #endif
 
         handle_cutscene();
         execute_mario_warp();
+        handle_lucy_blinks(gMarioState);
+        handle_lucy_action_mouths(gMarioStates);
 
         // The function can loop through many action shifts in one frame,
         // which can lead to unexpected sub-frame behavior. Could potentially hang
@@ -2077,6 +2131,8 @@ void init_mario(void) {
     gMarioState->gravPower[0] = 1.0f;
     gMarioState->gravPower[1] = 1.0f;
     gMarioState->gravPower[2] = 1.0f;
+    gMarioState->mouthState = 0;
+    gMarioState->eyeState = 0;
     // CTODO: Check save file
     gMarioState->dolphinPowers = FALSE;
     gMarioState->canAirJump = FALSE;
@@ -2215,4 +2271,6 @@ void init_mario_from_save_file(void) {
     gHudDisplay.wedges = 8;
 
     gMarioState->warpAngleSet = FALSE;
+    gMarioState->mouthState = 0;
+    gMarioState->eyeState = 0;
 }

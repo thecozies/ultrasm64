@@ -23,6 +23,8 @@
 #include "skybox.h"
 #include "sound_init.h"
 #include "puppycam2.h"
+#include "mario.h"
+#include "actors/mario/geo_header.h"
 
 #define TOAD_STAR_1_REQUIREMENT 12
 #define TOAD_STAR_2_REQUIREMENT 25
@@ -641,4 +643,88 @@ Gfx *geo_mirror_mario_backface_culling(s32 callContext, struct GraphNode *node, 
         asGenerated->fnNode.node.flags = (asGenerated->fnNode.node.flags & 0xFF) | (LAYER_OPAQUE << 8);
     }
     return gfx;
+}
+
+Gfx *geo_lucy_eyes(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    Gfx *dlStart, *dlHead;
+    struct GraphNodeGenerated *currentGraphNode;
+
+    dlStart = NULL;
+
+    // You'd set the flags to 7 << 8 to make it affect layer 7
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        currentGraphNode = (struct GraphNodeGenerated *) node;
+
+        if (currentGraphNode->parameter != 0) {
+            currentGraphNode->fnNode.node.flags =
+                (currentGraphNode->parameter << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
+        }
+    
+        dlStart = alloc_display_list(sizeof(Gfx) * 2);
+
+        dlHead = dlStart;
+
+        switch (gMarioState->eyeState) {
+            case LUCY_EYE_HALF:
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, lucy_eyes_half_open);
+                break;
+            case LUCY_EYE_SHUT:
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, lucy_eyes_shut);
+                break;
+            case LUCY_EYE_WIDE:
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, lucy_eyes_wide);
+                break;
+            case LUCY_EYE_OPEN:
+            default:
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, mario_eyes_rgba16);
+        }
+
+        gSPEndDisplayList(dlHead);
+    }
+
+    return dlStart;
+}
+
+
+
+Gfx *geo_lucy_mouth(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    Gfx *dlStart, *dlHead;
+    struct GraphNodeGenerated *currentGraphNode;
+
+    dlStart = NULL;
+
+    // You'd set the flags to 7 << 8 to make it affect layer 7
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        currentGraphNode = (struct GraphNodeGenerated *) node;
+
+        if (currentGraphNode->parameter != 0) {
+            currentGraphNode->fnNode.node.flags =
+                (currentGraphNode->parameter << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
+        }
+    
+        dlStart = alloc_display_list(sizeof(Gfx) * 2);
+
+        dlHead = dlStart;
+
+        switch (gMarioState->mouthState) {
+            case LUCY_MOUTH_SMILE:
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, lucy_mouth_smile);
+                break;
+            case LUCY_MOUTH_HAPPY_OPEN:
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, lucy_mouth_happy_open);
+                break;
+            case LUCY_MOUTH_OPEN:
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, lucy_mouth_open);
+                break;
+            case LUCY_MOUTH_CLOSED:
+            default:
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, mario_mouth_sad_rgba16);
+        }
+        
+        gSPEndDisplayList(dlHead);
+    }
+
+    return dlStart;
 }

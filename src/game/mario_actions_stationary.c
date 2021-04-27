@@ -140,6 +140,7 @@ s32 act_idle(struct MarioState *m) {
             case 1:
                 set_custom_mario_animation(m, LUCY_IDLE_ANIM);
 
+                // if (is_anim_at_end(m) && random_u16() < 10000) { // 15% chance
                 if (is_anim_at_end(m) && random_u16() < 2000) { // 3% chance
                     m->actionState = 3;
                 }
@@ -151,6 +152,7 @@ s32 act_idle(struct MarioState *m) {
 
             case 3:
                 set_custom_mario_animation(m, LUCY_HAPPY_DANCE_ANIM);
+                m->mouthState = LUCY_MOUTH_HAPPY_OPEN;
                 if (is_anim_at_end(m)) m->actionState = 1;
                 break;
         }

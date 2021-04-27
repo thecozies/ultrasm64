@@ -2174,9 +2174,20 @@ static void end_peach_cutscene_run_to_peach(struct MarioState *m) {
 // lucy walks in to the temple
 s32 act_temple_1_intro(struct MarioState *m) {
     struct Surface *surf;
-    m->actionTimer++;
+    if (m->actionTimer++ <= 1) {
+        m->faceAngle[1] = DEGREES(90);
+        m->marioObj->header.gfx.angle[1] = m->faceAngle[1];
+    }
 
     if (gCurCutsceneTimer == 584) m->actionState = 3;
+    if (gCurCutsceneTimer > TEMPLE_INTRO_DOOR_SLAM_LUCY_NOTICE) {
+        if (gCurCutsceneTimer < TEMPLE_INTRO_LUCY_CLOSE_UP) {
+            m->mouthState = LUCY_MOUTH_OPEN;
+            m->eyeState = LUCY_EYE_WIDE;
+        } else if (gCurCutsceneTimer == TEMPLE_INTRO_LUCY_CLOSE_UP) {
+            m->eyeState = LUCY_EYE_OPEN;
+        }
+    }
 
     if (m->actionState == 0) {
         if ((m->pos[0] += 8.1f) >= -1438.0f) {
@@ -2229,12 +2240,19 @@ s32 act_camp_intro(struct MarioState *m) {
     {
     case 0:
         set_custom_mario_animation(m, LUCY_SITTING_ANIM);
+        m->eyeState = LUCY_EYE_SHUT;
+        m->mouthState = LUCY_MOUTH_SMILE;
         if (m->actionTimer == CUTSCENE_INTRO_LUCY_LOOKS_OVER) {
+            m->eyeState = LUCY_EYE_OPEN;
+            m->mouthState = LUCY_MOUTH_CLOSED;
             m->actionState = 1;
         }
         break;
 
     case 1:
+        if (m->actionTimer > CUTSCENE_INTRO_LUCY_LOOKS_OVER + 5) m->mouthState = LUCY_MOUTH_OPEN;
+        else m->mouthState = LUCY_MOUTH_CLOSED;
+
         set_custom_mario_animation(m, LUCY_SITTING_LOOKING_OVER_ANIM);
         if (is_anim_at_end(m)) {
             m->actionState = 2;
@@ -2244,6 +2262,7 @@ s32 act_camp_intro(struct MarioState *m) {
         break;
     
     default:
+        set_current_cutscene(NO_CUTSCENE);
         set_mario_action(m, ACT_IDLE, 0);
         break;
     }

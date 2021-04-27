@@ -26,5 +26,7 @@ Gfx *geo_mario_rotate_wing_cap_wings(s32 callContext, struct GraphNode *node, UN
 Gfx *geo_switch_mario_hand_grab_pos(s32 callContext, struct GraphNode *b, Mat4 *mtx);
 Gfx *geo_render_mirror_mario(s32 callContext, struct GraphNode *node, UNUSED Mat4 *c);
 Gfx *geo_mirror_mario_backface_culling(s32 callContext, struct GraphNode *node, UNUSED Mat4 *c);
+Gfx *geo_lucy_eyes(s32 callContext, struct GraphNode *node, UNUSED void *context);
+Gfx *geo_lucy_mouth(s32 callContext, struct GraphNode *node, UNUSED void *context);
 
 #endif // MARIO_MISC_H

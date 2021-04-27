@@ -1327,11 +1327,11 @@ void temple_intro_cutscene(void) {
     override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
 
     if (
-        gCurCutsceneTimer < TEMPLE_INTRO_LENGTH - 10 &&
+        gCurCutsceneTimer < TEMPLE_INTRO_FINAL_FRAME - 10 &&
         gPlayer1Controller->buttonDown & START_BUTTON &&
         gPlayer1Controller->buttonPressed & A_BUTTON
     ) {
-        gCurCutsceneTimer = TEMPLE_INTRO_LENGTH - 20;
+        gCurCutsceneTimer = TEMPLE_INTRO_FINAL_FRAME - 20;
         gMarioState->pos[0] = -1558.0f;
     }
 
@@ -1339,19 +1339,25 @@ void temple_intro_cutscene(void) {
         set_mario_action(gMarioState, ACT_TEMPLE_1_INTRO, 0);
         gMarioState->pos[0] -= 5000.0f;
         gMarioState->pos[1] += 100.0f;
-        // enable_time_stop_including_mario();
         set_fov_function(CAM_FOV_SET_45);
     }
-    else if (gCurCutsceneTimer > TEMPLE_INTRO_LENGTH) {
+    else if (gCurCutsceneTimer >= TEMPLE_INTRO_FINAL_FRAME) {
         set_current_cutscene(NO_CUTSCENE);
         set_mario_action(gMarioState, ACT_IDLE, 2);
-        // disable_time_stop_including_mario();
+
         set_fov_function(CAM_FOV_DEFAULT);
-        return;
-    }
-    else if (gCurCutsceneTimer > TEMPLE_INTRO_LENGTH - 1) {
         gMarioState->pos[0] += 200.0f;
         gMarioState->marioObj->header.gfx.pos[0] = gMarioState->pos[0];
+        gMarioState->faceAngle[1] = DEGREES(90);
+        gMarioState->marioObj->header.gfx.angle[1] = gMarioState->faceAngle[1];
+        gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
+        gPuppyCam.yawTarget = gPuppyCam.yaw;
+        gPuppyCam.pos[0] = -2161;
+        gPuppyCam.pos[1] = 138;
+        gPuppyCam.pos[2] = -8;
+        gPuppyCam.focus[0] = -1164;
+        gPuppyCam.focus[1] = -124;
+        gPuppyCam.focus[2] = -8;
         return;
     }
     else if (gCurCutsceneTimer == TEMPLE_INTRO_DOOR_SLAM_SHOT_START - 1) {
@@ -1360,20 +1366,6 @@ void temple_intro_cutscene(void) {
 
     vec3s_copy(gPuppyCam.pos, temple_intro[gCurCutsceneTimer][0]);
     vec3s_copy(gPuppyCam.focus, temple_intro[gCurCutsceneTimer][1]);
-    // gPuppyCam.pos[0] = get_relative_position_between_ranges(
-    //     gCurCutsceneTimer,
-    //     0.0f,
-    //     TEMPLE_INTRO_LENGTH,
-    //     gMarioState->pos[0] + TEMPLE_X_START_OFFSET - 500.0f,
-    //     gMarioState->pos[0] - 500.0f
-    // );
-    // gPuppyCam.focus[0] = get_relative_position_between_ranges(
-    //     gCurCutsceneTimer,
-    //     0.0f,
-    //     TEMPLE_INTRO_LENGTH,
-    //     gMarioState->pos[0] + TEMPLE_X_START_OFFSET,
-    //     gMarioState->pos[0]
-    // );
 }
 
 void puppycam_handle_cutscene(void) {

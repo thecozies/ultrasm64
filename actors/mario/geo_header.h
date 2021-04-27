@@ -23,7 +23,7 @@ extern const GeoLayout mario_002_switch_opt0_001_switch_opt0_000_switch_001_expr
 extern const GeoLayout mario_002_switch_opt0_001_switch_opt0_000_switch_001_expressions_opt6[];
 extern const GeoLayout mario_geo[];
 extern Lights1 mario_clothes_lights;
-extern Lights1 mario_skin_v3_lights;
+extern Lights1 lucy_skin;
 extern Lights1 mario_face_0___Open_Eyes_v3_lights;
 extern Lights1 mario_mouthStandard_lights;
 extern Lights1 mario_hat_v3_lights;
@@ -222,3 +222,17 @@ extern Gfx mario_000_offset_013_RLeg_mesh_layer_1[];
 extern Gfx mario_000_displaylist_005_RFoot_skinned_mesh_layer_1[];
 extern Gfx mario_000_displaylist_005_RFoot_mesh_layer_1[];
 extern Gfx mario_material_revert_render_settings[];
+
+extern u8 lucy_eyes_half_open[];
+extern u8 lucy_eyes_shut[];
+extern u8 lucy_eyes_wide[];
+extern u8 lucy_mouth_happy_open[];
+extern u8 lucy_mouth_smile[];
+extern u8 lucy_mouth_open[];
+
+extern Gfx mat_lucy_eyes[];
+extern Gfx mat_lucy_mouth[];
+extern Gfx lucy_head_just_skin[];
+extern Gfx lucy_head_eyes[];
+extern Gfx lucy_head_mouth[];
+extern Gfx lucy_head_hair[];
