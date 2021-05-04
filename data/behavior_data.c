@@ -6222,3 +6222,15 @@ const BehaviorScript bhvCutsceneObj[] = {
         CALL_NATIVE(bhv_cutscene_obj_loop),
     END_LOOP(),
 };
+
+const BehaviorScript bhvMonkatHead[] = {
+    BEGIN(OBJ_LIST_LEVEL),
+    LOAD_ANIMATIONS(oAnimations, monkat_head_anims),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE)),
+    SET_HOME(),
+    CALL_NATIVE(bhv_monkat_head_init),
+    BEGIN_LOOP(),
+        SET_INT(oIntangibleTimer, 0),
+        CALL_NATIVE(bhv_monkat_head_loop),
+    END_LOOP(),
+};

@@ -20,3 +20,4 @@
 #include "sliding_door/geo.inc.c"
 #include "candle/geo.inc.c"
 #include "parasite/geo.inc.c"
+#include "small_palm/geo.inc.c"

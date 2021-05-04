@@ -41,6 +41,8 @@ u32 unused80339F10;
 s8 filler80339F1C[20];
 s8 gCheckingWaterForMario = FALSE;
 s8 gGameStarted = FALSE;
+s8 gWaitingToStart = TRUE;
+u16 sStartWaitTimer = 0;
 
 s8 gCurCutscene = 0;
 u32 gCurCutsceneTimer = 0;
@@ -2026,19 +2028,27 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
             gMarioState->action = ACT_DOLPHIN_DIVE;
         }
-        print_text_fmt_int(20, 80, "%d", (s32) gPuppyCam.focus[0]);
-        print_text_fmt_int(20, 50, "%d", (s32) gPuppyCam.focus[1]);
-        print_text_fmt_int(20, 20, "%d", (s32) gPuppyCam.focus[2]);
-        print_text_fmt_int(80, 80, "%d", (s32) gPuppyCam.pos[0]);
-        print_text_fmt_int(80, 50, "%d", (s32) gPuppyCam.pos[1]);
-        print_text_fmt_int(80, 20, "%d", (s32) gPuppyCam.pos[2]);
-        if (gMarioState->controller->buttonDown & START_BUTTON && gCurCutscene > NO_CUTSCENE) gCurCutsceneTimer++;
+        // print_text_fmt_int(20, 80, "%d", (s32) gPuppyCam.focus[0]);
+        // print_text_fmt_int(20, 50, "%d", (s32) gPuppyCam.focus[1]);
+        // print_text_fmt_int(20, 20, "%d", (s32) gPuppyCam.focus[2]);
+        // print_text_fmt_int(80, 80, "%d", (s32) gMarioState->pos[0]);
+        // print_text_fmt_int(80, 50, "%d", (s32) gMarioState->pos[1]);
+        // print_text_fmt_int(80, 20, "%d", (s32) gMarioState->pos[2]);
+        // if (gMarioState->controller->buttonDown & START_BUTTON && gCurCutscene > NO_CUTSCENE) gCurCutsceneTimer++;
 // #endif
 
         handle_cutscene();
         execute_mario_warp();
         handle_lucy_blinks(gMarioState);
         handle_lucy_action_mouths(gMarioStates);
+        if (gWaitingToStart) {
+            if (sStartWaitTimer++ > 60 && gMarioState->controller->buttonDown & START_BUTTON) {
+                gWaitingToStart = FALSE;
+                sStartWaitTimer = 0;
+            } else {
+                gMarioState->input = 0;
+            }
+        }
 
         // The function can loop through many action shifts in one frame,
         // which can lead to unexpected sub-frame behavior. Could potentially hang

@@ -69,7 +69,7 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
         }
 
         objectOpacity = objectGraphNode->oOpacity;
-        dlStart = alloc_display_list(sizeof(Gfx) * 3);
+        dlStart = alloc_display_list(sizeof(Gfx) * 5);
 
         dlHead = dlStart;
 
@@ -87,12 +87,17 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
             if (currentGraphNode->parameter == 20) {
                 currentGraphNode->fnNode.node.flags =
                 0x600 | (currentGraphNode->fnNode.node.flags & 0xFF);
+            }
+            else if (currentGraphNode->parameter == 4) {
+                currentGraphNode->fnNode.node.flags =
+                (currentGraphNode->parameter << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
             } else {
                 currentGraphNode->fnNode.node.flags =
                 0x500 | (currentGraphNode->fnNode.node.flags & 0xFF);
             }
-
             objectGraphNode->oAnimState = 1;
+
+            
 
 #ifdef VERSION_JP
             if (currentGraphNode->parameter == 10) {
@@ -112,9 +117,11 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
             // perform the only necessary check instead of the debuginfo
             // one.
             if (currentGraphNode->parameter != 10) {
-                if (objectGraphNode->activeFlags & ACTIVE_FLAG_DITHERED_ALPHA) {
-                    gDPSetAlphaCompare(dlHead++, G_AC_DITHER);
-                }
+                // if (objectGraphNode->activeFlags & ACTIVE_FLAG_DITHERED_ALPHA || currentGraphNode->parameter == LAYER_ALPHA) {
+                //     gDPSetColorDither(dlHead++, G_CD_MAGICSQ);
+                //     gDPSetAlphaDither(dlHead++, G_AD_PATTERN);
+                //     gDPSetAlphaCompare(dlHead++, G_AC_DITHER);
+                // }
             }
 #endif
         }

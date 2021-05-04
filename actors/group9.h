@@ -81,4 +81,8 @@ extern const Gfx small_key_seg5_dl_05006A28[];
 extern const Gfx small_key_seg5_dl_05006A48[];
 extern const Gfx small_key_seg5_dl_05006A68[];
 
+#include "monkat_head/geo_header.h"
+
+
+#include "monkat_head/anim_header.h"
 #endif

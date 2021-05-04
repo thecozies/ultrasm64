@@ -2225,9 +2225,13 @@ s32 act_temple_1_intro(struct MarioState *m) {
     }
 }
 
+#define CAMP_WALK_OVER_START 0.0f
+#define CAMP_WALK_OVER_END -207.0f
+
 // lucy walks in to the temple
 s32 act_camp_intro(struct MarioState *m) {
     struct Surface *surf;
+    s32 val14;
 
     if (m->actionTimer++ == 0) {
         m->pos[0] = 193.0f;
@@ -2242,7 +2246,7 @@ s32 act_camp_intro(struct MarioState *m) {
         set_custom_mario_animation(m, LUCY_SITTING_ANIM);
         m->eyeState = LUCY_EYE_SHUT;
         m->mouthState = LUCY_MOUTH_SMILE;
-        if (m->actionTimer == CUTSCENE_INTRO_LUCY_LOOKS_OVER) {
+        if (gCurCutsceneTimer == CUTSCENE_INTRO_LUCY_LOOKS_OVER) {
             m->eyeState = LUCY_EYE_OPEN;
             m->mouthState = LUCY_MOUTH_CLOSED;
             m->actionState = 1;
@@ -2250,20 +2254,44 @@ s32 act_camp_intro(struct MarioState *m) {
         break;
 
     case 1:
-        if (m->actionTimer > CUTSCENE_INTRO_LUCY_LOOKS_OVER + 5) m->mouthState = LUCY_MOUTH_OPEN;
+        if (gCurCutsceneTimer > CUTSCENE_INTRO_LUCY_LOOKS_OVER + 5) m->mouthState = LUCY_MOUTH_OPEN;
         else m->mouthState = LUCY_MOUTH_CLOSED;
 
         set_custom_mario_animation(m, LUCY_SITTING_LOOKING_OVER_ANIM);
-        if (is_anim_at_end(m)) {
+        if (gCurCutsceneTimer == CUTSCENE_INTRO_LUCY_WALKS_OVER) {
             m->actionState = 2;
+            m->pos[0] = 149.0f;
+            m->pos[2] = CAMP_WALK_OVER_START;
             m->pos[1] = find_floor(m->pos[0], m->pos[1] + 100.0f, m->pos[2], &surf);
+            m->faceAngle[1] = DEGREES(180);
+            m->marioObj->header.gfx.angle[1] = m->faceAngle[1];
             vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
+            set_custom_mario_animation(m, LUCY_IDLE_ANIM);
         }
         break;
-    
+
+    case 2:
+        if ((m->pos[2] -= 4.0f) <= CAMP_WALK_OVER_END) {
+            m->pos[2] = CAMP_WALK_OVER_END;
+            m->actionState = 3;
+        }
+
+        m->pos[1] = find_floor(m->pos[0], m->pos[1] + 100.0f, m->pos[2], &surf);
+        m->intendedMag = 4.0f;
+
+        val14 = (s32)(m->intendedMag / 4.0f * 0x10000);
+        set_mario_anim_with_accel(m, MARIO_ANIM_START_TIPTOE, val14);
+        play_step_sound(m, 7, 22);
+
+        vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
+        break;
+
     default:
-        set_current_cutscene(NO_CUTSCENE);
-        set_mario_action(m, ACT_IDLE, 0);
+        set_custom_mario_animation(m, LUCY_IDLE_ANIM);
+        if (gCurCutsceneTimer >= CUTSCENE_INTRO_END) {
+            set_current_cutscene(NO_CUTSCENE);
+            set_mario_action(m, ACT_IDLE, 2);
+        }
         break;
     }
     return FALSE;

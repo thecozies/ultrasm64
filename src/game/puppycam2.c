@@ -1314,8 +1314,6 @@ void towerclimb_cutscene(void) {
 #define TEMPLE_X_START_OFFSET 2500.0f
 #define TEMPLE_Y_START_OFFSET 1000.0f
 
-#define TEMPLE_INTRO_LENGTH 749.0f
-
 void temple_intro_cutscene(void) {
     Vec3f pos;
     Vec3f focus;
@@ -1368,6 +1366,39 @@ void temple_intro_cutscene(void) {
     vec3s_copy(gPuppyCam.focus, temple_intro[gCurCutsceneTimer][1]);
 }
 
+void camping_intro_cutscene(void) {
+    Vec3f pos;
+    Vec3f focus;
+
+    sCutsceneVp.vp.vscale[0] = 640;
+    sCutsceneVp.vp.vscale[1] = 360;
+    sCutsceneVp.vp.vtrans[0] = 640;
+    sCutsceneVp.vp.vtrans[1] = 480;
+    override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
+
+    if (
+        gCurCutsceneTimer < CUTSCENE_INTRO_END - 10 &&
+        gPlayer1Controller->buttonDown & START_BUTTON &&
+        gPlayer1Controller->buttonPressed & A_BUTTON
+    ) {
+        gCurCutsceneTimer = CUTSCENE_INTRO_END - 20;
+    }
+
+    if (gCurCutsceneTimer == CUTSCENE_INTRO_END - 1) {
+        gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
+        gPuppyCam.yawTarget = gPuppyCam.yaw;
+        vec3s_copy(gPuppyCam.pos, camping_intro[gCurCutsceneTimer][0]);
+        vec3s_copy(gPuppyCam.focus, camping_intro[gCurCutsceneTimer][1]);
+    } else if (gCurCutsceneTimer >= CUTSCENE_INTRO_END) {
+        gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
+        gPuppyCam.yawTarget = gPuppyCam.yaw;
+    } else {
+        vec3s_copy(gPuppyCam.pos, camping_intro[gCurCutsceneTimer][0]);
+        vec3s_copy(gPuppyCam.focus, camping_intro[gCurCutsceneTimer][1]);
+    }
+
+}
+
 void puppycam_handle_cutscene(void) {
     switch (gCurCutscene) {
         case CUTSCENE_DOOR_OPEN:
@@ -1381,6 +1412,9 @@ void puppycam_handle_cutscene(void) {
             break;
         case CUTSCENE_INTRO_TEMPLE:
             temple_intro_cutscene();
+            break;
+        case CUTSCENE_INTRO:
+            camping_intro_cutscene();
             break;
     }
 } 

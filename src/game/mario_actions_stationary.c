@@ -129,6 +129,8 @@ s32 act_idle(struct MarioState *m) {
         // }
     }
 
+    if (m->actionArg == 2 && m->actionState == 0) m->actionState = 1;
+
     if (m->actionArg & 1) {
         set_mario_animation(m, MARIO_ANIM_STAND_AGAINST_WALL);
     } else {
@@ -141,7 +143,7 @@ s32 act_idle(struct MarioState *m) {
                 set_custom_mario_animation(m, LUCY_IDLE_ANIM);
 
                 // if (is_anim_at_end(m) && random_u16() < 10000) { // 15% chance
-                if (is_anim_at_end(m) && random_u16() < 2000) { // 3% chance
+                if (is_anim_at_end(m) && random_u16() < 1500) { // 2.25% chance
                     m->actionState = 3;
                 }
                 break;

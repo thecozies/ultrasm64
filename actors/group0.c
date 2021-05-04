@@ -34,3 +34,7 @@
 #include "parasite/anims/table.inc.c"
 #include "mario/anims/data.inc.c"
 #include "mario/anims/table.inc.c"
+#include "small_palm/model.inc.c"
+#include "small_palm/anims/data.inc.c"
+#include "small_palm/anims/table.inc.c"
+#include "small_palm/collision.inc.c"

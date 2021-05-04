@@ -391,6 +391,7 @@
 #define MODEL_BOOKEND_PART                0x58        // bookend_part_geo
 #define MODEL_BOOKEND                     0x59        // bookend_geo
 #define MODEL_HAUNTED_CAGE                0x5A        // haunted_cage_geo
+#define MODEL_MONKAT_HEAD                 0x5A        // monkat_head_geo
 
 // group 10
 #define MODEL_BIRDS                       0x54        // birds_geo

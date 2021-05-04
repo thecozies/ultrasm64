@@ -357,4 +357,10 @@ extern const Gfx white_particle_small_unused_dl[];
 #include "parasite/anim_header.h"
 
 #include "mario/anim_header.h"
+#include "small_palm/geo_header.h"
+
+
+#include "small_palm/anim_header.h"
+#include "small_palm/collision_header.h"
+
 #endif

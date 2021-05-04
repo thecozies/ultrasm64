@@ -4770,7 +4770,7 @@ Gfx castle_courtyard_dl_da_mountain_mesh_tri_0[] = {
 	gsSPEndDisplayList(),
 };
 
-Vtx castle_courtyard_dl_grassnstuff_001_mesh_layer_6_vtx_0[56] = {
+Vtx castle_courtyard_dl_fireglow_mesh_layer_6_vtx_0[56] = {
 	{{{-547, 181, 344},0, {2661, -4076},{0xFE, 0x9B, 0x72, 0x2C}}},
 	{{{-548, 179, 346},0, {2626, -4091},{0xFE, 0x9B, 0x72, 0x2C}}},
 	{{{-548, 178, 348},0, {2587, -4091},{0xFF, 0x9B, 0x72, 0x2C}}},
@@ -4829,8 +4829,8 @@ Vtx castle_courtyard_dl_grassnstuff_001_mesh_layer_6_vtx_0[56] = {
 	{{{53, -16, 594},0, {-2695, -5400},{0x78, 0x59, 0x46, 0x0}}},
 };
 
-Gfx castle_courtyard_dl_grassnstuff_001_mesh_layer_6_tri_0[] = {
-	gsSPVertex(castle_courtyard_dl_grassnstuff_001_mesh_layer_6_vtx_0 + 0, 16, 0),
+Gfx castle_courtyard_dl_fireglow_mesh_layer_6_tri_0[] = {
+	gsSPVertex(castle_courtyard_dl_fireglow_mesh_layer_6_vtx_0 + 0, 16, 0),
 	gsSP1Triangle(0, 1, 2, 0),
 	gsSP1Triangle(0, 2, 3, 0),
 	gsSP1Triangle(4, 3, 2, 0),
@@ -4846,7 +4846,7 @@ Gfx castle_courtyard_dl_grassnstuff_001_mesh_layer_6_tri_0[] = {
 	gsSP1Triangle(13, 7, 9, 0),
 	gsSP1Triangle(14, 7, 13, 0),
 	gsSP1Triangle(15, 14, 13, 0),
-	gsSPVertex(castle_courtyard_dl_grassnstuff_001_mesh_layer_6_vtx_0 + 16, 15, 0),
+	gsSPVertex(castle_courtyard_dl_fireglow_mesh_layer_6_vtx_0 + 16, 15, 0),
 	gsSP1Triangle(0, 1, 2, 0),
 	gsSP1Triangle(2, 3, 0, 0),
 	gsSP1Triangle(0, 4, 5, 0),
@@ -4859,7 +4859,7 @@ Gfx castle_courtyard_dl_grassnstuff_001_mesh_layer_6_tri_0[] = {
 	gsSP1Triangle(8, 12, 11, 0),
 	gsSP1Triangle(8, 13, 12, 0),
 	gsSP1Triangle(10, 14, 9, 0),
-	gsSPVertex(castle_courtyard_dl_grassnstuff_001_mesh_layer_6_vtx_0 + 31, 16, 0),
+	gsSPVertex(castle_courtyard_dl_fireglow_mesh_layer_6_vtx_0 + 31, 16, 0),
 	gsSP1Triangle(0, 1, 2, 0),
 	gsSP1Triangle(3, 1, 0, 0),
 	gsSP1Triangle(3, 0, 4, 0),
@@ -4871,7 +4871,7 @@ Gfx castle_courtyard_dl_grassnstuff_001_mesh_layer_6_tri_0[] = {
 	gsSP1Triangle(8, 10, 11, 0),
 	gsSP1Triangle(10, 12, 11, 0),
 	gsSP1Triangle(13, 14, 15, 0),
-	gsSPVertex(castle_courtyard_dl_grassnstuff_001_mesh_layer_6_vtx_0 + 47, 9, 0),
+	gsSPVertex(castle_courtyard_dl_fireglow_mesh_layer_6_vtx_0 + 47, 9, 0),
 	gsSP1Triangle(0, 1, 2, 0),
 	gsSP1Triangle(3, 1, 0, 0),
 	gsSP1Triangle(4, 3, 0, 0),
@@ -5680,6 +5680,167 @@ Gfx castle_courtyard_dl_treeee_002_mesh_layer_7_tri_0[] = {
 	gsSPEndDisplayList(),
 };
 
+Vtx castle_courtyard_dl_treeee_003_mesh_layer_1_vtx_0[28] = {
+	{{{-3, 628, -93},0, {5818, -4561},{0x5B, 0x2A, 0x1C, 0x1A}}},
+	{{{21, 799, -131},0, {6083, -7554},{0x5E, 0x53, 0x46, 0x91}}},
+	{{{38, 598, -95},0, {4929, -3968},{0x0, 0x0, 0x0, 0x16}}},
+	{{{-27, 469, -84},0, {5625, -1616},{0x63, 0x2E, 0x1F, 0x5D}}},
+	{{{33, 469, -74},0, {4435, -1596},{0x0, 0x0, 0x0, 0x4A}}},
+	{{{-23, 178, -55},0, {5266, 3784},{0x84, 0x3D, 0x2A, 0x98}}},
+	{{{51, 195, -11},0, {3642, 3435},{0x0, 0x0, 0x0, 0x16}}},
+	{{{-17, 13, -60},0, {5192, 7003},{0x86, 0x40, 0x2D, 0x9B}}},
+	{{{53, 13, -5},0, {3569, 7003},{0x0, 0x0, 0x0, 0x0}}},
+	{{{-21, 202, 18},0, {4820, 3309},{0x0, 0x0, 0x0, 0x16}}},
+	{{{-29, 13, 29},0, {4918, 7003},{0x0, 0x0, 0x0, 0x0}}},
+	{{{100, -38, 1},0, {2655, 7993},{0x4, 0x4, 0x3, 0x0}}},
+	{{{-58, -38, 66},0, {5248, 7993},{0x8, 0x6, 0x5, 0x0}}},
+	{{{-36, -38, -103},0, {5776, 7993},{0x6D, 0x34, 0x24, 0x75}}},
+	{{{-17, 13, -60},0, {347, 7003},{0x86, 0x40, 0x2D, 0x9B}}},
+	{{{-36, -38, -103},0, {-372, 7993},{0x6D, 0x34, 0x24, 0x75}}},
+	{{{-58, -38, 66},0, {2927, 7993},{0x8, 0x6, 0x5, 0x0}}},
+	{{{-29, 13, 29},0, {2063, 7003},{0x0, 0x0, 0x0, 0x0}}},
+	{{{-23, 178, -55},0, {467, 3784},{0x84, 0x3D, 0x2A, 0x98}}},
+	{{{-21, 202, 18},0, {1821, 3309},{0x0, 0x0, 0x0, 0x16}}},
+	{{{-27, 469, -84},0, {-204, -1616},{0x63, 0x2E, 0x1F, 0x5D}}},
+	{{{-9, 498, -38},0, {550, -2189},{0x0, 0x0, 0x0, 0x0}}},
+	{{{51, 195, -11},0, {867, 3435},{0x0, 0x0, 0x0, 0x16}}},
+	{{{33, 469, -74},0, {-324, -1596},{0x0, 0x0, 0x0, 0x4A}}},
+	{{{16, 623, -61},0, {-1455, -4552},{0x0, 0x0, 0x0, 0x5}}},
+	{{{38, 598, -95},0, {-2091, -3968},{0x0, 0x0, 0x0, 0x16}}},
+	{{{21, 799, -131},0, {-4865, -7554},{0x5E, 0x53, 0x46, 0x91}}},
+	{{{-3, 628, -93},0, {-2211, -4561},{0x5B, 0x2A, 0x1C, 0x1A}}},
+};
+
+Gfx castle_courtyard_dl_treeee_003_mesh_layer_1_tri_0[] = {
+	gsSPVertex(castle_courtyard_dl_treeee_003_mesh_layer_1_vtx_0 + 0, 14, 0),
+	gsSP1Triangle(0, 1, 2, 0),
+	gsSP1Triangle(3, 0, 2, 0),
+	gsSP1Triangle(3, 2, 4, 0),
+	gsSP1Triangle(5, 3, 4, 0),
+	gsSP1Triangle(5, 4, 6, 0),
+	gsSP1Triangle(7, 5, 6, 0),
+	gsSP1Triangle(7, 6, 8, 0),
+	gsSP1Triangle(8, 6, 9, 0),
+	gsSP1Triangle(8, 9, 10, 0),
+	gsSP1Triangle(10, 11, 8, 0),
+	gsSP1Triangle(10, 12, 11, 0),
+	gsSP1Triangle(8, 11, 13, 0),
+	gsSP1Triangle(8, 13, 7, 0),
+	gsSPVertex(castle_courtyard_dl_treeee_003_mesh_layer_1_vtx_0 + 14, 14, 0),
+	gsSP1Triangle(0, 1, 2, 0),
+	gsSP1Triangle(0, 2, 3, 0),
+	gsSP1Triangle(3, 4, 0, 0),
+	gsSP1Triangle(3, 5, 4, 0),
+	gsSP1Triangle(5, 6, 4, 0),
+	gsSP1Triangle(5, 7, 6, 0),
+	gsSP1Triangle(8, 7, 5, 0),
+	gsSP1Triangle(8, 9, 7, 0),
+	gsSP1Triangle(9, 10, 7, 0),
+	gsSP1Triangle(9, 11, 10, 0),
+	gsSP1Triangle(11, 12, 10, 0),
+	gsSP1Triangle(10, 12, 13, 0),
+	gsSP1Triangle(7, 10, 13, 0),
+	gsSP1Triangle(7, 13, 6, 0),
+	gsSPEndDisplayList(),
+};
+
+Vtx castle_courtyard_dl_treeee_004_mesh_layer_1_vtx_0[16] = {
+	{{{-188, 318, -136},0, {5564, 2535},{0x72, 0x36, 0x21, 0xFF}}},
+	{{{-223, 323, 19},0, {5518, -7372},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{-180, 584, -187},0, {3379, 3339},{0x54, 0x28, 0x19, 0xFF}}},
+	{{{-141, 651, 108},0, {1717, -3459},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{-118, 350, 141},0, {2465, -9299},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{28, 376, 212},0, {-588, -11225},{0x2, 0x2, 0x1, 0xFF}}},
+	{{{108, 681, 114},0, {-412, -1305},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{178, 368, 148},0, {-2424, -4132},{0x3, 0x4, 0x3, 0xFF}}},
+	{{{294, 353, 35},0, {-4259, 2961},{0x2, 0x3, 0x2, 0xFF}}},
+	{{{237, 617, -186},0, {-625, 7683},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{282, 339, -124},0, {-2443, 10895},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{208, 319, -266},0, {-626, 18828},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{54, 575, -294},0, {1642, 9814},{0x54, 0x28, 0x19, 0xFF}}},
+	{{{56, 317, -295},0, {2492, 15635},{0x5A, 0x2B, 0x1B, 0xFF}}},
+	{{{-96, 314, -264},0, {5611, 12443},{0xC3, 0x5D, 0x3A, 0xFF}}},
+	{{{20, 812, -133},0, {1080, 3233},{0x6, 0xA, 0x6, 0xFF}}},
+};
+
+Gfx castle_courtyard_dl_treeee_004_mesh_layer_1_tri_0[] = {
+	gsSPVertex(castle_courtyard_dl_treeee_004_mesh_layer_1_vtx_0 + 0, 16, 0),
+	gsSP1Triangle(0, 1, 2, 0),
+	gsSP1Triangle(1, 3, 2, 0),
+	gsSP1Triangle(1, 4, 3, 0),
+	gsSP1Triangle(4, 5, 3, 0),
+	gsSP1Triangle(5, 6, 3, 0),
+	gsSP1Triangle(5, 7, 6, 0),
+	gsSP1Triangle(7, 8, 6, 0),
+	gsSP1Triangle(8, 9, 6, 0),
+	gsSP1Triangle(8, 10, 9, 0),
+	gsSP1Triangle(10, 11, 9, 0),
+	gsSP1Triangle(11, 12, 9, 0),
+	gsSP1Triangle(11, 13, 12, 0),
+	gsSP1Triangle(13, 14, 12, 0),
+	gsSP1Triangle(14, 2, 12, 0),
+	gsSP1Triangle(14, 0, 2, 0),
+	gsSP1Triangle(12, 2, 15, 0),
+	gsSP1Triangle(2, 3, 15, 0),
+	gsSP1Triangle(3, 6, 15, 0),
+	gsSP1Triangle(6, 9, 15, 0),
+	gsSP1Triangle(9, 12, 15, 0),
+	gsSPEndDisplayList(),
+};
+
+Vtx castle_courtyard_dl_treeee_005_mesh_layer_7_vtx_0[24] = {
+	{{{-118, 350, 141},0, {2465, -9299},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{-223, 323, 19},0, {5518, -7372},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{-223, 244, 16},0, {7221, -10578},{0x0, 0x0, 0x0, 0x1}}},
+	{{{-186, 239, -138},0, {7221, 2768},{0x84, 0x3F, 0x27, 0x2}}},
+	{{{-188, 318, -136},0, {5564, 2535},{0x72, 0x36, 0x21, 0xFF}}},
+	{{{-96, 232, -268},0, {7221, 16115},{0xDB, 0x69, 0x41, 0x2}}},
+	{{{-96, 314, -264},0, {5611, 12443},{0xC3, 0x5D, 0x3A, 0xFF}}},
+	{{{56, 240, -297},0, {3089, 20240},{0x71, 0x36, 0x22, 0x0}}},
+	{{{56, 317, -295},0, {2492, 15635},{0x5A, 0x2B, 0x1B, 0xFF}}},
+	{{{209, 245, -269},0, {-1042, 24365},{0x8, 0xB, 0x7, 0x0}}},
+	{{{208, 319, -266},0, {-626, 18828},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{282, 260, -127},0, {-3635, 13958},{0x0, 0x0, 0x0, 0x0}}},
+	{{{282, 339, -124},0, {-2443, 10895},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{295, 272, 33},0, {-6229, 3551},{0x2, 0x3, 0x2, 0x0}}},
+	{{{294, 353, 35},0, {-4259, 2961},{0x2, 0x3, 0x2, 0xFF}}},
+	{{{180, 281, 149},0, {-3749, -6853},{0x0, 0x0, 0x0, 0x0}}},
+	{{{294, 353, 35},0, {-4259, 2961},{0x2, 0x3, 0x2, 0xFF}}},
+	{{{178, 368, 148},0, {-2424, -4132},{0x3, 0x4, 0x3, 0xFF}}},
+	{{{180, 281, 149},0, {-3749, -6853},{0x0, 0x0, 0x0, 0x0}}},
+	{{{29, 291, 210},0, {-1270, -17256},{0x0, 0x0, 0x0, 0x0}}},
+	{{{28, 376, 212},0, {-588, -11225},{0x2, 0x2, 0x1, 0xFF}}},
+	{{{-117, 268, 139},0, {2975, -13917},{0x0, 0x0, 0x0, 0x0}}},
+	{{{-118, 350, 141},0, {2465, -9299},{0x0, 0x0, 0x0, 0xFF}}},
+	{{{-223, 244, 16},0, {7221, -10578},{0x0, 0x0, 0x0, 0x1}}},
+};
+
+Gfx castle_courtyard_dl_treeee_005_mesh_layer_7_tri_0[] = {
+	gsSPVertex(castle_courtyard_dl_treeee_005_mesh_layer_7_vtx_0 + 0, 16, 0),
+	gsSP1Triangle(0, 1, 2, 0),
+	gsSP1Triangle(1, 3, 2, 0),
+	gsSP1Triangle(1, 4, 3, 0),
+	gsSP1Triangle(4, 5, 3, 0),
+	gsSP1Triangle(4, 6, 5, 0),
+	gsSP1Triangle(6, 7, 5, 0),
+	gsSP1Triangle(6, 8, 7, 0),
+	gsSP1Triangle(8, 9, 7, 0),
+	gsSP1Triangle(8, 10, 9, 0),
+	gsSP1Triangle(10, 11, 9, 0),
+	gsSP1Triangle(10, 12, 11, 0),
+	gsSP1Triangle(12, 13, 11, 0),
+	gsSP1Triangle(12, 14, 13, 0),
+	gsSP1Triangle(14, 15, 13, 0),
+	gsSPVertex(castle_courtyard_dl_treeee_005_mesh_layer_7_vtx_0 + 16, 8, 0),
+	gsSP1Triangle(0, 1, 2, 0),
+	gsSP1Triangle(1, 3, 2, 0),
+	gsSP1Triangle(1, 4, 3, 0),
+	gsSP1Triangle(4, 5, 3, 0),
+	gsSP1Triangle(4, 6, 5, 0),
+	gsSP1Triangle(6, 7, 5, 0),
+	gsSPEndDisplayList(),
+};
+
 Gfx mat_castle_courtyard_dl_mountain_layer1[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
@@ -6015,9 +6176,9 @@ Gfx castle_courtyard_dl_da_mountain_mesh[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx castle_courtyard_dl_grassnstuff_001_mesh_layer_6[] = {
+Gfx castle_courtyard_dl_fireglow_mesh_layer_6[] = {
 	gsSPDisplayList(mat_castle_courtyard_dl_firelight),
-	gsSPDisplayList(castle_courtyard_dl_grassnstuff_001_mesh_layer_6_tri_0),
+	gsSPDisplayList(castle_courtyard_dl_fireglow_mesh_layer_6_tri_0),
 	gsSPDisplayList(mat_revert_castle_courtyard_dl_firelight),
 	gsSPEndDisplayList(),
 };
@@ -6077,6 +6238,27 @@ Gfx castle_courtyard_dl_treeee_001_mesh_layer_1[] = {
 Gfx castle_courtyard_dl_treeee_002_mesh_layer_7[] = {
 	gsSPDisplayList(mat_castle_courtyard_dl_leavesh_layer7),
 	gsSPDisplayList(castle_courtyard_dl_treeee_002_mesh_layer_7_tri_0),
+	gsSPDisplayList(mat_revert_castle_courtyard_dl_leavesh_layer7),
+	gsSPEndDisplayList(),
+};
+
+Gfx castle_courtyard_dl_treeee_003_mesh_layer_1[] = {
+	gsSPDisplayList(mat_castle_courtyard_dl_treetrunk_layer1),
+	gsSPDisplayList(castle_courtyard_dl_treeee_003_mesh_layer_1_tri_0),
+	gsSPDisplayList(mat_revert_castle_courtyard_dl_treetrunk_layer1),
+	gsSPEndDisplayList(),
+};
+
+Gfx castle_courtyard_dl_treeee_004_mesh_layer_1[] = {
+	gsSPDisplayList(mat_castle_courtyard_dl_leavessolid_layer1),
+	gsSPDisplayList(castle_courtyard_dl_treeee_004_mesh_layer_1_tri_0),
+	gsSPDisplayList(mat_revert_castle_courtyard_dl_leavessolid_layer1),
+	gsSPEndDisplayList(),
+};
+
+Gfx castle_courtyard_dl_treeee_005_mesh_layer_7[] = {
+	gsSPDisplayList(mat_castle_courtyard_dl_leavesh_layer7),
+	gsSPDisplayList(castle_courtyard_dl_treeee_005_mesh_layer_7_tri_0),
 	gsSPDisplayList(mat_revert_castle_courtyard_dl_leavesh_layer7),
 	gsSPEndDisplayList(),
 };
