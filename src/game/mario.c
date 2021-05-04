@@ -2001,33 +2001,33 @@ s32 execute_mario_action(UNUSED struct Object *o) {
 
 // #if FALSE
 // // CTODO: DEBUG
-        if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-            if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
-        }
         // if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-        //     set_current_cutscene(gCurCutscene + 1);
+        //     if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
         // }
-        if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-            if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
-            initiate_warp(LEVEL_PSS, 0, 0x0A, 0);
-        }
+        // // if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+        // //     set_current_cutscene(gCurCutscene + 1);
+        // // }
+        // if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+        //     if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
+        //     initiate_warp(LEVEL_PSS, 0, 0x0A, 0);
+        // }
         // if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
         //     set_current_cutscene(gCurCutscene - 1);
         // }
 // // CTODO: DEBUG
-        if (gMarioState->controller->buttonDown & A_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
-            gMarioState->pos[1] += 30.0f;
-            gMarioState->vel[1] = 30.0f;
-            gMarioState->faceAngle[1] = gMarioState->intendedYaw;
-            gMarioState->forwardVel = 2.0f * gMarioState->intendedMag;
-            gMarioState->action = ACT_DOLPHIN_DIVE;
-        }
-        if (gMarioState->controller->buttonDown & B_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
-            gMarioState->vel[1] = 0.0f;
-            gMarioState->faceAngle[1] = gMarioState->intendedYaw;
-            gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
-            gMarioState->action = ACT_DOLPHIN_DIVE;
-        }
+        // if (gMarioState->controller->buttonDown & A_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
+        //     gMarioState->pos[1] += 30.0f;
+        //     gMarioState->vel[1] = 30.0f;
+        //     gMarioState->faceAngle[1] = gMarioState->intendedYaw;
+        //     gMarioState->forwardVel = 2.0f * gMarioState->intendedMag;
+        //     gMarioState->action = ACT_DOLPHIN_DIVE;
+        // }
+        // if (gMarioState->controller->buttonDown & B_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
+        //     gMarioState->vel[1] = 0.0f;
+        //     gMarioState->faceAngle[1] = gMarioState->intendedYaw;
+        //     gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
+        //     gMarioState->action = ACT_DOLPHIN_DIVE;
+        // }
         // print_text_fmt_int(20, 80, "%d", (s32) gPuppyCam.focus[0]);
         // print_text_fmt_int(20, 50, "%d", (s32) gPuppyCam.focus[1]);
         // print_text_fmt_int(20, 20, "%d", (s32) gPuppyCam.focus[2]);

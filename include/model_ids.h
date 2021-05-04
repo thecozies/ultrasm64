@@ -567,6 +567,7 @@
 #define MODEL_SLIDING_DOOR                0xE2
 #define MODEL_CANDLE                      0xE3
 #define MODEL_PARASITE                    0xE4
+#define MODEL_SMALL_PALM                  0xE5
 
 
 // Menu Models (overwrites Level Geometry IDs)

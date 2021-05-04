@@ -841,6 +841,7 @@ s8 UNUSED debug_sequence_tracker(s16 debugInputSequence[]) {
 #include "behaviors/rolling_log.inc.c"
 #include "behaviors/mushroom_1up.inc.c"
 #include "behaviors/parasite.inc.c"
+#include "behaviors/small_palm.inc.c"
 #include "behaviors/monkat_head.inc.c"
 #include "behaviors/cutscene_obj.inc.c"
 #include "behaviors/controllable_platform.inc.c"

@@ -42,6 +42,7 @@ const LevelScript level_castle_courtyard_entry[] = {
 		OBJECT(MODEL_SLIDING_DOOR, 149, -3, -2207, 0, -180, 0, 0x10100000, bhvSlidingDoor),
 		OBJECT(MODEL_PARASITE, 149, 243, -2245, 0, 0, 0, 0x10100000, bhvParasite),
 		OBJECT(MODEL_MONKAT_HEAD, 149, 243, -2245, 0, 0, 0, 0x10100000, bhvMonkatHead),
+		OBJECT(MODEL_SMALL_PALM, -491, -3, -1622, 0, -180, 0, 0x00000000, bhvSmallPalm),
 		OBJECT(MODEL_CANDLE, -101, 304, -2505, 0, 90, 0, 0x00000000, bhvCandle),
 		OBJECT(MODEL_CANDLE, 400, 304, -2505, 0, -90, 0, 0x00000000, bhvCandle),
 		OBJECT(MODEL_NONE, 248, -19, 385, 0, -53, 0, 0x000A0000, bhvInstantActiveWarp),

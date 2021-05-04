@@ -1,0 +1,20 @@
+const Collision small_palm_collision[] = {
+	COL_INIT(),
+	COL_VERTEX_INIT(6),
+	COL_VERTEX(-17, -2, 10),
+	COL_VERTEX(-17, 51, 10),
+	COL_VERTEX(0, 51, -20),
+	COL_VERTEX(0, -2, -20),
+	COL_VERTEX(18, -2, 10),
+	COL_VERTEX(18, 51, 10),
+	COL_TRI_INIT(SURFACE_DEFAULT, 7),
+	COL_TRI(0, 1, 2),
+	COL_TRI(0, 2, 3),
+	COL_TRI(4, 5, 1),
+	COL_TRI(4, 1, 0),
+	COL_TRI(3, 2, 5),
+	COL_TRI(3, 5, 4),
+	COL_TRI(5, 2, 1),
+	COL_TRI_STOP(),
+	COL_END()
+};

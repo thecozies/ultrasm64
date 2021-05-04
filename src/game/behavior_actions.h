@@ -559,6 +559,7 @@ void bhv_checkpoint_loop(void);
 void bhv_cutscene_obj_loop(void);
 void bhv_monkat_head_loop(void);
 void bhv_monkat_head_init(void);
+void bhv_small_palm_loop(void);
 
 Gfx *geo_move_mario_part_from_parent(s32 run, UNUSED struct GraphNode *node, Mat4 mtx);
 

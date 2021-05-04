@@ -6234,3 +6234,17 @@ const BehaviorScript bhvMonkatHead[] = {
         CALL_NATIVE(bhv_monkat_head_loop),
     END_LOOP(),
 };
+
+const BehaviorScript bhvSmallPalm[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    LOAD_ANIMATIONS(oAnimations, small_palm_anims),
+    ANIMATE(0),
+    LOAD_COLLISION_DATA(small_palm_collision),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO)),
+    DROP_TO_FLOOR(),
+    SET_FLOAT(oDrawingDistance, 4000),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_small_palm_loop),
+        CALL_NATIVE(load_object_collision_model),
+    END_LOOP(),
+};

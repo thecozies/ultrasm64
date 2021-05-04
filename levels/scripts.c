@@ -115,6 +115,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_SLIDING_DOOR,            sliding_door_geo),
     LOAD_MODEL_FROM_GEO(MODEL_CANDLE,                  candle_geo),
     LOAD_MODEL_FROM_GEO(MODEL_PARASITE,                parasite_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_SMALL_PALM,              small_palm_geo),
 
     FREE_LEVEL_POOL(),
     CALL(/*arg*/ 0, /*func*/ lvl_init_from_save_file),

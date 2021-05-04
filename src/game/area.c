@@ -669,11 +669,11 @@ void render_game(void) {
         // }
         render_goals();
         render_intro_text();
-        if (gPlayer1Controller->buttonPressed & L_TRIG) sShowFPS = !sShowFPS;
-        if (sShowFPS) {
-            print_fps(20, 40);
-            render_s2dex();
-        }
+        // if (gPlayer1Controller->buttonPressed & L_TRIG) sShowFPS = !sShowFPS;
+        // if (sShowFPS) {
+        //     print_fps(20, 40);
+        //     render_s2dex();
+        // }
     } else {
         render_text_labels();
         if (D_8032CE78 != NULL) {
