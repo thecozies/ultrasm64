@@ -21,6 +21,7 @@
 #include "save_file.h"
 #include "mario.h"
 #include "puppyframes.h"
+#include "rendering_graph_node.h"
 
 #define OFFSET 30.0f
 #define STEPS 1
@@ -48,6 +49,7 @@ s8 sLWasHeld = FALSE;
 s8 sWaitForLUnheld = FALSE;
 s32 sMovingFramesSinceSnap = SNAP_HOLD_LENGTH + 1;
 static Vp sCutsceneVp = { { { 640, 480, 511, 0 }, { 640, 480, 511, 0 } } };
+f32 sCameraWallOffset = OFFSET;
 
 #if defined(VERSION_EU)
 static u8 gPCOptionStringsFR[][64] = {{NC_ANALOGUE_FR}, {NC_CAMX_FR}, {NC_CAMY_FR}, {NC_INVERTX_FR}, {NC_INVERTY_FR}, {NC_CAMC_FR}, {NC_CAMP_FR}, {NC_CAMD_FR}};
@@ -665,7 +667,7 @@ s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface 
     norm[0] = surface->normal.x;
     norm[1] = surface->normal.y;
     norm[2] = surface->normal.z;
-    vec3f_mul(norm,OFFSET);
+    vec3f_mul(norm, sCameraWallOffset);
 
     vec3s_to_vec3f(v0, surface->vertex1);
     vec3s_to_vec3f(v1, surface->vertex2);
@@ -1292,6 +1294,8 @@ void door_cutscene(void) {
 
 void slide_cutscene(void) {
     // uhh
+    gCloseClip = TRUE;
+    sCameraWallOffset = approach_f32_asymptotic(sCameraWallOffset, 200.0f, 0.1f);
 }
 
 void towerclimb_cutscene(void) {
@@ -1324,14 +1328,16 @@ void temple_intro_cutscene(void) {
     sCutsceneVp.vp.vtrans[1] = 480;
     override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
 
+#ifdef CDEBUG
     if (
         gCurCutsceneTimer < TEMPLE_INTRO_FINAL_FRAME - 10 &&
         gPlayer1Controller->buttonDown & START_BUTTON &&
         gPlayer1Controller->buttonPressed & A_BUTTON
     ) {
-        gCurCutsceneTimer = TEMPLE_INTRO_FINAL_FRAME - 20;
+        gCurCutsceneTimer = TEMPLE_INTRO_FINAL_FRAME - 5;
         gMarioState->pos[0] = -1558.0f;
     }
+#endif
 
     if (gCurCutsceneTimer == 0) {
         set_mario_action(gMarioState, ACT_TEMPLE_1_INTRO, 0);
@@ -1375,14 +1381,19 @@ void camping_intro_cutscene(void) {
     sCutsceneVp.vp.vtrans[0] = 640;
     sCutsceneVp.vp.vtrans[1] = 480;
     override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
+    gCloseClip = TRUE;
 
+#ifdef CDEBUG
     if (
-        gCurCutsceneTimer < CUTSCENE_INTRO_END - 10 &&
+        gCurCutsceneTimer < CUTSCENE_INTRO_LUCY_WALKS_OVER - 10 &&
         gPlayer1Controller->buttonDown & START_BUTTON &&
         gPlayer1Controller->buttonPressed & A_BUTTON
     ) {
-        gCurCutsceneTimer = CUTSCENE_INTRO_END - 20;
+        gCurCutsceneTimer = CUTSCENE_INTRO_LUCY_WALKS_OVER - 10;
+        gMarioState->pos[1] += 100.0f;
+        gMarioState->actionState = 3;
     }
+#endif
 
     if (gCurCutsceneTimer == CUTSCENE_INTRO_END - 1) {
         gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
@@ -1392,6 +1403,7 @@ void camping_intro_cutscene(void) {
     } else if (gCurCutsceneTimer >= CUTSCENE_INTRO_END) {
         gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
         gPuppyCam.yawTarget = gPuppyCam.yaw;
+        gCloseClip = FALSE;
     } else {
         vec3s_copy(gPuppyCam.pos, camping_intro[gCurCutsceneTimer][0]);
         vec3s_copy(gPuppyCam.focus, camping_intro[gCurCutsceneTimer][1]);
@@ -1427,6 +1439,7 @@ static void puppycam_script(void)
     void (*func)();
 
     if (gCurCutscene) puppycam_handle_cutscene();
+    else sCameraWallOffset = approach_f32_asymptotic(sCameraWallOffset, OFFSET, 0.2f);
 
     //Sets this before going through any possible modifications.
     gPuppyCam.flags = gPuppyCam.intendedFlags;

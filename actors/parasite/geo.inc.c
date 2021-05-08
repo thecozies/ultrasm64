@@ -16,6 +16,7 @@ const GeoLayout parasite_geo[] = {
 							GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, 0, 0, NULL),
 							GEO_OPEN_NODE(),
 								GEO_ASM(0, geo_update_layer_transparency),
+								GEO_ASM(5, geo_trippy_lookat),
 								GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, 0, 0, parasite_2egg_mesh_layer_5),
 								GEO_BILLBOARD_WITH_PARAMS(LAYER_TRANSPARENT, 0, 0, 0),
 								GEO_OPEN_NODE(),

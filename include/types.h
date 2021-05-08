@@ -362,6 +362,7 @@ struct MarioState
     u8 eyeState;
     u8 lastEyeState;
     u8 mouthState;
+    struct Object *lightObj;
 };
 
 #endif // TYPES_H

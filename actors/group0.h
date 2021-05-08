@@ -262,7 +262,8 @@ extern const Gfx mario_cap_wings[];
 extern const Gfx mario_cap_wings_transparent[];
 extern const Gfx mario_metal_cap_wings[];
 extern const Gfx mario_metal_cap_wings_transparent[];
-extern Lights1 mario_clothes_lights;
+extern Lights2 mario_clothes_lights;
+extern Lights2 lucy_skin;
 
 // sparkle
 extern const GeoLayout sparkles_geo[];

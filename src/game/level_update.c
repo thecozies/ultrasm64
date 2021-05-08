@@ -421,6 +421,7 @@ void init_mario_after_warp(void) {
 
         gMarioState->interactObj = spawnNode->object;
         gMarioState->usedObj = spawnNode->object;
+        gMarioState->lightObj = NULL;
     }
 
     reset_camera(gCurrentArea->camera);

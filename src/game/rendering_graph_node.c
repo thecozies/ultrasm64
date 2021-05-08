@@ -10,6 +10,8 @@
 #include "rendering_graph_node.h"
 #include "shadow.h"
 #include "sm64.h"
+#include "actors/group0.h"
+#include "level_update.h"
 
 /**
  * This file contains the code that processes the scene graph for rendering.
@@ -64,6 +66,7 @@ s16 gCurrAnimFrame;
 f32 gCurAnimTranslationMultiplier;
 u16 *gCurrAnimAttribute;
 s16 *gCurAnimData;
+struct Object *sCurNode = NULL;
 
 struct AllocOnlyPool *gDisplayListHeap;
 
@@ -127,7 +130,19 @@ u16 gAreaUpdateCounter = 0;
 
 #ifdef F3DEX_GBI_2
 LookAt lookAt;
+LookAt lookAtStatic;
 #endif
+
+#define VIEW_MATRIX_THINGY
+
+#ifdef VIEW_MATRIX_THINGY
+Mat4 *viewMat;
+s32 gReadyForLookAt = FALSE;
+#endif
+
+
+s32 gCloseClip = FALSE;
+s32 gObjectAngleHere = 0;
 
 /**
  * Process a master list node.
@@ -144,7 +159,25 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     // changes below.
 #ifdef F3DEX_GBI_2
     Mtx lMtx;
-    guLookAtReflect(&lMtx, &lookAt, 0, 0, 0, /* eye */ 0, 0, 1, /* at */ 1, 0, 0 /* up */);
+    Mtx lSMtx;
+    // guLookAtReflect(
+    //     &lMtx,  &lookAt,
+    //     gLakituState.curPos[0], gLakituState.curPos[1], gLakituState.curPos[2], /* eye */
+    //     gLakituState.curFocus[0], gLakituState.curFocus[1], gLakituState.curFocus[2], /* eye */
+    //     0, 1.0f, 0 /* up */
+    // );
+    guLookAtReflect(
+        &lMtx,  &lookAt,
+        0, 0, 0, /* eye */
+        0, 0, 1, /* at */
+        0.0f, 1.0f, 0.0f /* up */
+    );
+    guLookAtReflect(
+        &lSMtx,  &lookAtStatic,
+        0, 0, 0, /* eye */
+        0, 0, 1, /* at */
+        0.0f, 1.0f, 0.0f /* up */
+    );
 #endif
 
     if (enableZBuffer != 0) {
@@ -176,9 +209,24 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
  */
 static void geo_append_display_list(void *displayList, s16 layer) {
 
-#ifdef F3DEX_GBI_2
-    gSPLookAt(gDisplayListHead++, &lookAt);
+#ifdef VIEW_MATRIX_THINGY
+    if (gReadyForLookAt) {
+        if (!(sCurNode != NULL && sCurNode->header.gfx.sharedChild != gLoadedGraphNodes[MODEL_CANDLE])) {
+            Vec3f lightDir = {
+                100.0f * sinf((M_PI / 180.0f) * 0.0f),
+                100.0f * cosf((M_PI / 180.0f) * 0.0f),
+                0.0f
+            };
+            lookAtStatic.l[0].l.dir[0] = -((s8)(lightDir[0] * (*viewMat)[0][0] + lightDir[1] * (*viewMat)[1][0] + lightDir[2] * (*viewMat)[2][0]));
+            lookAtStatic.l[0].l.dir[1] = -((s8)(lightDir[0] * (*viewMat)[0][1] + lightDir[1] * (*viewMat)[1][1] + lightDir[2] * (*viewMat)[2][1]));
+            lookAtStatic.l[0].l.dir[2] = -((s8)(lightDir[0] * (*viewMat)[0][2] + lightDir[1] * (*viewMat)[1][2] + lightDir[2] * (*viewMat)[2][2]));
+            gSPLookAt(gDisplayListHead++, &lookAtStatic);
+        }
+    }
+#else
+    // gSPLookAt(gDisplayListHead++, &lookAt);
 #endif
+
     if (gCurGraphNodeMasterList != 0) {
         struct DisplayListNode *listNode =
             alloc_only_pool_alloc(gDisplayListHeap, sizeof(struct DisplayListNode));
@@ -249,7 +297,11 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
         f32 aspect = (f32) gCurGraphNodeRoot->width / (f32) gCurGraphNodeRoot->height;
 #endif
 
-        guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 1.0f);
+        if (gCloseClip) {
+            guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / 4.0f, node->far / WORLD_SCALE, 1.0f);
+        } else {
+            guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 1.0f);
+        }
         gSPPerspNormalize(gDisplayListHead++, perspNorm);
 
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -306,6 +358,61 @@ static void make_roll_matrix(Mtx *mtx, s16 angle) {
     guMtxF2L(temp, mtx);
 }
 
+#define FDEGREES(x) (((x) / 65536.0f * 360.0f))
+
+void set_clothes_light_dir(void) {
+    Lights2 *clothes = segmented_to_virtual(&mario_clothes_lights);
+    Lights2 *skin = segmented_to_virtual(&lucy_skin);
+    // Vec3f lightDir = {
+    //     100.0f * sinf((M_PI / 180.0f) * 0.0f),
+    //     100.0f * cosf((M_PI / 180.0f) * 0.0f),
+    //     0.0f
+    // };
+    Vec3f lightDir = {
+        // 100.0f * sinf((M_PI / 180.0f) * ((f32) gGlobalTimer)),
+        100.0f * sinf((M_PI / 180.0f) * 90.0f),
+        100.0f * cosf((M_PI / 180.0f) * FDEGREES(gMarioState->faceAngle[1] + 0x2000)),
+        // 100.0f * cosf((M_PI / 180.0f) * 45.0f),
+        0.0f
+    };
+    Vec3f altLightDir;
+
+    clothes->l[0].l.dir[0] = ((s8)(lightDir[0] * (*viewMat)[0][0] + lightDir[1] * (*viewMat)[1][0] + lightDir[2] * (*viewMat)[2][0]));
+    clothes->l[0].l.dir[1] = ((s8)(lightDir[0] * (*viewMat)[0][1] + lightDir[1] * (*viewMat)[1][1] + lightDir[2] * (*viewMat)[2][1]));
+    clothes->l[0].l.dir[2] = ((s8)(lightDir[0] * (*viewMat)[0][2] + lightDir[1] * (*viewMat)[1][2] + lightDir[2] * (*viewMat)[2][2]));
+    skin->l[0].l.dir[0] = clothes->l->l.dir[0];
+    skin->l[0].l.dir[1] = clothes->l->l.dir[1];
+    skin->l[0].l.dir[2] = clothes->l->l.dir[2];
+
+    if (gMarioState->lightObj != NULL) {
+        f32 dirMag = 50.0f;
+        // altLightDir[0] = 100.0f * sinf((M_PI / 180.0f) * 90.0f),
+        // altLightDir[1] = 100.0f * cosf((M_PI / 180.0f) * FDEGREES((f32)gMarioState->lightObj->oAngleToMario));
+
+        // altLightDir[0] = -lightDir[0];
+        // altLightDir[1] = lightDir[1];
+        // altLightDir[2] = 0.0f;
+        altLightDir[0] = get_relative_position_between_ranges(gMarioState->lightObj->header.gfx.pos[0] - gMarioState->pos[0], -1000.0f, 1000.0f, -dirMag, dirMag);
+        altLightDir[1] = get_relative_position_between_ranges(gMarioState->lightObj->header.gfx.pos[1] - gMarioState->pos[1], -1000.0f, 1000.0f, -dirMag, dirMag);
+        altLightDir[2] = get_relative_position_between_ranges(gMarioState->lightObj->header.gfx.pos[2] - gMarioState->pos[2], -1000.0f, 1000.0f, -dirMag, dirMag);
+
+        clothes->l[1].l.dir[0] = ((s8)(altLightDir[0] * (*viewMat)[0][0] + altLightDir[1] * (*viewMat)[1][0] + altLightDir[2] * (*viewMat)[2][0]));
+        clothes->l[1].l.dir[1] = ((s8)(altLightDir[0] * (*viewMat)[0][1] + altLightDir[1] * (*viewMat)[1][1] + altLightDir[2] * (*viewMat)[2][1]));
+        clothes->l[1].l.dir[2] = ((s8)(altLightDir[0] * (*viewMat)[0][2] + altLightDir[1] * (*viewMat)[1][2] + altLightDir[2] * (*viewMat)[2][2]));
+        skin->l[1].l.dir[0] = clothes->l[1].l.dir[0];
+        skin->l[1].l.dir[1] = clothes->l[1].l.dir[1];
+        skin->l[1].l.dir[2] = clothes->l[1].l.dir[2];
+        gMarioState->lightObj = NULL;
+    } else {
+        clothes->l[1].l.dir[0] = approach_s32(0x28, clothes->l[1].l.dir[0], 0x2, 0x2);
+        clothes->l[1].l.dir[1] = approach_s32(0x28, clothes->l[1].l.dir[1], 0x2, 0x2);
+        clothes->l[1].l.dir[2] = approach_s32(0x28, clothes->l[1].l.dir[2], 0x2, 0x2);
+        skin->l[1].l.dir[0] = approach_s32(0x28, skin->l[1].l.dir[0], 0x2, 0x2);
+        skin->l[1].l.dir[1] = approach_s32(0x28, skin->l[1].l.dir[1], 0x2, 0x2);
+        skin->l[1].l.dir[2] = approach_s32(0x28, skin->l[1].l.dir[2], 0x2, 0x2);
+    }
+}
+
 /**
  * Process a camera node.
  */
@@ -325,6 +432,14 @@ static void geo_process_camera(struct GraphNodeCamera *node) {
     mtxf_mul(gMatStack[gMatStackIndex + 1], cameraTransform, gMatStack[gMatStackIndex]);
     gMatStackIndex++;
     mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);
+
+#ifdef VIEW_MATRIX_THINGY
+    viewMat = &gMatStack[gMatStackIndex];
+    gReadyForLookAt = TRUE;
+    set_clothes_light_dir();
+#endif
+    
+
     gMatStackFixed[gMatStackIndex] = mtx;
     if (node->fnNode.node.children != 0) {
         gCurGraphNodeCamera = node;
@@ -806,6 +921,8 @@ static void geo_process_object(struct Object *node) {
     s32 hasAnimation = (node->header.gfx.node.flags & GRAPH_RENDER_HAS_ANIMATION) != 0;
 
     if (node->header.gfx.areaIndex == gCurGraphNodeRoot->areaIndex) {
+        sCurNode = node;
+
         if (node->header.gfx.throwMatrix != NULL) {
             mtxf_mul(gMatStack[gMatStackIndex + 1], *node->header.gfx.throwMatrix,
                      gMatStack[gMatStackIndex]);
@@ -848,6 +965,7 @@ static void geo_process_object(struct Object *node) {
         gMatStackIndex--;
         gCurAnimType = ANIM_TYPE_NONE;
         node->header.gfx.throwMatrix = NULL;
+        sCurNode = NULL;
     }
 }
 
@@ -875,9 +993,9 @@ void geo_process_held_object(struct GraphNodeHeldObject *node) {
     Vec3f translation;
     Mtx *mtx = alloc_display_list(sizeof(*mtx));
 
-#ifdef F3DEX_GBI_2
-    gSPLookAt(gDisplayListHead++, &lookAt);
-#endif
+// #ifdef F3DEX_GBI_2
+//     gSPLookAt(gDisplayListHead++, &lookAt);
+// #endif
 
     if (node->fnNode.func != NULL) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);

@@ -36,6 +36,7 @@
 #include "puppycam2.h"
 #include "actors/group0.h"
 #include "engine/behavior_script.h"
+#include "rendering_graph_node.h"
 
 u32 unused80339F10;
 s8 filler80339F1C[20];
@@ -1818,6 +1819,7 @@ void set_current_cutscene(s32 cutscene) {
 
     if (gCurCutscene == CUTSCENE_SLIDE && cutscene != CUTSCENE_SLIDE) {
         set_fov_function(CAM_FOV_DEFAULT);
+        gCloseClip = FALSE;
     } else if (gCurCutscene != cutscene) {
         gCurCutsceneTimer = 0;
     }
@@ -1871,9 +1873,12 @@ void execute_mario_warp(void) {
 }
 
 // #433D0D
-#define MAIN_CLOTHES_R 0x43
-#define MAIN_CLOTHES_G 0x3D
-#define MAIN_CLOTHES_B 0x0D
+// #define MAIN_CLOTHES_R 0x43
+// #define MAIN_CLOTHES_G 0x3D
+// #define MAIN_CLOTHES_B 0x0D
+#define MAIN_CLOTHES_R 0x26
+#define MAIN_CLOTHES_G 0x22
+#define MAIN_CLOTHES_B 0x06
 #define MAIN_CLOTHES_R2 0x21
 #define MAIN_CLOTHES_G2 0x1E
 #define MAIN_CLOTHES_B2 0x06
@@ -1900,7 +1905,8 @@ void set_color(unsigned char vec[3], unsigned char r, unsigned char g, unsigned 
 }
 
 void update_clothes_colors(void) {
-    Lights1 *clothes = segmented_to_virtual(&mario_clothes_lights);
+    Lights2 *clothes = segmented_to_virtual(&mario_clothes_lights);
+    Lights2 *skin = segmented_to_virtual(&lucy_skin);
 
     if (gMarioState->canAirJump) {
         unsigned char r, g, b, ra, ga, ba;
@@ -1921,6 +1927,57 @@ void update_clothes_colors(void) {
     set_color(clothes->a.l.colc, MAIN_CLOTHES_R2, MAIN_CLOTHES_G2, MAIN_CLOTHES_B2);
     set_color(clothes->l->l.col, MAIN_CLOTHES_R, MAIN_CLOTHES_G, MAIN_CLOTHES_B);
     set_color(clothes->l->l.colc, MAIN_CLOTHES_R, MAIN_CLOTHES_G, MAIN_CLOTHES_B);
+
+    if (gMarioState->lightObj != NULL) {
+        s32 lightType = (gMarioState->lightObj->oBehParams >> 16) & 0xFF;
+        switch (lightType) {
+            case 0:
+            default: {
+                f32 firePow = get_relative_position_between_ranges(
+                    gMarioState->lightObj->oDistanceToMario,
+                    1000.0f,
+                    0.0f,
+                    0.0f,
+                    gFireAlpha
+                );
+                clothes->l[1].l.col[0] = (u8) firePow;
+                clothes->l[1].l.col[1] = (u8) (firePow * 0.7);
+                clothes->l[1].l.col[2] = (u8) (firePow * 0.5);
+                skin->l[1].l.col[0] = (u8) firePow;
+                skin->l[1].l.col[1] = (u8) (firePow * 0.7);
+                skin->l[1].l.col[2] = (u8) (firePow * 0.5);
+                // u8 fireValR = (u8)((f32)gFireValue * (firePow * 255.0f));
+                // u8 fireValR = get_relative_position_between_ranges(
+                //     firePow,
+                //     1000.0f,
+                //     0.0f,
+                //     0.0f,
+                //     1.0f
+                // );
+                // gFireValue
+            }
+        }
+    } else {
+        clothes->l[1].l.col[0] = approach_s32(clothes->l[1].l.col[0], gGlobalFog.r / 8, 0x4, 0x4);
+        clothes->l[1].l.col[1] = approach_s32(clothes->l[1].l.col[1], gGlobalFog.g / 8, 0x4, 0x4);
+        clothes->l[1].l.col[2] = approach_s32(clothes->l[1].l.col[2], gGlobalFog.b / 8, 0x4, 0x4);
+        skin->l[1].l.col[0] = approach_s32(skin->l[1].l.col[0], gGlobalFog.r / 8, 0x4, 0x4);
+        skin->l[1].l.col[1] = approach_s32(skin->l[1].l.col[1], gGlobalFog.g / 8, 0x4, 0x4);
+        skin->l[1].l.col[2] = approach_s32(skin->l[1].l.col[2], gGlobalFog.b / 8, 0x4, 0x4);
+    }
+        // set_color(
+        //     clothes->a.l.col,
+        //     approach_f32_asymptotic(clothes->a.l.colc[0], gGlobalFog.r, 0.2f),
+        //     approach_f32_asymptotic(clothes->a.l.colc[1], gGlobalFog.g, 0.2f),
+        //     approach_f32_asymptotic(clothes->a.l.colc[2], gGlobalFog.b, 0.2f)
+        // );
+        // set_color(
+        //     skin->a.l.col,
+        //     approach_f32_asymptotic(skin->a.l.colc[0], gGlobalFog.r, 0.2f),
+        //     approach_f32_asymptotic(skin->a.l.colc[1], gGlobalFog.g, 0.2f),
+        //     approach_f32_asymptotic(skin->a.l.colc[2], gGlobalFog.b, 0.2f)
+        // );
+
 
     // switch(gCurrAreaIndex) {
     // case 2:
@@ -1999,43 +2056,42 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             return 0;
         }
 
-// #if FALSE
-// // CTODO: DEBUG
-        // if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-        //     if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
-        // }
-        // // if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-        // //     set_current_cutscene(gCurCutscene + 1);
-        // // }
-        // if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-        //     if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
-        //     initiate_warp(LEVEL_PSS, 0, 0x0A, 0);
-        // }
-        // if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
-        //     set_current_cutscene(gCurCutscene - 1);
-        // }
-// // CTODO: DEBUG
-        // if (gMarioState->controller->buttonDown & A_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
-        //     gMarioState->pos[1] += 30.0f;
-        //     gMarioState->vel[1] = 30.0f;
-        //     gMarioState->faceAngle[1] = gMarioState->intendedYaw;
-        //     gMarioState->forwardVel = 2.0f * gMarioState->intendedMag;
-        //     gMarioState->action = ACT_DOLPHIN_DIVE;
-        // }
-        // if (gMarioState->controller->buttonDown & B_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
-        //     gMarioState->vel[1] = 0.0f;
-        //     gMarioState->faceAngle[1] = gMarioState->intendedYaw;
-        //     gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
-        //     gMarioState->action = ACT_DOLPHIN_DIVE;
-        // }
+#ifdef CDEBUG
+        if (gMarioState->controller->buttonPressed & U_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+            if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
+        }
+
+        if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+            if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
+            set_current_cutscene(0);
+            initiate_warp(LEVEL_PSS, 0, 0x0A, 0);
+        }
+
+        if (gMarioState->controller->buttonDown & A_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
+            gMarioState->pos[1] += 30.0f;
+            gMarioState->vel[1] = 30.0f;
+            gMarioState->faceAngle[1] = gMarioState->intendedYaw;
+            gMarioState->forwardVel = 2.0f * gMarioState->intendedMag;
+            gMarioState->action = ACT_DOLPHIN_DIVE;
+        }
+        if (gMarioState->controller->buttonDown & B_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {
+            gMarioState->vel[1] = 0.0f;
+            gMarioState->faceAngle[1] = gMarioState->intendedYaw;
+            gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
+            gMarioState->action = ACT_DOLPHIN_DIVE;
+        }
         // print_text_fmt_int(20, 80, "%d", (s32) gPuppyCam.focus[0]);
         // print_text_fmt_int(20, 50, "%d", (s32) gPuppyCam.focus[1]);
         // print_text_fmt_int(20, 20, "%d", (s32) gPuppyCam.focus[2]);
         // print_text_fmt_int(80, 80, "%d", (s32) gMarioState->pos[0]);
         // print_text_fmt_int(80, 50, "%d", (s32) gMarioState->pos[1]);
         // print_text_fmt_int(80, 20, "%d", (s32) gMarioState->pos[2]);
-        // if (gMarioState->controller->buttonDown & START_BUTTON && gCurCutscene > NO_CUTSCENE) gCurCutsceneTimer++;
-// #endif
+        // if (
+        //     gMarioState->controller->buttonDown & START_BUTTON &&
+        //     gMarioState->controller->buttonDown & B_BUTTON &&
+        //     gCurCutscene > NO_CUTSCENE
+        // ) gCurCutsceneTimer++;
+#endif
 
         handle_cutscene();
         execute_mario_warp();
@@ -2237,6 +2293,8 @@ void init_mario(void) {
         set_current_cutscene(CUTSCENE_INTRO_TEMPLE);
         set_current_fog_state(0);
     }
+
+    gMarioState->lightObj = NULL;
 }
 
 void init_mario_from_save_file(void) {

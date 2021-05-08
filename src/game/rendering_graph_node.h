@@ -12,6 +12,14 @@ extern struct GraphNodeCamera *gCurGraphNodeCamera;
 extern struct GraphNodeObject *gCurGraphNodeObject;
 extern struct GraphNodeHeldObject *gCurGraphNodeHeldObject;
 extern u16 gAreaUpdateCounter;
+extern s32 gCloseClip;
+extern s32 gObjectAngleHere;
+extern LookAt lookAt;
+extern LookAt lookAtStatic;
+extern s32 gReadyForLookAt;
+extern Mat4 *viewMat;
+extern s16 gMatStackIndex;
+extern Mat4 gMatStack[32];
 
 // after processing an object, the type is reset to this
 #define ANIM_TYPE_NONE                  0

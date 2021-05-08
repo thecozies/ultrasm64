@@ -1,10 +1,16 @@
-Lights1 mario_clothes_lights = gdSPDefLights1(
-	0x21, 0x1E, 0x6,
-	0x43, 0x3D, 0xD, 0x28, 0x28, 0x28);
+// #include "gbi.h"
 
-Lights1 lucy_skin = gdSPDefLights1(
+Lights2 mario_clothes_lights = gdSPDefLights2(
+	0x21, 0x1E, 0x6,
+	0x43, 0x3D, 0xD, 0x28, 0x28, 0x28,
+	0x0, 0x0, 0x0, 0x28, 0x28, 0x28);
+
+Lights2 lucy_skin = gdSPDefLights2(
 	0x54, 0x3C, 0x20,
-	0xA8, 0x79, 0x41, 0x28, 0x28, 0x28);
+	//805d32
+	0x54, 0x3C, 0x20, 0x28, 0x28, 0x28,
+	// 0xA8, 0x79, 0x41, 0x28, 0x28, 0x28,
+	0x0, 0x0, 0x0, 0x28, 0x28, 0x28);
 
 Lights1 mario_face_0___Open_Eyes_v3_lights = gdSPDefLights1(
 	0x54, 0x3C, 0x20,
@@ -5318,7 +5324,7 @@ Gfx mat_mario_clothes[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(mario_clothes_lights),
+	gsSPSetLights2(mario_clothes_lights),
 	gsSPEndDisplayList(),
 };
 
@@ -5326,7 +5332,7 @@ Gfx mat_mario_skin_v3[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(lucy_skin),
+	gsSPSetLights2(lucy_skin),
 	gsSPEndDisplayList(),
 };
 
@@ -5342,7 +5348,7 @@ Gfx mat_mario_face_0___Open_Eyes_v3[] = {
 	gsDPPipeSync(),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
-	gsSPSetLights1(mario_face_0___Open_Eyes_v3_lights),
+	gsSPSetLights2(lucy_skin),
 	gsSPEndDisplayList(),
 };
 
@@ -5358,7 +5364,7 @@ Gfx mat_lucy_eyes[] = {
 	gsDPPipeSync(),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0),
 	gsDPSetTileSize(0, 0, 0, 124, 124),
-	gsSPSetLights1(lucy_skin),
+	gsSPSetLights2(lucy_skin),
 	gsSPEndDisplayList(),
 };
 
@@ -5374,7 +5380,7 @@ Gfx mat_mario_mouthStandard[] = {
 	gsDPPipeSync(),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0, G_TX_CLAMP | G_TX_NOMIRROR, 6, 0),
 	gsDPSetTileSize(0, 0, 0, 252, 124),
-	gsSPSetLights1(mario_mouthStandard_lights),
+	gsSPSetLights2(lucy_skin),
 	gsSPEndDisplayList(),
 };
 
@@ -5390,7 +5396,7 @@ Gfx mat_lucy_mouth[] = {
 	gsDPPipeSync(),
 	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0, G_TX_CLAMP | G_TX_NOMIRROR, 6, 0),
 	gsDPSetTileSize(0, 0, 0, 252, 124),
-	gsSPSetLights1(lucy_skin),
+	gsSPSetLights2(lucy_skin),
 	gsSPEndDisplayList(),
 };
 
@@ -5486,7 +5492,7 @@ Gfx mat_mario_white_v3[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
 	gsSPTexture(65535, 65535, 0, 0, 1),
-	gsSPSetLights1(mario_white_v3_lights),
+	gsSPSetLights2(lucy_skin),
 	gsSPEndDisplayList(),
 };
 

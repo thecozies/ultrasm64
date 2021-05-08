@@ -199,13 +199,16 @@ void s2d_print(int x, int y, int align, const char *str, uObjMtx *buf) {
 
 void s2d_print_alloc(int x, int y, int align, const char *str) {
 	int len;
+	uObjMtx *b;
 
 	if (s2d_check_align(align) != 0) return;
 	if (s2d_check_str(str)     != 0) return;
 
 	len = s2d_strlen(str);
 
-	uObjMtx *b = alloc(sizeof(uObjMtx) * len);
+	b = alloc(sizeof(uObjMtx) * len * 8);
+	if (b == NULL) return;
+
 	s2d_snprint(x, y, align, str, b, len);
 }
 

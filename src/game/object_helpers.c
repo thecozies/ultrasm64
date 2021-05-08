@@ -186,6 +186,56 @@ Gfx *geo_set_fire_env(s32 callContext, struct GraphNode *node, UNUSED void *cont
     return dlStart;
 }
 
+Gfx *geo_trippy_lookat(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    Gfx *dlStart, *dlHead;
+    struct GraphNodeGenerated *currentGraphNode;
+    struct Object *obj;
+
+    dlStart = NULL;
+
+    // You'd set the flags to 7 << 8 to make it affect layer 7
+
+    if (callContext == GEO_CONTEXT_RENDER && gReadyForLookAt) {
+        Mtx lMtx;
+        LookAt* lookAtLocal;
+        f32 offset;
+        obj = (struct Object *) gCurGraphNodeObject;
+        currentGraphNode = (struct GraphNodeGenerated *) node;
+        offset = obj->header.gfx.pos[0] + obj->header.gfx.pos[1] + obj->header.gfx.pos[2];
+
+        Vec3f lightDir = {
+            100.0f * sinf((M_PI / 180.0f) * (((f32)gGlobalTimer) + offset)),
+            100.0f * cosf((M_PI / 180.0f) * (((f32)gGlobalTimer) + offset)),
+            0.0f
+        };
+        lookAtLocal = alloc_display_list(sizeof(LookAt));
+        guLookAtReflect(
+            &lMtx,  lookAtLocal,
+            0, 0, 0, /* eye */
+            0, 0, 1, /* at */
+            0.0f, 1.0f, 0.0f /* up */
+        );
+
+        lookAtLocal->l[0].l.dir[0] = -((s8)(lightDir[0] * (*viewMat)[0][0] + lightDir[1] * (*viewMat)[1][0] + lightDir[2] * (*viewMat)[2][0]));
+        lookAtLocal->l[0].l.dir[1] = -((s8)(lightDir[0] * (*viewMat)[0][1] + lightDir[1] * (*viewMat)[1][1] + lightDir[2] * (*viewMat)[2][1]));
+        lookAtLocal->l[0].l.dir[2] = -((s8)(lightDir[0] * (*viewMat)[0][2] + lightDir[1] * (*viewMat)[1][2] + lightDir[2] * (*viewMat)[2][2]));
+
+        if (currentGraphNode->parameter != 0) {
+            currentGraphNode->fnNode.node.flags =
+                (currentGraphNode->parameter << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
+        }
+        
+    
+        dlStart = alloc_display_list(sizeof(Gfx) * 2);
+
+        dlHead = dlStart;
+        gSPLookAt(dlHead++, lookAtLocal);
+        gSPEndDisplayList(dlHead);
+    }
+
+    return dlStart;
+}
+
 Gfx *geo_zbuffer_clear(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 *mtx) {
     Gfx *dl = NULL;
     if (callContext == GEO_CONTEXT_RENDER) {

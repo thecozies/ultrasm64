@@ -2246,7 +2246,7 @@ s32 act_camp_intro(struct MarioState *m) {
         set_custom_mario_animation(m, LUCY_SITTING_ANIM);
         m->eyeState = LUCY_EYE_SHUT;
         m->mouthState = LUCY_MOUTH_SMILE;
-        if (gCurCutsceneTimer == CUTSCENE_INTRO_LUCY_LOOKS_OVER) {
+        if (gCurCutsceneTimer >= CUTSCENE_INTRO_LUCY_LOOKS_OVER) {
             m->eyeState = LUCY_EYE_OPEN;
             m->mouthState = LUCY_MOUTH_CLOSED;
             m->actionState = 1;
@@ -2258,7 +2258,7 @@ s32 act_camp_intro(struct MarioState *m) {
         else m->mouthState = LUCY_MOUTH_CLOSED;
 
         set_custom_mario_animation(m, LUCY_SITTING_LOOKING_OVER_ANIM);
-        if (gCurCutsceneTimer == CUTSCENE_INTRO_LUCY_WALKS_OVER) {
+        if (gCurCutsceneTimer >= CUTSCENE_INTRO_LUCY_WALKS_OVER) {
             m->actionState = 2;
             m->pos[0] = 149.0f;
             m->pos[2] = CAMP_WALK_OVER_START;

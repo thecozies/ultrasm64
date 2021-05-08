@@ -22,8 +22,8 @@ extern const GeoLayout mario_002_switch_opt0_001_switch_opt0_000_switch_001_expr
 extern const GeoLayout mario_002_switch_opt0_001_switch_opt0_000_switch_001_expressions_opt5[];
 extern const GeoLayout mario_002_switch_opt0_001_switch_opt0_000_switch_001_expressions_opt6[];
 extern const GeoLayout mario_geo[];
-extern Lights1 mario_clothes_lights;
-extern Lights1 lucy_skin;
+extern Lights2 mario_clothes_lights;
+extern Lights2 lucy_skin;
 extern Lights1 mario_face_0___Open_Eyes_v3_lights;
 extern Lights1 mario_mouthStandard_lights;
 extern Lights1 mario_hat_v3_lights;

@@ -66,19 +66,26 @@ void setup_font_texture(int idx) {
 //     gSPObjMatrix(gdl_head++, m);
 // }
 
+// 0x00000000801658c8 pass
+// 0x0000000080165848 fail
+
 // New matrix pipeline
 // Works with both rotation and scale,
 // but is (probably not noticeably) slower
 void mtx_pipeline2(uObjMtx *m, int x, int y) {
     // init
+    // Mat4 tmp, scal, translate;
     Mat4 tmp, rot, scal, translate;
+    // int ioioio = 100;
+    // ioioio++;
+
     guMtxIdentF(tmp);
     guScaleF(scal, gS2DScale, gS2DScale, 1.0f);
     guRotateF(rot, (f32) myDegrees, 0, 0, 1.0f);
     guTranslateF(translate, x, y, 0);
 
     mtxf_mul(tmp, tmp, scal);
-    mtxf_mul(tmp, tmp, rot);
+    // mtxf_mul(tmp, tmp, rot);
     mtxf_mul(tmp, tmp, translate);
 
     gu_to_gs2dex(m, tmp);

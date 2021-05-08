@@ -19,6 +19,7 @@ SRC_DIRS :=
 
 # Build for the N64 (turn this off for ports)
 TARGET_N64 ?= 1
+CDEBUG ?= 0
 
 # CONSOLE - selects the console to target
 #   bb - Targets the iQue Player (codenamed BB)
@@ -151,6 +152,10 @@ endif
 ifeq ($(NON_MATCHING),1)
   DEFINES += NON_MATCHING=1 AVOID_UB=1
   COMPARE := 0
+endif
+
+ifeq ($(CDEBUG),1)
+  DEFINES += CDEBUG=1
 endif
 
 
