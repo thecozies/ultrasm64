@@ -75,13 +75,13 @@ void setup_font_texture(int idx) {
 void mtx_pipeline2(uObjMtx *m, int x, int y) {
     // init
     // Mat4 tmp, scal, translate;
-    Mat4 tmp, rot, scal, translate;
+    Mat4 tmp, scal, translate;
     // int ioioio = 100;
     // ioioio++;
 
     guMtxIdentF(tmp);
     guScaleF(scal, gS2DScale, gS2DScale, 1.0f);
-    guRotateF(rot, (f32) myDegrees, 0, 0, 1.0f);
+    // guRotateF(rot, (f32) myDegrees, 0, 0, 1.0f);
     guTranslateF(translate, x, y, 0);
 
     mtxf_mul(tmp, tmp, scal);

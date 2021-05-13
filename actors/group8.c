@@ -12,3 +12,6 @@ UNUSED static const u64 binid_0 = 0;
 #include "capswitch/model.inc.c"
 #include "capswitch/collision.inc.c"
 UNUSED static const u64 binid_1 = 1;
+
+#include "big_orb/model.inc.c"
+#include "beam/model.inc.c"

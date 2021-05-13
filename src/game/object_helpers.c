@@ -26,10 +26,12 @@
 #include "rendering_graph_node.h"
 #include "spawn_object.h"
 #include "spawn_sound.h"
+#include "puppycam2.h"
 
 s8 D_8032F0A0[] = { -8, 8, -4, 4 };
 s16 D_8032F0A4[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 static s8 sLevelsWithRooms[] = { LEVEL_CASTLE_GROUNDS, LEVEL_PSS, LEVEL_CASTLE, LEVEL_HMC, -1 };
+s32 gLevelSwitch = 0;
 
 static s32 clear_move_flag(u32 *, s32);
 
@@ -163,6 +165,8 @@ Gfx *geo_update_fog(s32 callContext, struct GraphNode *node, UNUSED void *contex
 Gfx *geo_set_fire_env(s32 callContext, struct GraphNode *node, UNUSED void *context) {
     Gfx *dlStart, *dlHead;
     struct GraphNodeGenerated *currentGraphNode;
+    u8 layer;
+    u8 mult;
 
     dlStart = NULL;
 
@@ -170,16 +174,18 @@ Gfx *geo_set_fire_env(s32 callContext, struct GraphNode *node, UNUSED void *cont
 
     if (callContext == GEO_CONTEXT_RENDER) {
         currentGraphNode = (struct GraphNodeGenerated *) node;
+        layer = currentGraphNode->parameter & 0xF;
+        mult = (currentGraphNode->parameter >> 4) + 1;
 
-        if (currentGraphNode->parameter != 0) {
+        if (layer != 0) {
             currentGraphNode->fnNode.node.flags =
-                (currentGraphNode->parameter << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
+                (layer << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
         }
     
         dlStart = alloc_display_list(sizeof(Gfx) * 2);
 
         dlHead = dlStart;
-        gDPSetEnvColor(dlHead++, gFireValue, gFireValue, gFireValue, gFireAlpha);
+        gDPSetEnvColor(dlHead++, gFireValue, gFireValue, gFireValue, gFireAlpha * mult);
         gSPEndDisplayList(dlHead);
     }
 
@@ -196,12 +202,17 @@ Gfx *geo_trippy_lookat(s32 callContext, struct GraphNode *node, UNUSED void *con
     // You'd set the flags to 7 << 8 to make it affect layer 7
 
     if (callContext == GEO_CONTEXT_RENDER && gReadyForLookAt) {
+        u8 layer, noOffsetSeed;
         Mtx lMtx;
         LookAt* lookAtLocal;
         f32 offset;
         obj = (struct Object *) gCurGraphNodeObject;
         currentGraphNode = (struct GraphNodeGenerated *) node;
-        offset = obj->header.gfx.pos[0] + obj->header.gfx.pos[1] + obj->header.gfx.pos[2];
+
+        layer = currentGraphNode->parameter & 0xF;
+        noOffsetSeed = (currentGraphNode->parameter >> 4);
+
+        offset = noOffsetSeed ? 0 : obj->header.gfx.pos[0] + obj->header.gfx.pos[1] + obj->header.gfx.pos[2];
 
         Vec3f lightDir = {
             100.0f * sinf((M_PI / 180.0f) * (((f32)gGlobalTimer) + offset)),
@@ -220,9 +231,9 @@ Gfx *geo_trippy_lookat(s32 callContext, struct GraphNode *node, UNUSED void *con
         lookAtLocal->l[0].l.dir[1] = -((s8)(lightDir[0] * (*viewMat)[0][1] + lightDir[1] * (*viewMat)[1][1] + lightDir[2] * (*viewMat)[2][1]));
         lookAtLocal->l[0].l.dir[2] = -((s8)(lightDir[0] * (*viewMat)[0][2] + lightDir[1] * (*viewMat)[1][2] + lightDir[2] * (*viewMat)[2][2]));
 
-        if (currentGraphNode->parameter != 0) {
+        if (layer != 0) {
             currentGraphNode->fnNode.node.flags =
-                (currentGraphNode->parameter << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
+                (layer << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
         }
         
     
@@ -273,6 +284,20 @@ Gfx *geo_backdrop_move(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx
         // ((struct GraphNodeTranslation *) node->next)->translation[2] = gLakituState.pos[2] * .98;
     }
     return 0;
+}
+
+
+Gfx *geo_switch_level(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    s16 sp26;
+    struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        switchCase->selectedCase = gLevelSwitch;
+    } else {
+        switchCase->selectedCase = 0;
+    }
+
+    return NULL;
 }
 
 /**
@@ -444,6 +469,14 @@ f32 dist_between_objects(struct Object *obj1, struct Object *obj2) {
     f32 dx = obj1->oPosX - obj2->oPosX;
     f32 dy = obj1->oPosY - obj2->oPosY;
     f32 dz = obj1->oPosZ - obj2->oPosZ;
+
+    return sqrtf(dx * dx + dy * dy + dz * dz);
+}
+
+f32 dist_between_object_and_camera(struct Object *obj) {
+    f32 dx = obj->oHomeX - gPuppyCam.pos[0];
+    f32 dy = obj->oHomeY - gPuppyCam.pos[1];
+    f32 dz = obj->oHomeZ - gPuppyCam.pos[2];
 
     return sqrtf(dx * dx + dy * dy + dz * dz);
 }

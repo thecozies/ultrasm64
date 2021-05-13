@@ -1054,7 +1054,7 @@ s32 play_mode_normal(void) {
         update_camera(gCurrentArea->camera);
     }
 
-    if (gCurrLevelNum == LEVEL_CASTLE_COURTYARD) adjust_fire_env();
+    adjust_fire_env();
 
     initiate_painting_warp();
     initiate_delayed_warp();

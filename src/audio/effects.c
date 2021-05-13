@@ -56,7 +56,7 @@ void sequence_channel_process_sound(struct SequenceChannel *seqChannel, s32 reca
     seqChannel->changes.as_u8 = 0;
 }
 #else
-static void sequence_channel_process_sound(struct SequenceChannel *seqChannel) {
+void sequence_channel_process_sound(struct SequenceChannel *seqChannel) {
     f32 channelVolume;
     f32 panLayerWeight;
     f32 panFromChannel;

@@ -1,0 +1,10 @@
+extern const GeoLayout single_flame_geo[];
+extern Lights1 single_flame_fireflame_layer5_lights;
+extern u8 single_flame_fire__ia16[];
+extern u8 single_flame_fire_blurry_ia16[];
+extern Vtx single_flame_fire_flame_mesh_layer_5_vtx_0[9];
+extern Gfx single_flame_fire_flame_mesh_layer_5_tri_0[];
+extern Gfx mat_single_flame_fireflame_layer5[];
+extern Gfx mat_revert_single_flame_fireflame_layer5[];
+extern Gfx single_flame_fire_flame_mesh_layer_5[];
+extern Gfx single_flame_material_revert_render_settings[];

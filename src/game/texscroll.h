@@ -5,6 +5,8 @@
 #include "src/game/texscroll/group0_texscroll.inc.h"
 #include "src/game/texscroll/pss_texscroll.inc.h"
 #include "src/game/texscroll/castle_courtyard_texscroll.inc.h"
+#include "src/game/texscroll/group9_texscroll.inc.h"
+#include "src/game/texscroll/group8_texscroll.inc.h"
 extern void scroll_textures();
 
 #endif

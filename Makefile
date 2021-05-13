@@ -88,7 +88,12 @@ ifeq      ($(VERSION),jp)
   VERSION_JP_US  ?= true
 else ifeq ($(VERSION),us)
   DEFINES   += VERSION_US=1
-  OPT_FLAGS := -g3
+  ifeq (${CDEBUG}, 1)
+    OPT_FLAGS := -g
+  else
+    OPT_FLAGS := -O2
+  endif
+  # OPT_FLAGS := -g3
   GRUCODE   ?= f3dzex
   VERSION_JP_US  ?= true
 else ifeq ($(VERSION),eu)

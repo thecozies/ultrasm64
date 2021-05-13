@@ -43,7 +43,7 @@ s8 filler80339F1C[20];
 s8 gCheckingWaterForMario = FALSE;
 s8 gGameStarted = FALSE;
 s8 gWaitingToStart = TRUE;
-u16 sStartWaitTimer = 0;
+u32 gStartWaitTimer = 0;
 
 s8 gCurCutscene = 0;
 u32 gCurCutsceneTimer = 0;
@@ -2098,9 +2098,9 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         handle_lucy_blinks(gMarioState);
         handle_lucy_action_mouths(gMarioStates);
         if (gWaitingToStart) {
-            if (sStartWaitTimer++ > 60 && gMarioState->controller->buttonDown & START_BUTTON) {
+            if (gStartWaitTimer++ > 60 && gMarioState->controller->buttonDown & START_BUTTON) {
                 gWaitingToStart = FALSE;
-                sStartWaitTimer = 0;
+                gStartWaitTimer = 0;
             } else {
                 gMarioState->input = 0;
             }

@@ -15,6 +15,9 @@
 
 #include "make_const_nonconst.h"
 #include "levels/pss/header.h"
+#include "actors/group8.h"
+
+#define MODEL_BEAM 0x58
 
 const LevelScript level_pss_entry[] = {
 	INIT_LEVEL(),
@@ -28,22 +31,25 @@ const LevelScript level_pss_entry[] = {
 	ALLOC_LEVEL_POOL(),
 	MARIO(MODEL_MARIO, 0x00000001, bhvMario), 
 	JUMP_LINK(script_func_global_1), 
-	JUMP_LINK(script_func_global_9), 
+	JUMP_LINK(script_func_global_9),
+	LOAD_MODEL_FROM_GEO(MODEL_BEAM, beam_geo),
 
 	AREA(0, pss_area_0),
 		WARP_NODE(0x0A, LEVEL_PSS, 0x00, 0x0A, WARP_NO_CHECKPOINT),
 		WARP_NODE(0xF0, LEVEL_PSS, 0x00, 0x0A, WARP_NO_CHECKPOINT),
 		WARP_NODE(0xF1, LEVEL_PSS, 0x00, 0x0A, WARP_NO_CHECKPOINT),
-		OBJECT(MODEL_SLIDING_DOOR, -5876, -6037, -95, 0, 90, 0, 0xFF080000, bhvSlidingDoorNoRoom),
+		OBJECT(MODEL_SLIDING_DOOR, -5876, -6037, -95, 0, 90, 0, 0x00080000, bhvSlidingDoor),
 		OBJECT(MODEL_NONE, -4876, -6037, -95, 0, 90, 0, 0xFF070000, bhvCheckpoint),
 		OBJECT(MODEL_NONE, -5676, -6037, -95, 0, 90, 0, 0xFF060000, bhvCheckpoint),
 		OBJECT(MODEL_NONE, -7318, 5026, -95, -180, 90, 0, 0xFF060000, bhvCheckpoint),
 		OBJECT(MODEL_PARASITE, -7318, -5525, -95, -180, 90, 0, 0x00080000, bhvParasite),
 		OBJECT(MODEL_NONE, -7318, 5258, -95, -180, 90, 0, 0x000A0000, bhvAirborneWarp),
-		OBJECT(MODEL_SLIDING_DOOR, 1228, -6037, -95, 0, 90, 0, 0xFF090000, bhvSlidingDoorNoRoom),
+		OBJECT(MODEL_SLIDING_DOOR, 1228, -6037, -95, 0, 90, 0, 0x00090000, bhvSlidingDoorNoRoom),
 		OBJECT(MODEL_NONE, 1028, -6037, -95, 0, 90, 0, 0xFF080000, bhvCheckpoint),
 		OBJECT(MODEL_NONE, 228, -6037, -95, 0, 90, 0, 0xFF070000, bhvCheckpoint),
+		OBJECT(MODEL_BIG_ORB, 4000, -6080, -100, 0, 0, 0, 0x00000000, bhvBigOrb),
 		OBJECT(MODEL_PARASITE, 4, -5928, -95, 0, -180, 0, 0x00090000, bhvParasiteNoRoom),
+		OBJECT(MODEL_BEAM, 4000, -6080, -100, 0, 0, 0, 0x00010000, bhvBigOrb),
 		TERRAIN(pss_area_0_collision),
 		ROOMS(pss_area_0_collision_rooms),
 		MACRO_OBJECTS(pss_area_0_macro_objs),

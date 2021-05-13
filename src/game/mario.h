@@ -116,5 +116,6 @@ extern s8 gGameStarted;
 extern s8 gCurCutscene;
 extern u32 gCurCutsceneTimer;
 extern s8 gWaitingToStart;
+extern u32 gStartWaitTimer;
 
 #endif // MARIO_H

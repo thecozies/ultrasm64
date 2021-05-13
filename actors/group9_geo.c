@@ -16,3 +16,4 @@
 #include "haunted_cage/geo.inc.c"
 
 #include "monkat_head/geo.inc.c"
+#include "single_flame/geo.inc.c"

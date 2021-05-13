@@ -28,7 +28,7 @@
 #include "s2dex/init.h"
 #include "s2dex/s2d_draw.h"
 #include "s2dex/s2d_print.h"
-// #include "s2dex/s2d_buffer.h"
+#include "s2dex/s2d_buffer.h"
 #include "tutorial.h"
 
 
@@ -83,6 +83,7 @@ s32 gCameraWaterLevel = FLOOR_LOWER_LIMIT;
 u8 sFadeAlpha = 0;
 
 char sGameTitle[18] = "Lucy's\nLevitation";
+char sPressStartToPlay[11] = "Press Start";
 s32 sTimesRenderedText = 0;
 
 
@@ -543,6 +544,33 @@ void render_intro_text(void) {
     }
 }
 
+    // if (gGoalFadeState == STARTING_SHOW_GOAL) {
+    //     if (sGoalFadeTimer >= attack) set_next_goal_state(FULL_SHOW_GOAL, 255);
+    //     sFadeAlpha = MIN(sFadeAlpha + 9, 255);
+    // } else if (gGoalFadeState == FULL_SHOW_GOAL && sGoalFadeTimer >= sustain) {
+    //     set_next_goal_state(FADING_SHOW_GOAL, 255);
+    //     sFadeAlpha = 255;
+    // } else if (gGoalFadeState == FADING_SHOW_GOAL) { // FADING_SHOW_GOAL
+    //     if (sGoalFadeTimer > release) set_next_goal_state(NO_GOAL, 0);
+    //     sFadeAlpha = MAX(sFadeAlpha - (255 / release), 0);
+    // }
+
+void render_intro_start_text(void) {
+    if (gGoalFadeState == FULL_SHOW_GOAL && !gWaitingToStart) set_next_goal_state(FADING_SHOW_GOAL, 150);
+    else if (gGoalFadeState == FULL_SHOW_GOAL) sGoalFadeTimer = 0;
+    else if (gGoalFadeState == NO_GOAL && gWaitingToStart) set_next_goal_state(STARTING_SHOW_GOAL, 0);
+
+    if (update_text_fade(50, 100000, 45)) {
+        s2d_print_deferred(
+            SCREEN_WIDTH - 10,
+            (int) (SCREEN_HEIGHT - 60),
+            ALIGN_RIGHT,
+            MIN(150, sFadeAlpha),
+            sPressStartToPlay
+        );
+    }
+}
+
 // deferred
 // void render_intro_text(void) {
 //     if (
@@ -611,15 +639,22 @@ void update_fog(void) {
 }
 
 void render_s2dex(void) {
-    s2d_init();
-    s2d_handle_deferred();
-    s2d_stop();
+    if (s2d_charBuffer_index) {
+        s2d_init();
+        s2d_handle_deferred();
+        s2d_stop();
+    }
 }
 
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
         if (!gWaitingToStart) gCurCutsceneTimer++;
         if (gGameStarted) update_fog();
+        if (
+            (gWaitingToStart && gStartWaitTimer > 55) ||
+            (!gWaitingToStart && gCurCutscene == CUTSCENE_INTRO && gCurCutsceneTimer < 100)
+        ) render_intro_start_text();
+
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
 
         gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&D_8032CF00));
@@ -673,9 +708,10 @@ void render_game(void) {
         if (gPlayer1Controller->buttonPressed & L_TRIG) sShowFPS = !sShowFPS;
         if (sShowFPS) {
             print_fps(20, 40);
-            render_s2dex();
         }
 #endif
+
+        render_s2dex();
     } else {
         render_text_labels();
         if (D_8032CE78 != NULL) {

@@ -382,6 +382,7 @@
 #define MODEL_CAP_SWITCH_EXCLAMATION      0x54        // cap_switch_exclamation_seg5_dl_05002E00
 #define MODEL_CAP_SWITCH                  0x55        // cap_switch_geo
 #define MODEL_CAP_SWITCH_BASE             0x56        // cap_switch_base_seg5_dl_05003120
+#define MODEL_BIG_ORB                     0x57        // big_orb_geo
 
 // group 9
 #define MODEL_BOO                         0x54        // boo_geo
@@ -392,6 +393,7 @@
 #define MODEL_BOOKEND                     0x59        // bookend_geo
 #define MODEL_HAUNTED_CAGE                0x5A        // haunted_cage_geo
 #define MODEL_MONKAT_HEAD                 0x5A        // monkat_head_geo
+#define MODEL_SINGLE_FLAME                0x5B        // single_flame_geo
 
 // group 10
 #define MODEL_BIRDS                       0x54        // birds_geo

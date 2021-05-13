@@ -74,6 +74,7 @@ Gfx *geo_update_fog(s32 callContext, struct GraphNode *node, UNUSED void *contex
 Gfx *geo_set_fire_env(s32 callContext, struct GraphNode *node, UNUSED void *context);
 Gfx *geo_zbuffer_clear(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 *mtx);
 Gfx *geo_backdrop_move(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx);
+Gfx *geo_switch_level(s32 callContext, struct GraphNode *node, UNUSED void *context);
 #ifdef AVOID_UB
 Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node, UNUSED void *context);
 Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *context);
@@ -222,6 +223,7 @@ void obj_translate_xz_random(struct Object *obj, f32 rangeLength);
 void cur_obj_set_pos_via_transform(void);
 void cur_obj_spawn_particles(struct SpawnParticlesInfo *info);
 s16 cur_obj_reflect_move_angle_off_wall(void);
+f32 dist_between_object_and_camera(struct Object *obj);
 
 #define WAYPOINT_FLAGS_END -1
 #define WAYPOINT_FLAGS_INITIALIZED 0x8000
@@ -303,5 +305,7 @@ void cur_obj_spawn_loot_blue_coin(void);
 #ifndef VERSION_JP
 void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 offsetY);
 #endif
+
+extern s32 gLevelSwitch;
 
 #endif // OBJECT_HELPERS_H

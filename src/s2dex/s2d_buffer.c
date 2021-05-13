@@ -13,7 +13,7 @@ struct s2d_pos {
 };
 static struct s2d_pos s2d_positions[S2D_BUFFERSIZE];
 static char *s2d_charBuffer[S2D_BUFFERSIZE];
-static int s2d_charBuffer_index = 0;
+int s2d_charBuffer_index = 0;
 
 void s2d_reset_defer_index(void) {
 	s2d_charBuffer_index = 0;

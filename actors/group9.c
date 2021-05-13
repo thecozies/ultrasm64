@@ -36,3 +36,4 @@ UNUSED static const u64 binid_6 = 6;
 #include "monkat_head/model.inc.c"
 #include "monkat_head/anims/data.inc.c"
 #include "monkat_head/anims/table.inc.c"
+#include "single_flame/model.inc.c"

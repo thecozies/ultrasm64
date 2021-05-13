@@ -9,3 +9,6 @@
 
 #include "springboard/geo.inc.c"
 #include "capswitch/geo.inc.c"
+
+#include "big_orb/geo.inc.c"
+#include "beam/geo.inc.c"

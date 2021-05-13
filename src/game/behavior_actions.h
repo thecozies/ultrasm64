@@ -553,6 +553,8 @@ void bhv_yoshi_loop(void);
 void bhv_volcano_trap_loop(void);
 void bhv_parasite_init(void);
 void bhv_parasite_loop(void);
+void bhv_big_orb_init(void);
+void bhv_big_orb_loop(void);
 void bhv_sliding_door_loop(void);
 void bhv_sliding_door_init(void);
 void bhv_checkpoint_loop(void);

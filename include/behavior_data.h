@@ -555,5 +555,7 @@ extern const BehaviorScript bhvCutsceneObj[];
 extern const BehaviorScript bhvMonkatHead[];
 extern const BehaviorScript bhvSmallPalm[];
 extern const BehaviorScript bhvLightObj[];
+extern const BehaviorScript bhvSingleFlame[];
+extern const BehaviorScript bhvBigOrb[];
 
 #endif // BEHAVIOR_DATA_H

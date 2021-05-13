@@ -264,6 +264,7 @@ const LevelScript script_func_global_9[] = {
     LOAD_MODEL_FROM_DL( MODEL_CAP_SWITCH_EXCLAMATION,  cap_switch_exclamation_seg5_dl_05002E00, LAYER_ALPHA),
     LOAD_MODEL_FROM_GEO(MODEL_CAP_SWITCH,              cap_switch_geo),
     LOAD_MODEL_FROM_DL( MODEL_CAP_SWITCH_BASE,         cap_switch_base_seg5_dl_05003120,        LAYER_OPAQUE),
+    LOAD_MODEL_FROM_GEO(MODEL_BIG_ORB,                 big_orb_geo),
     RETURN(),
 };
 
@@ -276,6 +277,7 @@ const LevelScript script_func_global_10[] = {
     LOAD_MODEL_FROM_GEO(MODEL_BOOKEND,                 bookend_geo),
     LOAD_MODEL_FROM_GEO(MODEL_HAUNTED_CAGE,            haunted_cage_geo),
     LOAD_MODEL_FROM_GEO(MODEL_MONKAT_HEAD,             monkat_head_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_SINGLE_FLAME,            single_flame_geo),
     RETURN(),
 };
 

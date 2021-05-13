@@ -50,6 +50,7 @@ s8 sWaitForLUnheld = FALSE;
 s32 sMovingFramesSinceSnap = SNAP_HOLD_LENGTH + 1;
 static Vp sCutsceneVp = { { { 640, 480, 511, 0 }, { 640, 480, 511, 0 } } };
 f32 sCameraWallOffset = OFFSET;
+f32 sRayCastOffset = OFFSET;
 
 #if defined(VERSION_EU)
 static u8 gPCOptionStringsFR[][64] = {{NC_ANALOGUE_FR}, {NC_CAMX_FR}, {NC_CAMY_FR}, {NC_INVERTX_FR}, {NC_INVERTY_FR}, {NC_CAMC_FR}, {NC_CAMP_FR}, {NC_CAMD_FR}};
@@ -599,7 +600,11 @@ static void puppycam_view_height_offset(void)
     floorTemp = find_floor_height(gPuppyCam.targetObj->oPosX, gPuppyCam.targetObj->oPosY+200, gPuppyCam.targetObj->oPosZ);
     if (floorTemp > gPuppyCam.targetObj->oPosY - 200 && !(gMarioState->action & ACT_FLAG_SWIMMING))
     {
-        gPuppyCam.posHeight[0] = approach_f32_asymptotic(gPuppyCam.posHeight[0],floorTemp-gPuppyCam.targetFloorHeight,0.05f);
+        gPuppyCam.posHeight[0] = approach_f32_asymptotic(
+            gPuppyCam.posHeight[0],
+            floorTemp-gPuppyCam.targetFloorHeight,
+            0.05f
+        );
         //if (gPuppyCam.posHeight[0]-gPuppyCam.shake[1] - gPuppyCam.floorY[1] < floorTemp)
         //    gPuppyCam.posHeight[0] = floorTemp-gPuppyCam.shake[1]+gPuppyCam.povHeight - gPuppyCam.floorY[1];
     }
@@ -667,7 +672,7 @@ s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface 
     norm[0] = surface->normal.x;
     norm[1] = surface->normal.y;
     norm[2] = surface->normal.z;
-    vec3f_mul(norm, sCameraWallOffset);
+    vec3f_mul(norm, sRayCastOffset);
 
     vec3s_to_vec3f(v0, surface->vertex1);
     vec3s_to_vec3f(v1, surface->vertex2);
@@ -1098,6 +1103,9 @@ static void puppycam_projection(void)
 
     gPuppyCam.pitch = CLAMP(gPuppyCam.pitch,0x1000,0x7000);
     gPuppyCam.pitchTarget = CLAMP(gPuppyCam.pitchTarget,0x1000,0x7000);
+    if (!isSwimming && (gMarioState->forwardVel || gMarioState->vel[1])) {
+        gPuppyCam.pitchTarget = (s16)approach_f32_asymptotic(gPuppyCam.pitchTarget, sZoomPitchTargets[gPuppyCam.zoomSet], 0.05f);
+    }
 
     if (gPuppyCam.targetObj == gMarioState->marioObj)
     {
@@ -1148,7 +1156,7 @@ static void puppycam_projection(void)
         {
             gPuppyCam.floorY[0] = CLAMP(gPuppyCam.targetObj->oPosY - gPuppyCam.lastTargetFloorHeight, 0, 300);
             gPuppyCam.floorY[1] = CLAMP(gPuppyCam.targetObj->oPosY - gPuppyCam.lastTargetFloorHeight, 0, 350);
-            gPuppyCam.swimPitch = approach_f32_asymptotic(gPuppyCam.swimPitch,0,0.2f);
+            gPuppyCam.swimPitch = approach_f32_asymptotic(gPuppyCam.swimPitch, 0, 0.2f);
         }
         else
         {
@@ -1157,7 +1165,11 @@ static void puppycam_projection(void)
             gPuppyCam.targetFloorHeight = gPuppyCam.targetObj->oPosY;
             gPuppyCam.lastTargetFloorHeight = gPuppyCam.targetObj->oPosY;
             if (gCurCutscene != CUTSCENE_TOWERCLIMB) {
-                gPuppyCam.swimPitch = approach_f32_asymptotic(gPuppyCam.swimPitch,gMarioState->faceAngle[0]/10,0.05f);
+                gPuppyCam.swimPitch = approach_f32_asymptotic(
+                    gPuppyCam.swimPitch,
+                    gMarioState->faceAngle[0]/10,
+                    0.05f
+                );
                 // gPuppyCam.yawTarget  = gMarioState->faceAngle[1] + 0x8000 - approach_s32(
                 //     (s16)(gMarioState->faceAngle[1]+0x8000 - gPuppyCam.yawTarget),
                 //     0,
@@ -1517,6 +1529,70 @@ static void puppycam_script(void)
     }
 }
 
+f32 vec3f_dist(Vec3f fromVec, Vec3f toVec) {
+    return sqrtf((fromVec[0] - toVec[0]) * (fromVec[0] - toVec[0]) + (fromVec[1] - toVec[1]) * (fromVec[1] - toVec[1]) + (fromVec[2] - toVec[2]) * (fromVec[2] - toVec[2]));
+}
+
+//Handles collision detection using ray casting.
+// static s32 puppycam_collision_test(s16 offsetX, s16 offsetY, s16 offsetZ, s16 tOffsetY, Vec3s curPos)
+// {
+//     struct Surface *surf;
+//     Vec3f camdir;
+//     Vec3f hitpos;
+//     Vec3f target;
+//     Vec3s pPos;
+//     s16 colDist;
+
+//     vec3s_set(pPos, offsetX, offsetY, offsetZ);
+//     vec3s_add(pPos, curPos);
+
+//     target[0] = gPuppyCam.targetObj->oPosX;
+//     target[1] = gPuppyCam.targetObj->oPosY + tOffsetY;
+//     target[2] = gPuppyCam.targetObj->oPosZ;
+
+//     camdir[0] = pPos[0] - target[0];
+//     camdir[1] = pPos[1] - target[1];
+//     camdir[2] = pPos[2] - target[2];
+
+//     find_surface_on_ray(target, camdir, &surf, &hitpos);
+//     colDist = vec3f_dist(target, hitpos);
+
+//     if (!surf)
+//     {
+//         gPuppyCam.pos[0] = pPos[0];
+//         gPuppyCam.pos[1] = pPos[1];
+//         gPuppyCam.pos[2] = pPos[2];
+//         return 0;
+//     }
+//     return colDist;
+// }
+
+static s16 get_target_y_offset(void) {
+    struct Surface *surf;
+    Vec3f posDir;
+    Vec3f hitpos;
+    Vec3f fromPos;
+    Vec3f toPos;
+    s32 t1, t2;
+
+    fromPos[0] = gPuppyCam.targetObj->oPosX;
+    fromPos[1] = gPuppyCam.targetObj->oPosY;
+    fromPos[2] = gPuppyCam.targetObj->oPosZ;
+
+    toPos[0] = gPuppyCam.targetObj->oPosX;
+    toPos[1] = gPuppyCam.targetObj->oPosY + gPuppyCam.povHeight;
+    toPos[2] = gPuppyCam.targetObj->oPosZ;
+
+    posDir[0] = fromPos[0] - toPos[0];
+    posDir[1] = fromPos[1] - toPos[1];
+    posDir[2] = fromPos[2] - toPos[2];
+
+    find_surface_on_ray(fromPos, posDir, &surf, &hitpos);
+ 
+    if (surf) return toPos[1] - hitpos[1];
+    return gPuppyCam.povHeight;
+}
+
 //Handles collision detection using ray casting.
 static void puppycam_collision(void)
 {
@@ -1524,6 +1600,7 @@ static void puppycam_collision(void)
     Vec3f camdir;
     Vec3f hitpos;
     Vec3f target;
+    s32 t1, t2;
 
     target[0] = gPuppyCam.targetObj->oPosX;
     target[1] = gPuppyCam.targetObj->oPosY + gPuppyCam.povHeight;
@@ -1532,23 +1609,63 @@ static void puppycam_collision(void)
     if (
         (gMarioState->action & ACT_GROUP_MASK) == ACT_GROUP_SUBMERGED &&
         gMarioState->pos[1] > gMarioState->waterLevel - 150 &&
-        gPuppyCam.pos[1] < gCameraWaterLevel + 80
+        gPuppyCam.pos[1] < gCameraWaterLevel + 80 &&
+        ABS(gCameraWaterLevel - gMarioState->waterLevel) < 150
     ) {
-        gPuppyCam.pos[1] = approach_f32_asymptotic(target[1], (f32) (gCameraWaterLevel + 80.0f), 0.1f);
+        // gPuppyCam.pos[1] = approach_f32_asymptotic(target[1], (f32) (gCameraWaterLevel + 400.0f), 0.1f);
+        gPuppyCam.pos[1] = approach_f32_asymptotic(gPuppyCam.pos[1], (f32) (gCameraWaterLevel + 400.0f), 0.1f);
+        gPuppyCam.pitchTarget = (s16)approach_f32_asymptotic(gPuppyCam.pitchTarget, sZoomPitchTargets[gPuppyCam.zoomSet], 0.2f);
+        // gPuppyCam.pitch = (s16)approach_f32_asymptotic(gPuppyCam.pitchTarget, sZoomPitchTargets[gPuppyCam.zoomSet], 0.2f);
     }
 
     camdir[0] = gPuppyCam.pos[0] - target[0];
     camdir[1] = gPuppyCam.pos[1] - target[1];
     camdir[2] = gPuppyCam.pos[2] - target[2];
 
+    sRayCastOffset = sCameraWallOffset;
     find_surface_on_ray(target, camdir, &surf, &hitpos);
-    gPuppyCam.collisionDistance = sqrtf((target[0] - hitpos[0]) * (target[0] - hitpos[0]) + (target[1] - hitpos[1]) * (target[1] - hitpos[1]) + (target[2] - hitpos[2]) * (target[2] - hitpos[2]));
+    gPuppyCam.collisionDistance = vec3f_dist(target, hitpos);
 
     if (surf)
-    {
+    {   
+        // Vec3f target2;
+        // target2[0] = hitpos[0];
+        // target2[1] = hitpos[1];
+        // target2[2] = hitpos[2];
+
+        // REGULAR
         gPuppyCam.pos[0] = hitpos[0];
         gPuppyCam.pos[1] = hitpos[1];
         gPuppyCam.pos[2] = hitpos[2];
+
+        // triple double check
+        // if (gPuppyCam.collisionDistance < 100)
+        // {
+        //     Vec3f norm;
+        //     Vec3f hitpos2;
+        //     struct Surface *surf2;
+        //     sRayCastOffset = 0.0f;
+        //     find_surface_on_ray(target, camdir, &surf2, &hitpos2);
+
+        //     gPuppyCam.collisionDistance = vec3f_dist(target, hitpos2);
+        //     if (surf2)
+        //     {
+        //         norm[0] = surf->normal.x;
+        //         norm[1] = surf->normal.y;
+        //         norm[2] = surf->normal.z;
+        //         vec3f_mul(norm, sCameraWallOffset);
+        //         vec3f_add(hitpos2, norm);
+        //         gPuppyCam.pos[0] = hitpos2[0];
+        //         gPuppyCam.pos[1] = hitpos2[1];
+        //         gPuppyCam.pos[2] = hitpos2[2];
+        //     }
+        // }
+        // else
+        // {
+        //     gPuppyCam.pos[0] = hitpos[0];
+        //     gPuppyCam.pos[1] = hitpos[1];
+        //     gPuppyCam.pos[2] = hitpos[2];
+        // }
     }
 
     gPuppyCam.opacity = 255;

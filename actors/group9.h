@@ -85,4 +85,6 @@ extern const Gfx small_key_seg5_dl_05006A68[];
 
 
 #include "monkat_head/anim_header.h"
+#include "single_flame/geo_header.h"
+
 #endif

@@ -6258,3 +6258,29 @@ const BehaviorScript bhvLightObj[] = {
         CALL_NATIVE(bhv_light_obj_loop),
     END_LOOP(),
 };
+
+const BehaviorScript bhvSingleFlame[] = {
+    BEGIN(OBJ_LIST_LEVEL),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_ANGLE_TO_MARIO)),
+    BILLBOARD(),
+    SET_HOME(),
+    SET_INTERACT_TYPE(INTERACT_FLAME),
+    SET_HITBOX_WITH_OFFSET(/*Radius*/ 50, /*Height*/ 25, /*Downwards offset*/ 25),
+    SET_INT(oIntangibleTimer, 0),
+    CALL_NATIVE(bhv_init_room),
+    BEGIN_LOOP(),
+        SET_INT(oInteractStatus, 0),
+    END_LOOP(),
+};
+
+const BehaviorScript bhvBigOrb[] = {
+    BEGIN(OBJ_LIST_LEVEL),
+    OR_INT(oFlags, (OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE | OBJ_FLAG_COMPUTE_DIST_TO_MARIO)),
+    SET_HOME(),
+    CALL_NATIVE(bhv_init_room),
+    CALL_NATIVE(bhv_big_orb_init),
+    BEGIN_LOOP(),
+        SET_INT(oIntangibleTimer, 0),
+        CALL_NATIVE(bhv_big_orb_loop),
+    END_LOOP(),
+};
