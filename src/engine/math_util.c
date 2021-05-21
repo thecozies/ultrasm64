@@ -882,6 +882,14 @@ f32 get_relative_position_between_ranges(f32 x, f32 fromA, f32 toA, f32 fromB, f
     return (x - fromA) / (toA - fromA) * (toB - fromB) + fromB;
 }
 
+// f32 calcLandTime(f32 curY, f32 goalY, f32 gravity, f32 startspeed) {
+//     // gravity * return^2 - 2*startspeed*return + 2 * (goalY - curY)
+//     f32 p, q;
+//     p = startspeed / gravity;
+//     q = -2 * (goalY - curY) / gravity;
+//     return -p + sqrtf(p * p - q);
+// }
+
 // f32 smooth_interp(f32 y0, f32 y1, f32 y2, f32 y3, f32 mu) {
 //     f32 a0, a1, a2, a3, mu2;
 //     mu2 = mu * mu;
