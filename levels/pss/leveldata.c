@@ -20,3 +20,7 @@
 #include "levels/pss/areas/1/collision.inc.c"
 #include "levels/pss/areas/1/macro.inc.c"
 #include "levels/pss/leveldata.inc.c"
+#include "levels/pss/sky_dome2/model.inc.c"
+
+#include "levels/pss/squat_palm/model.inc.c"
+#include "levels/pss/squat_palm/collision.inc.c"

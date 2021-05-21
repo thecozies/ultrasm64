@@ -53,6 +53,7 @@
 #include "levels/wf/header.h"
 #include "levels/bowser_2/header.h"
 #include "levels/ttm/header.h"
+#include "levels/pss/header.h"
 
 #include "make_const_nonconst.h"
 #include "behavior_data.h"
@@ -6282,5 +6283,15 @@ const BehaviorScript bhvBigOrb[] = {
     BEGIN_LOOP(),
         SET_INT(oIntangibleTimer, 0),
         CALL_NATIVE(bhv_big_orb_loop),
+    END_LOOP(),
+};
+
+const BehaviorScript bhvSquatPalm[] = {
+    BEGIN(OBJ_LIST_SURFACE),
+    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    LOAD_COLLISION_DATA(squat_palm_collision),
+    SET_FLOAT(oCollisionDistance, 10000),
+    BEGIN_LOOP(),
+        CALL_NATIVE(load_object_collision_model),
     END_LOOP(),
 };

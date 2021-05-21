@@ -1,0 +1,23 @@
+const Collision squat_palm_collision[] = {
+	COL_INIT(),
+	COL_VERTEX_INIT(7),
+	COL_VERTEX(0, 237, -58),
+	COL_VERTEX(1, 425, -1),
+	COL_VERTEX(50, 237, 29),
+	COL_VERTEX(-50, 0, 29),
+	COL_VERTEX(-50, 237, 29),
+	COL_VERTEX(0, 0, -58),
+	COL_VERTEX(50, 0, 29),
+	COL_TRI_INIT(SURFACE_DEFAULT, 9),
+	COL_TRI(0, 1, 2),
+	COL_TRI(3, 4, 0),
+	COL_TRI(3, 0, 5),
+	COL_TRI(2, 1, 4),
+	COL_TRI(4, 1, 0),
+	COL_TRI(6, 2, 4),
+	COL_TRI(6, 4, 3),
+	COL_TRI(5, 0, 2),
+	COL_TRI(5, 2, 6),
+	COL_TRI_STOP(),
+	COL_END()
+};

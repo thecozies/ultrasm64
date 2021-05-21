@@ -15,3 +15,5 @@
 
 #include "levels/pss/areas/1/geo.inc.c"
 #include "levels/pss/geo.inc.c"
+#include "levels/pss/sky_dome2/geo.inc.c"
+#include "levels/pss/squat_palm/geo.inc.c"

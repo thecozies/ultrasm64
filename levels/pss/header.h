@@ -22,4 +22,10 @@ extern const LevelScript level_pss_entry[];
 
 #include "levels/pss/header.inc.h"
 
+#include "levels/pss/sky_dome2/geo_header.h"
+
+#include "levels/pss/squat_palm/geo_header.h"
+
+#include "levels/pss/squat_palm/collision_header.h"
+
 #endif

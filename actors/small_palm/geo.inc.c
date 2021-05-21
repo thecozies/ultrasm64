@@ -4,6 +4,8 @@ const GeoLayout small_palm_geo[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
 		GEO_SHADOW(1, 51, 50),
+		GEO_ASM(0, geo_update_fog),
+		GEO_ASM(4, geo_update_fog),
 		GEO_OPEN_NODE(),
 			GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, small_palm_small_palm_base_mesh_layer_1),
 			GEO_OPEN_NODE(),

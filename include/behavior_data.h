@@ -557,5 +557,6 @@ extern const BehaviorScript bhvSmallPalm[];
 extern const BehaviorScript bhvLightObj[];
 extern const BehaviorScript bhvSingleFlame[];
 extern const BehaviorScript bhvBigOrb[];
+extern const BehaviorScript bhvSquatPalm[];
 
 #endif // BEHAVIOR_DATA_H
