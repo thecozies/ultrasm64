@@ -15,6 +15,7 @@
 
 u8 sTransitionColorFadeCount[4] = { 0 };
 u16 sTransitionTextureFadeCount[2] = { 0 };
+// static u16 *sFrameBuffers[3];
 
 s32 set_and_reset_transition_fade_timer(s8 fadeTimer, u8 transTime) {
     s32 reset = FALSE;
@@ -299,3 +300,57 @@ Gfx *geo_cannon_circle_base(s32 callContext, struct GraphNode *node, UNUSED Mat4
     }
     return dlist;
 }
+
+// u16 *sample_frame_buffer(s32 imageW, s32 imageH, s32 sampleW, s32 sampleH) {
+//     u16 *fb;
+//     u16 *image;
+//     s32 pixel;
+//     f32 size;
+//     f32 r, g, b;
+//     s32 iy, ix, sy, sx;
+
+//     s32 xOffset = 0;
+//     s32 yOffset = 0;
+
+//     fb = sFrameBuffers[frameBufferIndex];
+//     image = alloc_display_list(imageW * imageH * sizeof(u16));
+
+//     if (image == NULL) {
+//         return image;
+//     }
+
+//     for (iy = 0; iy < imageH; iy++) {
+//         for (ix = 0; ix < imageW; ix++) {
+//             r = 0;
+//             g = 0;
+//             b = 0;
+
+//             for (sy = 0; sy < sampleH; sy++) {
+//                 for (sx = 0; sx < sampleW; sx++) {
+//                     u16 fbr, fbg, fbb;
+//                     f32 f1, f2, f3;
+//                     pixel = 320 * (sampleH * iy + sy + yOffset) + (sampleW * ix + xOffset) + sx;
+
+//                     fbr = fb[pixel];
+//                     fbg = fb[pixel];
+//                     fbb = fb[pixel];
+
+//                     f1 = ((fbr >> 0xB) & 0x1F);
+//                     f2 = ((fbg >> 0x6) & 0x1F);
+//                     f3 = ((fbb >> 0x1) & 0x1F);
+
+//                     r += f1;
+//                     g += f2;
+//                     b += f3;
+//                 }
+//             }
+
+//             size = sampleW * sampleH;
+//             image[imageH * iy + ix] = ((((u16) (r / size + 0.5) << 0xB) & 0xF800) & 0xffff) +
+//                                       ((((u16) (g / size + 0.5) << 0x6) &  0x7C0) & 0xffff) +
+//                                       ((((u16) (b / size + 0.5) << 0x1) &   0x3E) & 0xffff) + 1;
+//         }
+//     }
+
+//     return image;
+// }
