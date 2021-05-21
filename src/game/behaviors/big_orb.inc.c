@@ -56,18 +56,18 @@ void bhv_big_orb_interact(void) {
 }
 
 void bhv_big_orb_loop(void) {
-    s32 isBeam = (o->oBehParams >> 16) > 0;
+    // s32 isBeam = (o->oBehParams >> 16) > 0;
 
-    if (!isBeam) {
-        switch (o->oAction) {
-            default:
-                bhv_big_orb_interact();
-        }
-    } else {
-        f32 lateralDistFromMario = lateral_dist_between_objects(o, gMarioObject);
-        o->oOpacity = 155;
-        o->oPosY = lateralDistFromMario < BIG_ORB_RADIUS ? gMarioState->pos[1] : o->oHomeY;
+    // if (!isBeam) {
+    switch (o->oAction) {
+        default:
+            bhv_big_orb_interact();
     }
+    // } else {
+    //     f32 lateralDistFromMario = lateral_dist_between_objects(o, gMarioObject);
+    //     o->oOpacity = 155;
+    //     o->oPosY = lateralDistFromMario < BIG_ORB_RADIUS ? gMarioState->pos[1] : o->oHomeY;
+    // }
 }
 
 void bhv_big_orb_init(void) {

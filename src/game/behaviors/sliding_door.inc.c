@@ -1,3 +1,15 @@
+#ifndef o
+#include "game/level_update.h"
+#include "game/object_helpers.h"
+#include "game/object_list_processor.h"
+#include "game/rendering_graph_node.h"
+#include "game/puppycam2.h"
+#include "game/area.h"
+#include "game/mario.h"
+#include "object_fields.h"
+
+#define o gCurrentObject
+#endif
 
 #define SLIDING_DOOR_CUTSCENE_END_HEIGHT 550.0f
 #define SLIDING_DOOR_GOAL_HEIGHT 820.0f
@@ -8,19 +20,22 @@
 #define SLIDING_DOOR_KICKBACK_END 27
 #define SLIDING_DOOR_SLIDE_START 32
 
+#define FINAL_SLIDING_DOOR_GROUP 9
+
 s32 is_sliding_door_face_up(void) {
     return o->oFaceAnglePitch == 0 && o->oFaceAngleRoll == 0;
 }
 
 void sliding_door_act_4(void) {
-    if (o->oFloorRoom != gMarioCurrentRoom) {
-        o->oPosY = approach_f32_asymptotic(o->oPosY, o->oHomeY, 0.1f);
-    } else if (o->oPosY != o->oHomeY + SLIDING_DOOR_GOAL_HEIGHT) {
-        o->oPosY = approach_f32_asymptotic(
-            o->oPosY,
-            o->oHomeY + SLIDING_DOOR_GOAL_HEIGHT,
-            0.05f
-        );
+    s32 faceUp = is_sliding_door_face_up();
+    f32 hiddenHeight = faceUp ? o->oHomeY + SLIDING_DOOR_GOAL_HEIGHT : o->oHomeY - SLIDING_DOOR_GOAL_HEIGHT;
+    if (o->oFloorRoom != gMarioCurrentRoom)
+    {
+        o->oPosY = approach_f32_symmetric(o->oPosY, o->oHomeY, SLIDING_DOOR_VELY_1);
+    }
+    else if (o->oPosY != hiddenHeight)
+    {
+        o->oPosY = approach_f32_symmetric(o->oPosY, hiddenHeight, SLIDING_DOOR_VELY_1);
     }
     return;
 }
@@ -49,9 +64,9 @@ void sliding_door_act_2(void) {
 
 void sliding_door_act_1(void) {
     f32 direction = is_sliding_door_face_up() ? 1.0f : -1.0f;
+    s32 parasiteGroup = (o->oBehParams >> 16) & 0xFF;
 
     if (o->oTimer == 0) {
-        s32 parasiteGroup = (o->oBehParams >> 16) & 0xFF;
         gParasitesGoalsSet[parasiteGroup] = TRUE;
         gPuppyCam.targetObj2 = o;
         gPrevPuppyZoomDist = gPuppyCam.zoomTarget;
@@ -62,7 +77,7 @@ void sliding_door_act_1(void) {
     }
 
     o->oVelY = 0.0f;
-
+    if (parasiteGroup == FINAL_SLIDING_DOOR_GROUP && o->oTimer == SLIDING_DOOR_SLIDE_START + 30) set_current_fog_state(END_FINAL_FOG);
     if (o->oTimer > SLIDING_DOOR_SLIDE_START)
     {
         o->oPosY += (direction * SLIDING_DOOR_VELY_2);
@@ -95,7 +110,14 @@ void sliding_door_act_1(void) {
             gPuppyCam.zoomTarget = gPrevPuppyZoomDist;
             gPuppyCam.yawTarget = gPrevPuppyTargetYaw;
             disable_time_stop_including_mario();
-            set_current_cutscene(NO_CUTSCENE);
+            if (parasiteGroup == FINAL_SLIDING_DOOR_GROUP)
+            {
+                set_current_cutscene(CUTSCENE_ORB_REVEAL);
+            }
+            else
+            {
+                set_current_cutscene(NO_CUTSCENE);
+            }
         }
     }
 }
