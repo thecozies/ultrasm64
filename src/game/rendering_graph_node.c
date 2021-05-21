@@ -402,9 +402,9 @@ void set_clothes_light_dir(void) {
         altLightDir[1] = get_relative_position_between_ranges(gMarioState->lightObj->header.gfx.pos[1] - gMarioState->pos[1], -1000.0f, 1000.0f, -dirMag, dirMag);
         altLightDir[2] = get_relative_position_between_ranges(gMarioState->lightObj->header.gfx.pos[2] - gMarioState->pos[2], -1000.0f, 1000.0f, -dirMag, dirMag);
 
-        clothes->l[1].l.dir[0] = ((s8)(altLightDir[0] * (*viewMat)[0][0] + altLightDir[1] * (*viewMat)[1][0] + altLightDir[2] * (*viewMat)[2][0]));
-        clothes->l[1].l.dir[1] = ((s8)(altLightDir[0] * (*viewMat)[0][1] + altLightDir[1] * (*viewMat)[1][1] + altLightDir[2] * (*viewMat)[2][1]));
-        clothes->l[1].l.dir[2] = ((s8)(altLightDir[0] * (*viewMat)[0][2] + altLightDir[1] * (*viewMat)[1][2] + altLightDir[2] * (*viewMat)[2][2]));
+        clothes->l[1].l.dir[0] = MAX(-64, MIN(64, ((s8)(altLightDir[0] * (*viewMat)[0][0] + altLightDir[1] * (*viewMat)[1][0] + altLightDir[2] * (*viewMat)[2][0]))));
+        clothes->l[1].l.dir[1] = MAX(-64, MIN(64, ((s8)(altLightDir[0] * (*viewMat)[0][1] + altLightDir[1] * (*viewMat)[1][1] + altLightDir[2] * (*viewMat)[2][1]))));
+        clothes->l[1].l.dir[2] = MAX(-64, MIN(64, ((s8)(altLightDir[0] * (*viewMat)[0][2] + altLightDir[1] * (*viewMat)[1][2] + altLightDir[2] * (*viewMat)[2][2]))));
         skin->l[1].l.dir[0] = clothes->l[1].l.dir[0];
         skin->l[1].l.dir[1] = clothes->l[1].l.dir[1];
         skin->l[1].l.dir[2] = clothes->l[1].l.dir[2];

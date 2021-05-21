@@ -222,8 +222,10 @@ Gfx *geo_trippy_lookat(s32 callContext, struct GraphNode *node, UNUSED void *con
         lookAtLocal = alloc_display_list(sizeof(LookAt));
         guLookAtReflect(
             &lMtx,  lookAtLocal,
-            0, 0, 0, /* eye */
-            0, 0, 1, /* at */
+            1, 0, 0, /* eye */ // ortho
+            0, 1, 0, /* at */  // graphic
+            // 0, 0, 0, /* eye */
+            // 0, 0, 1, /* at */
             0.0f, 1.0f, 0.0f /* up */
         );
 
