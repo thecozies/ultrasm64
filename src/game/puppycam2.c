@@ -51,6 +51,7 @@ s32 sMovingFramesSinceSnap = SNAP_HOLD_LENGTH + 1;
 static Vp sCutsceneVp = { { { 640, 480, 511, 0 }, { 640, 480, 511, 0 } } };
 f32 sCameraWallOffset = OFFSET;
 f32 sRayCastOffset = OFFSET;
+u8 sSavedZoomSet = 4;
 
 #if defined(VERSION_EU)
 static u8 gPCOptionStringsFR[][64] = {{NC_ANALOGUE_FR}, {NC_CAMX_FR}, {NC_CAMY_FR}, {NC_INVERTX_FR}, {NC_INVERTY_FR}, {NC_CAMC_FR}, {NC_CAMP_FR}, {NC_CAMD_FR}};
@@ -488,24 +489,30 @@ static void puppycam_input_hold(void)
     if (
         (
             !gPuppyCam.options.analogue
+            // && (gPlayer1Controller->buttonDown & L_JPAD || gPlayer1Controller->buttonDown & L_CBUTTONS)
             && (gPlayer1Controller->buttonDown & L_JPAD)
             && gPuppyCam.framesSinceC[0] > 8
         )
         || gPuppyCam.stick2[0] != 0
     )
     {
+        // if (gPlayer1Controller->buttonDown & L_CBUTTONS) gPuppyCam.yawAcceleration -= 2*(gPuppyCam.options.sensitivityX/100.f);
+        // else gPuppyCam.yawAcceleration -= 40*(gPuppyCam.options.sensitivityX/100.f);
         gPuppyCam.yawAcceleration -= 40*(gPuppyCam.options.sensitivityX/100.f);
         // gPuppyCam.framesSinceC[0] = 0;
     }
     else if (
         (
             !gPuppyCam.options.analogue
+            // && (gPlayer1Controller->buttonDown & R_JPAD || gPlayer1Controller->buttonDown & R_CBUTTONS)
             && (gPlayer1Controller->buttonDown & R_JPAD)
             && gPuppyCam.framesSinceC[1] > 8
         )
         || gPuppyCam.stick2[0] != 0
     )
     {
+        // if (gPlayer1Controller->buttonDown & R_CBUTTONS) gPuppyCam.yawAcceleration += 2*(gPuppyCam.options.sensitivityX/100.f);
+        // else gPuppyCam.yawAcceleration += 40*(gPuppyCam.options.sensitivityX/100.f);
         gPuppyCam.yawAcceleration += 40*(gPuppyCam.options.sensitivityX/100.f);
         // gPuppyCam.framesSinceC[1] = 0;
     }
@@ -669,10 +676,11 @@ s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface 
         return FALSE;
 
     // Get surface normal and some other stuff
-    norm[0] = surface->normal.x;
+    norm[0] = 0.0f;
     norm[1] = surface->normal.y;
-    norm[2] = surface->normal.z;
+    norm[2] = 0.0f;
     vec3f_mul(norm, sRayCastOffset);
+    // vec3f_mul(norm, 0);
 
     vec3s_to_vec3f(v0, surface->vertex1);
     vec3s_to_vec3f(v1, surface->vertex2);
@@ -714,6 +722,16 @@ s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface 
     vec3f_copy(add_dir, dir);
     vec3f_mul(add_dir, *length);
     vec3f_sum(hit_pos, orig, add_dir);
+
+    // norm[0] = 0.0f;
+    // norm[1] = surface->normal.y;
+    // norm[2] = 0.0f;
+    // norm[0] = surface->normal.x;
+    // norm[1] = surface->normal.y;
+    // norm[2] = surface->normal.z;
+    // vec3f_mul(norm, sRayCastOffset);
+    // vec3f_add(hit_pos, norm);
+
     return TRUE;
 }
 
@@ -1073,12 +1091,54 @@ static void puppycam_input_core(void)
     if (gCurCutscene != CUTSCENE_TOWERCLIMB) handle_wall_bonk_cam();
 }
 
+f32 vec3f_dist(Vec3f fromVec, Vec3f toVec) {
+    return sqrtf((fromVec[0] - toVec[0]) * (fromVec[0] - toVec[0]) + (fromVec[1] - toVec[1]) * (fromVec[1] - toVec[1]) + (fromVec[2] - toVec[2]) * (fromVec[2] - toVec[2]));
+}
+
+static s16 get_pitch_offset(void)
+{
+    struct Surface *surf;
+    Vec3f ceildir;
+    Vec3f campos;
+    Vec3f hitpos;
+    Vec3f target;
+
+    target[0] = gPuppyCam.targetObj->oPosX;
+    target[1] = gPuppyCam.targetObj->oPosY + gPuppyCam.povHeight;
+    target[2] = gPuppyCam.targetObj->oPosZ;
+
+    ceildir[0] = 0;
+    ceildir[1] = 1000.0f;
+    ceildir[2] = 0;
+
+    campos[0] = gPuppyCam.pos[0];
+    campos[1] = gPuppyCam.pos[1];
+    campos[2] = gPuppyCam.pos[2];
+
+    sRayCastOffset = sCameraWallOffset;
+    find_surface_on_ray(target, ceildir, &surf, &hitpos);
+
+    if (surf && surf->normal.y < -0.5)
+    {
+        f32 opposite, adjacent;
+        f32 dx = target[0] - campos[0];
+        f32 dz = target[2] - campos[2];
+
+        opposite = vec3f_dist(target, hitpos);
+        adjacent = sqrtf(dx * dx + dz * dz);
+
+        return MAX(gPuppyCam.pitchTarget, atan2s(opposite, adjacent));
+    }
+    return gPuppyCam.pitchTarget;
+}
+
 //Calculates the base position the camera should be, before any modification.
 static void puppycam_projection(void)
 {
     Vec3s targetPos, targetPos2, targetPos3;
     u8 panD = (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_PANSHIFT)/8192;
     u32 isSwimming = gMarioState->action & ACT_FLAG_SWIMMING;
+    gPuppyCam.pitchTarget = get_pitch_offset();
 
     if (
         gPuppyCam.options.turnAggression > 0 &&
@@ -1263,7 +1323,6 @@ void door_cutscene(void) {
         s32 faceUp = gPuppyCam.targetObj2->oFaceAnglePitch == 0 && gPuppyCam.targetObj2->oFaceAngleRoll == 0;
         // f32 relativePercent = get_relative_position_between_ranges()
 
-        // should use home instead of pos
         target[0] = gPuppyCam.targetObj2->oHomeX;
         // NO NO NO NO should get actual middle of door you idiot
         target[1] = faceUp
@@ -1306,8 +1365,10 @@ void door_cutscene(void) {
 
 void slide_cutscene(void) {
     // uhh
+    if (sSavedZoomSet == 4) sSavedZoomSet = gPuppyCam.zoomSet;
+
     gCloseClip = TRUE;
-    sCameraWallOffset = approach_f32_asymptotic(sCameraWallOffset, 200.0f, 0.1f);
+    sCameraWallOffset = approach_f32_asymptotic(sCameraWallOffset, 100.0f, 0.15f);
 }
 
 void towerclimb_cutscene(void) {
@@ -1423,6 +1484,43 @@ void camping_intro_cutscene(void) {
 
 }
 
+void orb_reveal_cutscene(void) {
+    sCutsceneVp.vp.vscale[0] = 640;
+    sCutsceneVp.vp.vscale[1] = 360;
+    sCutsceneVp.vp.vtrans[0] = 640;
+    sCutsceneVp.vp.vtrans[1] = 480;
+    override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
+    gCloseClip = TRUE;
+
+// #ifdef CDEBUG
+//     if (
+//         gCurCutsceneTimer < CUTSCENE_INTRO_LUCY_WALKS_OVER - 10 &&
+//         gPlayer1Controller->buttonDown & START_BUTTON &&
+//         gPlayer1Controller->buttonPressed & A_BUTTON
+//     ) {
+//         gCurCutsceneTimer = CUTSCENE_INTRO_LUCY_WALKS_OVER - 10;
+//         gMarioState->pos[1] += 100.0f;
+//         gMarioState->actionState = 3;
+//     }
+// #endif
+
+    if (gCurCutsceneTimer == ORB_REVEAL_FINAL_FRAME - 1) {
+        gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
+        gPuppyCam.yawTarget = gPuppyCam.yaw;
+        vec3s_copy(gPuppyCam.pos, final_orb_reveal[gCurCutsceneTimer][0]);
+        vec3s_copy(gPuppyCam.focus, final_orb_reveal[gCurCutsceneTimer][1]);
+    } else if (gCurCutsceneTimer >= ORB_REVEAL_FINAL_FRAME) {
+        gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
+        gPuppyCam.yawTarget = gPuppyCam.yaw;
+        gCloseClip = FALSE;
+        set_current_cutscene(NO_CUTSCENE);
+    } else {
+        vec3s_copy(gPuppyCam.pos, final_orb_reveal[gCurCutsceneTimer][0]);
+        vec3s_copy(gPuppyCam.focus, final_orb_reveal[gCurCutsceneTimer][1]);
+    }
+
+}
+
 void puppycam_handle_cutscene(void) {
     switch (gCurCutscene) {
         case CUTSCENE_DOOR_OPEN:
@@ -1440,6 +1538,14 @@ void puppycam_handle_cutscene(void) {
         case CUTSCENE_INTRO:
             camping_intro_cutscene();
             break;
+        case CUTSCENE_ORB_REVEAL:
+            orb_reveal_cutscene();
+            break;
+        default:
+            if (sSavedZoomSet != 4) {
+                gPuppyCam.zoomSet = sSavedZoomSet;
+                sSavedZoomSet = 4;
+            }
     }
 } 
 
@@ -1529,10 +1635,6 @@ static void puppycam_script(void)
     }
 }
 
-f32 vec3f_dist(Vec3f fromVec, Vec3f toVec) {
-    return sqrtf((fromVec[0] - toVec[0]) * (fromVec[0] - toVec[0]) + (fromVec[1] - toVec[1]) * (fromVec[1] - toVec[1]) + (fromVec[2] - toVec[2]) * (fromVec[2] - toVec[2]));
-}
-
 //Handles collision detection using ray casting.
 // static s32 puppycam_collision_test(s16 offsetX, s16 offsetY, s16 offsetZ, s16 tOffsetY, Vec3s curPos)
 // {
@@ -1597,8 +1699,9 @@ static s16 get_target_y_offset(void) {
 static void puppycam_collision(void)
 {
     struct Surface *surf;
+    struct Surface *surfWall;
     Vec3f camdir;
-    Vec3f hitpos;
+    Vec3f hitpos, hitpos2;
     Vec3f target;
     s32 t1, t2;
 
@@ -1625,6 +1728,13 @@ static void puppycam_collision(void)
     sRayCastOffset = sCameraWallOffset;
     find_surface_on_ray(target, camdir, &surf, &hitpos);
     gPuppyCam.collisionDistance = vec3f_dist(target, hitpos);
+
+    vec3f_copy(hitpos2, hitpos);
+    surfWall = resolve_and_return_wall_collisions(hitpos2, 0.0f, sRayCastOffset);
+    if (surfWall != NULL) {
+        surf = surfWall;
+        vec3f_copy(hitpos, hitpos2);
+    }
 
     if (surf)
     {   
