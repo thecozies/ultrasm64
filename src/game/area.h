@@ -174,4 +174,17 @@ void set_current_fog_state(s32 fogState);
 void set_next_goal_state(s32 state, s32 nextAlpha);
 void reset_collected_para(void);
 
+enum FOG_OPTIONS {
+    DEFAULT_FOG,
+    WATER_FOG,
+    TEMPLE1_ROOM4_FOG,
+    TRIPPY_FOG,
+    TEMPLE2_FOG,
+    TUTORIAL_FOG,
+    END_FOG,
+    END_TUNNEL_FOG,
+    END_FINAL_FOG,
+    CAMP_FOG,
+};
+
 #endif // AREA_H

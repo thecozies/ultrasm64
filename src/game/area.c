@@ -86,20 +86,6 @@ char sGameTitle[18] = "Lucy's\nLevitation";
 char sPressStartToPlay[11] = "Press Start";
 s32 sTimesRenderedText = 0;
 
-
-enum FOG_OPTIONS {
-    DEFAULT_FOG,
-    WATER_FOG,
-    TEMPLE1_ROOM4_FOG,
-    TRIPPY_FOG,
-    TEMPLE2_FOG,
-    TUTORIAL_FOG,
-    END_FOG,
-    END_TUNNEL_FOG,
-    END_FINAL_FOG,
-    CAMP_FOG,
-};
-
 s8 sCurFog = DEFAULT_FOG;
 
 enum GOAL_FADE_STATES {
@@ -584,6 +570,8 @@ void render_intro_start_text(void) {
 // }
 
 void set_current_fog_state(s32 fogState) {
+    // Make sure tunnel fog doesn't overwrite the END_FINAL_BOG
+    if (fogState == END_TUNNEL_FOG && sCurFog == END_FINAL_FOG) return;
     sCurFog = fogState;
 }
 
