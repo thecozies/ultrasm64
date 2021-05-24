@@ -277,6 +277,16 @@
 #define CAM_FOV_APP_60      11
 #define CAM_FOV_ZOOM_30     12
 #define CAM_FOV_SET_29      13
+#define CAM_FOV_SET_CUSTOM  14
+
+#define FOV_24MM  84.06f
+#define FOV_35MM  63.44f
+#define FOV_50MM  46.79f
+#define FOV_75MM  32.18f
+#define FOV_100MM 24.41f
+#define FOV_120MM 19.64f
+#define FOV_150MM 16.41f
+#define FOV_200MM 12.35f
 
 #define CAM_EVENT_CANNON              1
 #define CAM_EVENT_SHOT_FROM_CANNON    2
@@ -669,6 +679,7 @@ extern struct Camera *gCamera;
 extern struct Object *gCutsceneFocus;
 extern struct Object *gSecondCameraFocus;
 extern u8 gRecentCutscene;
+extern f32 gCustomFOV;
 
 // TODO: sort all of this extremely messy shit out after the split
 
@@ -715,6 +726,7 @@ s32 is_range_behind_surface(Vec3f from, Vec3f to, struct Surface *surf, s16 rang
 void scale_along_line(Vec3f dest, Vec3f from, Vec3f to, f32 scale);
 s16 calculate_pitch(Vec3f from, Vec3f to);
 s16 calculate_yaw(Vec3f from, Vec3f to);
+s16 calculate_yaws(Vec3s from, Vec3s to);
 void calculate_angles(Vec3f from, Vec3f to, s16 *pitch, s16 *yaw);
 f32 calc_abs_dist(Vec3f a, Vec3f b);
 f32 calc_hor_dist(Vec3f a, Vec3f b);
@@ -761,6 +773,7 @@ s32 cutscene_spawn_obj(u32 obj, s16 frame);
 void set_fov_shake(s16 amplitude, s16 decay, s16 shakeSpeed);
 
 void set_fov_function(u8 func);
+void set_fov_45(void);
 void cutscene_set_fov_shake_preset(u8 preset);
 void set_fov_shake_from_point_preset(u8 preset, f32 posX, f32 posY, f32 posZ);
 void obj_rotate_towards_point(struct Object *o, Vec3f point, s16 pitchOff, s16 yawOff, s16 pitchDiv, s16 yawDiv);

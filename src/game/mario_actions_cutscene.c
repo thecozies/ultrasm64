@@ -2297,6 +2297,56 @@ s32 act_camp_intro(struct MarioState *m) {
     return FALSE;
 }
 
+
+#define ORB_REVEAL_INIT_X 505.0f
+#define ORB_REVEAL_END_X  2050.0f
+
+s32 act_orb_reveal(struct MarioState *m) {
+    struct Surface *surf;
+    if (m->actionTimer++ == 0) {
+        // set initial position
+        m->pos[0] = ORB_REVEAL_INIT_X;
+        m->faceAngle[1] = DEGREES(90);
+        m->marioObj->header.gfx.angle[1] = m->faceAngle[1];
+        m->actionState = 0;
+    }
+
+    switch (m->actionState) {
+        case 0:
+            m->forwardVel = 4.0f;
+            m->intendedMag = 8.1f;
+
+            if (m->pos[0] >= ORB_REVEAL_END_X - 40.0f && m->pos[0] < ORB_REVEAL_END_X) {
+                if((m->pos[0] += 5.0f) >= ORB_REVEAL_END_X) {
+                    m->pos[0] = ORB_REVEAL_END_X;
+                    m->actionState = 1;
+                }
+                m->intendedMag = 5.0f;
+            }
+            else if ((m->pos[0] += 8.1f) >= ORB_REVEAL_END_X) {
+                m->pos[0] = ORB_REVEAL_END_X;
+                m->actionState = 1;
+            }
+
+            m->pos[1] = find_floor(m->pos[0], m->pos[1] + 100.0f, m->pos[2], &surf);
+            
+            anim_and_audio_for_walk(m);
+
+            vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
+            break;
+        case 1:
+            set_custom_mario_animation(m, LUCY_TO_IDLE_ANIM);
+            m->marioObj->header.gfx.angle[1] = m->faceAngle[1];
+            if (is_anim_at_end(m)) m->actionState = 2;
+            break;
+
+        case 2:
+            set_custom_mario_animation(m, LUCY_IDLE_ANIM);
+            break;
+    }
+    return FALSE;
+}
+
 // dialog 1
 // "Mario!"
 // "The power of the Stars is restored to the castle..."
@@ -2918,6 +2968,7 @@ s32 mario_execute_cutscene_action(struct MarioState *m) {
         case ACT_SLOW_WARP:                  cancel = act_slow_warp(m);                  break;
         case ACT_TEMPLE_1_INTRO:             cancel = act_temple_1_intro(m);             break;
         case ACT_CAMP_INTRO:                 cancel = act_camp_intro(m);                 break;
+        case ACT_ORB_REVEAL:                 cancel = act_orb_reveal(m);                 break;
     }
     /* clang-format on */
 

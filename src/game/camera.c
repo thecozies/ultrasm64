@@ -442,6 +442,8 @@ Vec3f sUnusedModeBasePosition_3 = { 646.0f, 143.0f, -1513.0f };
 Vec3f sUnusedModeBasePosition_4 = { 646.0f, 143.0f, -1513.0f };
 Vec3f sUnusedModeBasePosition_5 = { 646.0f, 143.0f, -1513.0f };
 
+f32 gCustomFOV = 45.0f;
+
 s32 update_radial_camera(struct Camera *c, Vec3f, Vec3f);
 s32 update_outward_radial_camera(struct Camera *c, Vec3f, Vec3f);
 s32 update_behind_mario_camera(struct Camera *c, Vec3f, Vec3f);
@@ -4553,6 +4555,14 @@ s16 calculate_pitch(Vec3f from, Vec3f to) {
 s16 calculate_yaw(Vec3f from, Vec3f to) {
     f32 dx = to[0] - from[0];
     UNUSED f32 dy = to[1] - from[1];
+    f32 dz = to[2] - from[2];
+    s16 yaw = atan2s(dz, dx);
+
+    return yaw;
+}
+
+s16 calculate_yaws(Vec3s from, Vec3s to) {
+    f32 dx = to[0] - from[0];
     f32 dz = to[2] - from[2];
     s16 yaw = atan2s(dz, dx);
 
@@ -11373,8 +11383,12 @@ void approach_fov_20(UNUSED struct MarioState *m) {
     camera_approach_f32_symmetric_bool(&sFOVState.fov, 20.f, 0.3f);
 }
 
-void set_fov_45(UNUSED struct MarioState *m) {
-    sFOVState.fov = 54.f;
+void set_fov_45(void) {
+    sFOVState.fov = 45.f;
+}
+
+void set_fov_custom(void) {
+    sFOVState.fov = gCustomFOV;
 }
 
 void set_fov_29(UNUSED struct MarioState *m) {
@@ -11462,7 +11476,10 @@ Gfx *geo_camera_fov(s32 callContext, struct GraphNode *g, UNUSED void *context) 
     if (callContext == GEO_CONTEXT_RENDER) {
         switch (fovFunc) {
             case CAM_FOV_SET_45:
-                set_fov_45(marioState);
+                set_fov_45();
+                break;
+            case CAM_FOV_SET_CUSTOM:
+                set_fov_custom();
                 break;
             case CAM_FOV_SET_29:
                 set_fov_29(marioState);

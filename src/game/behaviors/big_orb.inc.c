@@ -4,6 +4,7 @@
 #include "game/object_list_processor.h"
 #include "game/rendering_graph_node.h"
 #include "game/puppycam2.h"
+#include "game/mario.h"
 #include "object_fields.h"
 
 #define o gCurrentObject
@@ -12,6 +13,18 @@
 #define BIG_ORB_RADIUS 850.0f
 
 // #include "actors/group8.h"
+
+void set_orb_locked_to_cam(void) {
+    // f32 x = 50.0f * sins(gPuppyCam.yaw);
+    // f32 z = 50.0f * coss(gPuppyCam.yaw);
+
+    // o->oPosX = gPuppyCam.pos[0] + x;
+    // o->oPosY = gPuppyCam.pos[1];
+    // o->oPosZ = gPuppyCam.pos[2] + z;
+    o->oPosX = gPuppyCam.pos[0];
+    o->oPosY = gPuppyCam.pos[1];
+    o->oPosZ = gPuppyCam.pos[2];
+}
 
 void bhv_big_orb_interact(void) {
     f32 distFromCam = dist_between_object_and_camera(o);
@@ -55,11 +68,31 @@ void bhv_big_orb_interact(void) {
     }
 }
 
+void bhv_big_orb_reveal(void) {
+    s8 insideOrb = gCurCutsceneTimer >= ORB_REVEAL_INSIDE_ORB;
+    u8 increaseAmt = insideOrb ? 140 : 180;
+
+    f32 maxMag = ABS((sinf(((f32)gCurCutsceneTimer) * 0.1f) * 25.0f) + 5.0f);
+
+    o->oOpacity = (sinf(((f32)gCurCutsceneTimer) * 0.25f) * maxMag) + increaseAmt;
+
+    if (insideOrb) {
+        set_orb_locked_to_cam();
+    } else {
+        o->oPosX = o->oHomeX;
+        o->oPosY = o->oHomeY;
+        o->oPosZ = o->oHomeZ;
+    }
+}
+
 void bhv_big_orb_loop(void) {
     // s32 isBeam = (o->oBehParams >> 16) > 0;
 
     // if (!isBeam) {
-    switch (o->oAction) {
+    switch (gCurCutscene) {
+        case CUTSCENE_ORB_REVEAL:
+            bhv_big_orb_reveal();
+            break;
         default:
             bhv_big_orb_interact();
     }

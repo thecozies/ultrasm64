@@ -1504,6 +1504,30 @@ void orb_reveal_cutscene(void) {
 //     }
 // #endif
 
+    if (gCurCutsceneTimer == ORB_REVEAL_BEHIND_LUCY) {
+        set_fov_function(CAM_FOV_SET_CUSTOM);
+        gCustomFOV = FOV_24MM;
+    } else if (gCurCutsceneTimer >= ORB_REVEAL_INSIDE_ORB) {
+        gCustomFOV = get_relative_position_between_ranges(
+            gCurCutsceneTimer,
+            ORB_REVEAL_INSIDE_ORB,
+            ORB_REVEAL_FINAL_FRAME,
+            FOV_100MM,
+            FOV_120MM
+        );
+    } else if (gCurCutsceneTimer > ORB_REVEAL_BEHIND_LUCY) {
+        set_fov_function(CAM_FOV_SET_CUSTOM);
+        gCustomFOV = get_relative_position_between_ranges(
+            gCurCutsceneTimer,
+            ORB_REVEAL_BEHIND_LUCY,
+            ORB_REVEAL_INSIDE_ORB,
+            FOV_35MM,
+            FOV_50MM
+            // FOV_24MM,
+            // FOV_35MM
+        );
+    }
+
     if (gCurCutsceneTimer == ORB_REVEAL_FINAL_FRAME - 1) {
         gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
         gPuppyCam.yawTarget = gPuppyCam.yaw;
@@ -1514,9 +1538,12 @@ void orb_reveal_cutscene(void) {
         gPuppyCam.yawTarget = gPuppyCam.yaw;
         gCloseClip = FALSE;
         set_current_cutscene(NO_CUTSCENE);
+        set_fov_45();
+        set_fov_function(CAM_FOV_DEFAULT);
     } else {
         vec3s_copy(gPuppyCam.pos, final_orb_reveal[gCurCutsceneTimer][0]);
         vec3s_copy(gPuppyCam.focus, final_orb_reveal[gCurCutsceneTimer][1]);
+        gPuppyCam.yaw = calculate_yaws(gPuppyCam.pos, gPuppyCam.focus);
     }
 
 }

@@ -1817,13 +1817,16 @@ void set_current_cutscene(s32 cutscene) {
         set_fov_function(CAM_FOV_DEFAULT);
     }
 
+    if (cutscene == CUTSCENE_ORB_REVEAL) set_mario_action(gMarioState, ACT_ORB_REVEAL, 0);
+    else if (gCurCutscene == CUTSCENE_ORB_REVEAL && cutscene == NO_CUTSCENE) set_mario_action(gMarioState, ACT_IDLE, 2);
+
     if (gCurCutscene == CUTSCENE_SLIDE && cutscene != CUTSCENE_SLIDE) {
         set_fov_function(CAM_FOV_DEFAULT);
         gCloseClip = FALSE;
     } else if (gCurCutscene != cutscene) {
         gCurCutsceneTimer = 0;
     }
-        gCurCutscene = cutscene;
+    gCurCutscene = cutscene;
 }
 
 void handle_cutscene(void) {
@@ -1839,6 +1842,8 @@ void handle_cutscene(void) {
             break;
         case CUTSCENE_TOWERCLIMB:
             // CTODO
+            break;
+        case CUTSCENE_ORB_REVEAL:
             break;
         case NO_CUTSCENE:
         default:
@@ -2022,19 +2027,28 @@ void handle_lucy_blinks(struct MarioState *m) {
 }
 
 void handle_lucy_action_mouths(struct MarioState *m) {
-    switch (gMarioState->action & ACT_GROUP_MASK)
-    {
-    case ACT_GROUP_AIRBORNE:
-        if (m->vel[1] > 0.0f) set_lucy_mouth_state(m, LUCY_MOUTH_HAPPY_OPEN);
-        else set_lucy_mouth_state(m, LUCY_MOUTH_OPEN);
-        break;
-    // case ACT_GROUP_MOVING:
-    //     set_lucy_mouth_state(m, LUCY_MOUTH_SMILE);
+    if (gMarioState->action & ACT_GROUP_MASK == ACT_GROUP_CUTSCENE) return;
+
+    s32 sayingSomething = check_bank_playing_sound(SOUND_BANK_VOICE);
+
+    if (!sayingSomething) set_lucy_mouth_state(m, LUCY_MOUTH_CLOSED);
+    else if (m->mouthState == LUCY_MOUTH_CLOSED) set_lucy_mouth_state(m, random_sign() < 0 ? LUCY_MOUTH_OPEN : LUCY_MOUTH_HAPPY_OPEN);
+
+    return;
+
+    // switch (gMarioState->action & ACT_GROUP_MASK)
+    // {
+    // case ACT_GROUP_AIRBORNE:
+    //     if (m->vel[1] > 0.0f) set_lucy_mouth_state(m, LUCY_MOUTH_HAPPY_OPEN);
+    //     else set_lucy_mouth_state(m, LUCY_MOUTH_OPEN);
     //     break;
-    case ACT_GROUP_SUBMERGED:
-    default:
-        set_lucy_mouth_state(m, LUCY_MOUTH_CLOSED);
-    }
+    // // case ACT_GROUP_MOVING:
+    // //     set_lucy_mouth_state(m, LUCY_MOUTH_SMILE);
+    // //     break;
+    // case ACT_GROUP_SUBMERGED:
+    // default:
+    //     set_lucy_mouth_state(m, LUCY_MOUTH_CLOSED);
+    // }
 }
 
 /**
