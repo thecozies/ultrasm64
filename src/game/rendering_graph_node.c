@@ -301,7 +301,7 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
 #endif
 
         if (gCloseClip) {
-            guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / 4.0f, node->far / WORLD_SCALE, 1.0f);
+            guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / (WORLD_SCALE * 2.0f), node->far / WORLD_SCALE, 1.0f);
         } else {
             guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 1.0f);
         }
