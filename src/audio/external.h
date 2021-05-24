@@ -61,6 +61,7 @@ void play_race_fanfare(void);
 void play_toads_jingle(void);
 void sound_reset(u8 presetId);
 void audio_set_sound_mode(u8 arg0);
+s32 check_bank_playing_sound(u8 bank);
 
 void audio_init(void); // in load.c
 
