@@ -10,7 +10,8 @@
 #include "memory.h"
 
 // #define GFX_POOL_SIZE 6400
-#define GFX_POOL_SIZE 8800
+// #define GFX_POOL_SIZE 8800
+#define GFX_POOL_SIZE 6400 * 3
 
 struct GfxPool {
     Gfx buffer[GFX_POOL_SIZE];
