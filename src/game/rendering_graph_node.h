@@ -21,6 +21,7 @@ extern Mat4 *viewMat;
 extern s16 gMatStackIndex;
 extern Mat4 gMatStack[32];
 extern s8 gOverrideLOD;
+extern s32 gWidescreen;
 
 // after processing an object, the type is reset to this
 #define ANIM_TYPE_NONE                  0

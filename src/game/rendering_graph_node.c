@@ -145,7 +145,10 @@ s32 gCloseClip = FALSE;
 s32 gObjectAngleHere = 0;
 
 s8 gOverrideLOD = FALSE;
-
+s32 gWidescreen = FALSE;
+#define FOUR_BY_3 (4.0f / 3.0f)
+#define SIXTEEN_BY_9 (16.0f / 9.0f)
+f32 sAspectRatio = FOUR_BY_3;
 
 /**
  * Process a master list node.
@@ -297,13 +300,16 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
 #ifdef VERSION_EU
         f32 aspect = ((f32) gCurGraphNodeRoot->width / (f32) gCurGraphNodeRoot->height) * 1.1f;
 #else
-        f32 aspect = (f32) gCurGraphNodeRoot->width / (f32) gCurGraphNodeRoot->height;
+        // f32 aspect = (f32) gCurGraphNodeRoot->width / (f32) gCurGraphNodeRoot->height;
+        sAspectRatio = gWidescreen ? SIXTEEN_BY_9 : FOUR_BY_3;
 #endif
 
-        if (gCloseClip) {
-            guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / (WORLD_SCALE * 2.0f), node->far / WORLD_SCALE, 1.0f);
+        if (gCloseClip == 2) {
+            guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, node->near, node->far / WORLD_SCALE, 1.0f);
+        } else if (gCloseClip) {
+            guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, node->near / (WORLD_SCALE * 2.0f), node->far / (WORLD_SCALE * 1.2f), 1.0f);
         } else {
-            guPerspective(mtx, &perspNorm, node->fov, aspect, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 1.0f);
+            guPerspective(mtx, &perspNorm, node->fov, sAspectRatio, node->near / WORLD_SCALE, node->far / WORLD_SCALE, 1.0f);
         }
         gSPPerspNormalize(gDisplayListHead++, perspNorm);
 
@@ -887,7 +893,7 @@ static s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
 
     // This multiplication should really be performed on 4:3 as well,
     // but the issue will be more apparent on widescreen.
-    hScreenEdge *= GFX_DIMENSIONS_ASPECT_RATIO;
+    hScreenEdge *= sAspectRatio;
 
     if (geo != NULL && geo->type == GRAPH_NODE_TYPE_CULLING_RADIUS) {
         cullingRadius =

@@ -147,6 +147,8 @@ char sPauseText[] =
 char sPuppyOptionText1[] = COLOR_GREY "R: " COLOR_WHITE "Options";
 char sPuppyOptionText2[] = COLOR_GREY "R: " COLOR_WHITE "Return";
 char sPuppyOptionTitle[] = COLOR_BLUE "Puppycam Options";
+char sAspect169[] = COLOR_GREY "L:" COLOR_WHITE " 16:9";
+char sAspect43[] = COLOR_GREY "L:" COLOR_WHITE " 4:3";
 u8 sSkipTimer = 0;
 
 enum TUTORIAL_FADE_STATES {
@@ -328,11 +330,20 @@ void render_pause_hint_text(void) {
 
     gS2DScale = 0.5f;
     s2d_print_alloc(
-        GFX_DIMENSIONS_FROM_RIGHT_EDGE(10),
+        GFX_DIMENSIONS_FROM_RIGHT_EDGE(70),
         10,
-        ALIGN_RIGHT,
+        ALIGN_LEFT,
         gPCOptionOpen ? sPuppyOptionText2 : sPuppyOptionText1
     );
+
+    gS2DScale = 0.5f;
+    s2d_print_alloc(
+        GFX_DIMENSIONS_FROM_RIGHT_EDGE(70),
+        24,
+        ALIGN_LEFT,
+        gWidescreen ? sAspect169 : sAspect43
+    );
+    if (gPlayer1Controller->buttonPressed & L_TRIG) gWidescreen = !gWidescreen;
 
     if (gPCOptionOpen) {
         gS2DScale = 1.0f;
