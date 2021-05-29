@@ -7,15 +7,16 @@
 #include "types.h"
 
 
-#define NO_CUTSCENE            0
-#define CUTSCENE_INTRO         1
-#define CUTSCENE_SLIDE         2
-#define CUTSCENE_END           3
-#define CUTSCENE_DOOR_OPEN     4
-#define CUTSCENE_TOWERCLIMB    5
-#define CUTSCENE_FORCE_YAW     6
-#define CUTSCENE_INTRO_TEMPLE  7
-#define CUTSCENE_ORB_REVEAL    8
+#define NO_CUTSCENE               0
+#define CUTSCENE_INTRO            1
+#define CUTSCENE_SLIDE            2
+#define CUTSCENE_END              3
+#define CUTSCENE_DOOR_OPEN        4
+#define CUTSCENE_TOWERCLIMB       5
+#define CUTSCENE_FORCE_YAW        6
+#define CUTSCENE_INTRO_TEMPLE     7
+#define CUTSCENE_ORB_REVEAL       8
+#define CUTSCENE_LUCYS_LEVITATION 9
 
 
 enum CUTSCENE_INTRO_ACTS {
@@ -47,6 +48,13 @@ enum ORB_REVEAL_ACTS {
     ORB_REVEAL_FINAL_FRAME = 359
 };
 
+enum LUCYS_LEVITATION_ACTS {
+    LUCYS_LEVITATION_START_ACCEPTING = 120,
+    LUCYS_LEVITATION_ACCEPTED = 134,
+    LUCYS_LEVITATION_NIRVANA  = 190,
+    LUCYS_LEVITATION_FINAL_FRAME = 1000
+};
+
 enum LUCY_EYE_STATES {
     LUCY_EYE_OPEN,
     LUCY_EYE_HALF,
@@ -66,6 +74,8 @@ enum LUCY_MOUTH_STATES {
 #define LUCY_SITTING_ANIM               2
 #define LUCY_SITTING_LOOKING_OVER_ANIM  3
 #define LUCY_HAPPY_DANCE_ANIM           4
+#define LUCY_LEVITATING_START           5
+#define LUCY_LEVITATING                 6
 
 s32 is_anim_at_end(struct MarioState *m);
 s32 is_anim_past_end(struct MarioState *m);
@@ -124,5 +134,6 @@ extern s8 gCurCutscene;
 extern u32 gCurCutsceneTimer;
 extern s8 gWaitingToStart;
 extern u32 gStartWaitTimer;
+extern Vec3f gFinalOrbPos;
 
 #endif // MARIO_H

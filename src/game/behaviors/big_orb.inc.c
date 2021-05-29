@@ -6,6 +6,8 @@
 #include "game/puppycam2.h"
 #include "game/mario.h"
 #include "object_fields.h"
+#include "sm64.h"
+#include "engine/math_util.h"
 
 #define o gCurrentObject
 #endif
@@ -56,13 +58,17 @@ void bhv_big_orb_interact(void) {
     // }
 
     if (lateralDistFromMario >= 5000) o->oOpacity = 0;
-    else if (lateralDistFromMario < BIG_ORB_RADIUS) o->oOpacity = 255;
+    else if (lateralDistFromMario < BIG_ORB_RADIUS) {
+        o->oOpacity = 200;
+        set_current_cutscene(CUTSCENE_LUCYS_LEVITATION);
+        vec3f_copy(gFinalOrbPos, &o->oPosX);
+    }
     else {
         o->oOpacity = (int) MAX(0, MIN(255, get_relative_position_between_ranges(
             lateralDistFromMario,
             BIG_ORB_RADIUS,
             5000.0f,
-            255,
+            200,
             0
         )));
     }
@@ -85,11 +91,32 @@ void bhv_big_orb_reveal(void) {
     }
 }
 
+void bhv_big_orb_levitation(void) {
+    s32 isBeam = (o->oBehParams >> 16) > 0;
+    f32 distFromCam;
+    vec3f_copy(&o->oPosX, gFinalOrbPos);
+
+    distFromCam = dist_between_object_and_camera(o);
+    gOverrideLOD = distFromCam < BIG_ORB_RADIUS;
+
+    u8 increaseAmt = gOverrideLOD ? 140 : 180;
+    f32 maxMag = ABS((sinf(((f32)gCurCutsceneTimer) * 0.1f) * 25.0f) + 5.0f);
+    o->oOpacity = (sinf(((f32)gCurCutsceneTimer) * 0.25f) * maxMag) + increaseAmt;
+
+    if (gOverrideLOD) {
+        set_orb_locked_to_cam();
+    } else {
+    }
+}
+
 void bhv_big_orb_loop(void) {
     // s32 isBeam = (o->oBehParams >> 16) > 0;
 
     // if (!isBeam) {
     switch (gCurCutscene) {
+        case CUTSCENE_LUCYS_LEVITATION:
+            bhv_big_orb_levitation();
+            break;
         case CUTSCENE_ORB_REVEAL:
             bhv_big_orb_reveal();
             break;

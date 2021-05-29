@@ -3,3 +3,5 @@
 #include "anim_lucy_sitting.inc.c"
 #include "anim_lucy_sitting_looking_over.inc.c"
 #include "anim_lucy_happy_dance.inc.c"
+#include "anim_lucy_levitating_start.inc.c"
+#include "anim_lucy_levitating.inc.c"

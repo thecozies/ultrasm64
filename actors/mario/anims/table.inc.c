@@ -9,5 +9,9 @@ const struct Animation *const mario_anims[] = {
 
 	&mario_anim_lucy_happy_dance,
 
+	&mario_anim_lucy_levitating_start,
+
+	&mario_anim_lucy_levitating,
+
 	NULL,
 };

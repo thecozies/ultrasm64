@@ -61,8 +61,8 @@ u8 gWarpTransBlue = 0;
 s16 gCurrSaveFileNum = 1;
 s16 gCurrLevelNum = LEVEL_MIN;
 
-struct GlobalFog gGlobalFog = { 73, 63, 52, 0xFF, 812, 1000 };
-struct GlobalFog sDefaultFog = { 73, 63, 52, 0xFF, 812, 1000 };
+struct GlobalFog gGlobalFog = { 73, 63, 52, 0xFF, 832, 1000 };
+struct GlobalFog sDefaultFog = { 73, 63, 52, 0xFF, 832, 1000 };
 struct GlobalFog sWaterFog = { 0x33, 0x6C, 0x71, 0xDF, 800, 1000 };
 struct GlobalFog sTemple1Room4Fog = { 73, 63, 52, 0xFF, 812, 1100 };
 struct GlobalFog sTrippyFog = { 73, 63, 52, 0xFF, 750, 1100 };

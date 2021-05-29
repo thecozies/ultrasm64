@@ -49,6 +49,7 @@ s8 gCurCutscene = 0;
 u32 gCurCutsceneTimer = 0;
 s32 sWarpOp = 0;
 s8 sIntroCutsceneDone = FALSE;
+Vec3f gFinalOrbPos = { 0.0f, 0.0f, 0.0f };
 
 
 /**************************************************
@@ -1820,6 +1821,8 @@ void set_current_cutscene(s32 cutscene) {
     if (cutscene == CUTSCENE_ORB_REVEAL) set_mario_action(gMarioState, ACT_ORB_REVEAL, 0);
     else if (gCurCutscene == CUTSCENE_ORB_REVEAL && cutscene == NO_CUTSCENE) set_mario_action(gMarioState, ACT_IDLE, 2);
 
+    if (cutscene == CUTSCENE_LUCYS_LEVITATION) set_mario_action(gMarioState, ACT_LUCYS_LEVITATION, 0);
+
     if (gCurCutscene == CUTSCENE_SLIDE && cutscene != CUTSCENE_SLIDE) {
         set_fov_function(CAM_FOV_DEFAULT);
         gCloseClip = FALSE;
@@ -2105,6 +2108,8 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         //     gMarioState->controller->buttonDown & B_BUTTON &&
         //     gCurCutscene > NO_CUTSCENE
         // ) gCurCutsceneTimer++;
+        // f32 speed = sqrtf((gMarioState->vel[0] * gMarioState->vel[0]) + (gMarioState->vel[1] * gMarioState->vel[1]) + (gMarioState->vel[2] * gMarioState->vel[2]));
+        // print_text_fmt_int(80, 20, "%d", (s32) speed);
 #endif
 
         handle_cutscene();

@@ -41,12 +41,27 @@ void *vec3f_add(Vec3f dest, Vec3f a) {
     return &dest; //! warning: function returns address of local variable
 }
 
+/// get diff between a and b
+void vec3f_diff(Vec3f dest, Vec3f a, Vec3f b) {
+    dest[0] = a[0] - b[0];
+    dest[1] = a[1] - b[1];
+    dest[2] = a[2] - b[2];
+}
+
 /// Make 'dest' the sum of vectors a and b.
 void *vec3f_sum(Vec3f dest, Vec3f a, Vec3f b) {
     dest[0] = a[0] + b[0];
     dest[1] = a[1] + b[1];
     dest[2] = a[2] + b[2];
     return &dest; //! warning: function returns address of local variable
+}
+
+/// Multiply vector 'dest' by a
+void vec3f_mul(Vec3f dest, f32 a)
+{
+    dest[0] *= a;
+    dest[1] *= a;
+    dest[2] *= a;
 }
 
 /// Make 'dest' the sum of vectors a and b.
@@ -752,6 +767,21 @@ s16 atan2s(f32 y, f32 x) {
  */
 f32 atan2f(f32 y, f32 x) {
     return (f32) atan2s(y, x) * M_PI / 0x8000;
+}
+
+f32 acosf(f32 x)
+{
+    f32 f0 = (f32)(M_PI/2.0) - sinf(x)/cosf(x);
+#if 1
+    f32 f2;
+    do
+    {
+        f2 = (cosf(f0)-x) / sinf(f0);
+        f0 += f2;
+    }
+    while (f2 < -0.00001F || f2 > 0.00001F);
+#endif
+    return f0;
 }
 
 #define CURVE_BEGIN_1 1

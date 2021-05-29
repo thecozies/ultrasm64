@@ -2342,8 +2342,141 @@ s32 act_orb_reveal(struct MarioState *m) {
 
         case 2:
             set_custom_mario_animation(m, LUCY_IDLE_ANIM);
+            m->mouthState = LUCY_MOUTH_OPEN;
             break;
     }
+    return FALSE;
+}
+
+static void move_final_orb_pos(void) {
+    s8 beginning = gCurCutsceneTimer < LUCYS_LEVITATION_NIRVANA;
+    if (beginning) {
+        gFinalOrbPos[1]++;
+    } else {
+        gFinalOrbPos[1] += 15.0f;
+    }
+}
+
+// #define MIN_ORB_GRAV_STRENGTH 5.0f
+// #define MAX_ORB_GRAV_STRENGTH 15.0f
+// static f32 clamp_orb_grav(f32 cur) {
+//     if (cur < 0.0f) return MIN_MAX(cur, -MAX_ORB_GRAV_STRENGTH, -MIN_ORB_GRAV_STRENGTH);
+//     return MIN_MAX(cur, MIN_ORB_GRAV_STRENGTH, MAX_ORB_GRAV_STRENGTH);
+// }
+
+// static f32 clamp_grav(f32 cur, f32 min, f32 max) {
+//     if (cur < 0.0f) return MIN_MAX(cur, -max, -min);
+//     return MIN_MAX(cur, min, max);
+// }
+
+// static clamp_vec3f_grav(Vec3f a, struct MarioState *m) {
+//     a[0] = clamp_grav(a[0], MIN_ORB_GRAV_STRENGTH, ABS(m->vel[0]));
+//     a[1] = clamp_grav(a[1], MIN_ORB_GRAV_STRENGTH, ABS(m->vel[1]));
+//     a[2] = clamp_grav(a[2], MIN_ORB_GRAV_STRENGTH, ABS(m->vel[2]));
+// }
+
+// static clamp_vec3f(Vec3f a, f32 min, f32 max) {
+//     a[0] = clamp_grav(a[0], min, max);
+//     a[1] = clamp_grav(a[1], min, max);
+//     a[2] = clamp_grav(a[2], min, max);
+// }
+
+
+#define ORB_GRAV_STRENGTH 0.05f
+static void gravitate_towards_center_of_orb(struct MarioState *m) {
+    Vec3f diff;
+    // The general problem here:
+    /**
+     * If the diff is in the same direction as mario's vel,
+     * the diff shouldn't affect vel as much
+     * Maybe this is happening now?
+     * Looks too "whippy", not enough momentum continuing
+     */
+
+    vec3f_diff(diff, gFinalOrbPos, m->pos);
+    // clamp_vec3f_grav(diff, m);
+
+    vec3f_mul(diff, 0.5f);
+
+    // approach_vec3f_asymptotic(diff, m->vel, 0.4f, 0.4f, 0.4f);
+
+    approach_vec3f_asymptotic(m->vel, diff, ORB_GRAV_STRENGTH, ORB_GRAV_STRENGTH, ORB_GRAV_STRENGTH);
+
+    vec3f_add(m->pos, m->vel);
+    vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
+}
+
+// #define ORB_GRAV 30.0f
+
+// static void gravitate_towards_center_of_orb(struct MarioState *m) {
+//     Vec3f relPos;
+//     f32 radius;
+//     f32 azimuth;
+//     f32 inclination;
+//     f32 speed = sqrtf((m->vel[0] * m->vel[0]) + (m->vel[1] * m->vel[1]) + (m->vel[2] * m->vel[2]));
+
+//     vec3f_diff(relPos, m->pos, gFinalOrbPos);
+//     print_text_fmt_int(20, 100, "%d", (s32) relPos[0]);
+//     print_text_fmt_int(20, 70, "%d", (s32) relPos[1]);
+//     print_text_fmt_int(20, 40, "%d", (s32) relPos[2]);
+
+//     radius = sqrtf((relPos[0] * relPos[0]) + (relPos[1] * relPos[1]) + (relPos[2] * relPos[2]));
+//     inclination = acosf(relPos[1] / radius);
+//     azimuth = atan2f(relPos[2], relPos[0]);
+//     azimuth = ORB_GRAV / (radius * radius);
+//     radius = ORB_GRAV / (radius + speed);
+//     // print_text_fmt_int(20, 100, "%d", (s32) radius);
+//     // print_text_fmt_int(20, 70, "%d", (s32) inclination);
+//     // print_text_fmt_int(20, 40, "%d", (s32) azimuth);
+
+
+//     relPos[2] = radius * cosf(azimuth) * sinf(inclination);
+//     relPos[1] = radius * cosf(inclination);
+//     relPos[0] = radius * sinf(azimuth) * sinf(inclination);
+//     print_text_fmt_int(80, 100, "%d", (s32) relPos[0]);
+//     print_text_fmt_int(80, 70, "%d", (s32) relPos[1]);
+//     print_text_fmt_int(80, 40, "%d", (s32) relPos[2]);
+
+//     vec3f_sum(m->pos, relPos, gFinalOrbPos);
+
+//     vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
+// }
+
+s32 act_lucys_levitation(struct MarioState *m) {
+    Vec3f diff;
+    m->actionTimer++;
+
+    move_final_orb_pos();
+    gravitate_towards_center_of_orb(m);
+
+    switch (m->actionState) {
+        case 0:
+            set_custom_mario_animation(m, LUCY_LEVITATING_START);
+            if (gCurCutsceneTimer < LUCYS_LEVITATION_ACCEPTED && gCurCutsceneTimer > LUCYS_LEVITATION_START_ACCEPTING) {
+                m->mouthState = LUCY_MOUTH_CLOSED;
+                // m->eyeState = LUCY_EYE_OPEN;
+            } else if (gCurCutsceneTimer < LUCYS_LEVITATION_ACCEPTED) {
+                m->mouthState = LUCY_MOUTH_OPEN;
+                // m->eyeState = LUCY_EYE_OPEN;
+            } else if (gCurCutsceneTimer == LUCYS_LEVITATION_NIRVANA) {
+                m->mouthState = LUCY_MOUTH_HAPPY_OPEN;
+                m->eyeState = LUCY_EYE_HALF;
+            } else if (gCurCutsceneTimer > LUCYS_LEVITATION_NIRVANA) {
+                m->mouthState = LUCY_MOUTH_HAPPY_OPEN;
+                // m->eyeState = LUCY_EYE_OPEN;
+            } else {
+                m->mouthState = LUCY_MOUTH_CLOSED;
+                m->eyeState = LUCY_EYE_SHUT;
+            }
+            if (is_anim_at_end(m)) m->actionState = 1;
+            break;
+        case 1:
+        default:
+            set_custom_mario_animation(m, LUCY_LEVITATING);
+            m->mouthState = LUCY_MOUTH_HAPPY_OPEN;
+            m->eyeState = LUCY_EYE_OPEN;
+    }
+
     return FALSE;
 }
 
@@ -2969,6 +3102,7 @@ s32 mario_execute_cutscene_action(struct MarioState *m) {
         case ACT_TEMPLE_1_INTRO:             cancel = act_temple_1_intro(m);             break;
         case ACT_CAMP_INTRO:                 cancel = act_camp_intro(m);                 break;
         case ACT_ORB_REVEAL:                 cancel = act_orb_reveal(m);                 break;
+        case ACT_LUCYS_LEVITATION:           cancel = act_lucys_levitation(m);                 break;
     }
     /* clang-format on */
 

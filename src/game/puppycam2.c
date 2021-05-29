@@ -634,15 +634,6 @@ static void puppycam_view_height_offset(void)
     }
 }
 
-/// Multiply vector 'dest' by a
-void *vec3f_mul(Vec3f dest, f32 a)
-{
-    dest[0] *= a;
-    dest[1] *= a;
-    dest[2] *= a;
-    return dest; //! warning: function returns address of local variable
-}
-
 /// Get length of vector 'a'
 f32 vec3f_length(Vec3f a)
 {
@@ -653,14 +644,6 @@ f32 vec3f_length(Vec3f a)
 f32 vec3f_dot(Vec3f a, Vec3f b)
 {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-}
-
-/// Make 'dest' the difference of vectors a and b.
-void *vec3f_dif(Vec3f dest, Vec3f a, Vec3f b) {
-    dest[0] = a[0] - b[0];
-    dest[1] = a[1] - b[1];
-    dest[2] = a[2] - b[2];
-    return dest; //! warning: function returns address of local variable
 }
 
 //Raycasting
@@ -690,8 +673,8 @@ s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface 
     vec3f_add(v1, norm);
     vec3f_add(v2, norm);
 
-    vec3f_dif(e1, v1, v0);
-    vec3f_dif(e2, v2, v0);
+    vec3f_diff(e1, v1, v0);
+    vec3f_diff(e2, v2, v0);
 
     vec3f_cross(h, dir, e2);
 
@@ -703,7 +686,7 @@ s32 ray_surface_intersect(Vec3f orig, Vec3f dir, f32 dir_length, struct Surface 
     // Check if we're making contact with the surface
     f = 1.0f / a;
 
-    vec3f_dif(s, orig, v0);
+    vec3f_diff(s, orig, v0);
     u = f * vec3f_dot(s, h);
     if (u < 0.0f || u > 1.0f)
         return FALSE;
@@ -1490,7 +1473,7 @@ void orb_reveal_cutscene(void) {
     sCutsceneVp.vp.vtrans[0] = 640;
     sCutsceneVp.vp.vtrans[1] = 480;
     override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
-    gCloseClip = TRUE;
+    gCloseClip = 2;
 
 // #ifdef CDEBUG
 //     if (
@@ -1505,6 +1488,7 @@ void orb_reveal_cutscene(void) {
 // #endif
 
     if (gCurCutsceneTimer == ORB_REVEAL_BEHIND_LUCY) {
+        gCloseClip = 0;
         set_fov_function(CAM_FOV_SET_CUSTOM);
         gCustomFOV = FOV_24MM;
     } else if (gCurCutsceneTimer >= ORB_REVEAL_INSIDE_ORB) {
@@ -1516,6 +1500,7 @@ void orb_reveal_cutscene(void) {
             FOV_120MM
         );
     } else if (gCurCutsceneTimer > ORB_REVEAL_BEHIND_LUCY) {
+        gCloseClip = 0;
         set_fov_function(CAM_FOV_SET_CUSTOM);
         gCustomFOV = get_relative_position_between_ranges(
             gCurCutsceneTimer,
@@ -1545,7 +1530,46 @@ void orb_reveal_cutscene(void) {
         vec3s_copy(gPuppyCam.focus, final_orb_reveal[gCurCutsceneTimer][1]);
         gPuppyCam.yaw = calculate_yaws(gPuppyCam.pos, gPuppyCam.focus);
     }
+}
 
+void lucys_levitation_cutscene(void) {
+    sCutsceneVp.vp.vscale[0] = 640;
+    sCutsceneVp.vp.vscale[1] = 360;
+    sCutsceneVp.vp.vtrans[0] = 640;
+    sCutsceneVp.vp.vtrans[1] = 480;
+    override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
+    set_fov_function(CAM_FOV_SET_CUSTOM);
+    gCustomFOV = FOV_150MM;
+    gCloseClip = 2;
+    // gCloseClip = 2;
+
+
+    // if (gCurCutsceneTimer == ORB_REVEAL_FINAL_FRAME - 1) {
+    //     gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
+    //     gPuppyCam.yawTarget = gPuppyCam.yaw;
+    //     vec3s_copy(gPuppyCam.pos, final_orb_reveal[gCurCutsceneTimer][0]);
+    //     vec3s_copy(gPuppyCam.focus, final_orb_reveal[gCurCutsceneTimer][1]);
+    // } else if (gCurCutsceneTimer >= ORB_REVEAL_FINAL_FRAME) {
+    //     gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
+    //     gPuppyCam.yawTarget = gPuppyCam.yaw;
+    //     gCloseClip = FALSE;
+    //     set_current_cutscene(NO_CUTSCENE);
+    //     set_fov_45();
+    //     set_fov_function(CAM_FOV_DEFAULT);
+    // } else {
+        // vec3s_copy(gPuppyCam.pos, final_orb_reveal[gCurCutsceneTimer][0]);
+        // vec3s_copy(gPuppyCam.focus, final_orb_reveal[gCurCutsceneTimer][1]);
+        // gPuppyCam.yaw = calculate_yaws(gPuppyCam.pos, gPuppyCam.focus);
+    // }
+    // vec3s_copy(gPuppyCam.focus, gMarioState->pos);
+    vec3s_copy(gPuppyCam.pos, final_orb_reveal[109][0]);
+    // vec3s_copy(gPuppyCam.focus, final_orb_reveal[109][1]);
+    gPuppyCam.focus[0] = (s16)gFinalOrbPos[0];
+    gPuppyCam.focus[1] = (s16)gFinalOrbPos[1];
+    gPuppyCam.focus[2] = (s16)gFinalOrbPos[2];
+    gPuppyCam.yaw = calculate_yaws(gPuppyCam.pos, gPuppyCam.focus);
+    gPuppyCam.yawTarget = gPuppyCam.yaw;
+    gPuppyCam.flags &= ~PUPPYCAM_BEHAVIOUR_COLLISION;
 }
 
 void puppycam_handle_cutscene(void) {
@@ -1567,6 +1591,9 @@ void puppycam_handle_cutscene(void) {
             break;
         case CUTSCENE_ORB_REVEAL:
             orb_reveal_cutscene();
+            break;
+        case CUTSCENE_LUCYS_LEVITATION:
+            lucys_levitation_cutscene();
             break;
         default:
             if (sSavedZoomSet != 4) {
