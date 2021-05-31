@@ -2627,7 +2627,7 @@ layer_jump .layer_C4E
   chan_end
 
   .layer_F27:
-  layer_note1 39, 0x15e, 127
+  layer_note1 39, 0x15e, 45
   layer_end
 
   .sound_peach_thanks_to_you:
@@ -2638,7 +2638,7 @@ layer_jump .layer_C4E
   chan_end
 
   .layer_F37:
-  layer_note1 39, 0xb4, 127
+  layer_note1 39, 0xb4, 80
   layer_end
 
   .sound_peach_thank_you_mario:
@@ -2649,7 +2649,7 @@ layer_jump .layer_C4E
   chan_end
 
   .layer_F47:
-  layer_note1 39, 0x64, 127
+  layer_note1 39, 0x64, 60
   layer_end
 
   .sound_peach_something_special:

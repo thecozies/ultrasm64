@@ -1732,7 +1732,7 @@ static void intro_cutscene_jump_out_of_pipe(struct MarioState *m) {
             sound_banks_enable(SEQ_PLAYER_SFX, SOUND_BANKS_DISABLED_DURING_INTRO_CUTSCENE);
             play_mario_landing_sound(m, SOUND_ACTION_TERRAIN_LANDING);
 #ifndef VERSION_JP
-            play_sound(SOUND_MARIO_HAHA, m->marioObj->header.gfx.cameraToObject);
+            play_sound(SOUND_LUCY_SEES_ORB, m->marioObj->header.gfx.cameraToObject);
 #endif
             advance_cutscene_step(m);
         }
@@ -2179,7 +2179,9 @@ s32 act_temple_1_intro(struct MarioState *m) {
         m->marioObj->header.gfx.angle[1] = m->faceAngle[1];
     }
 
-    if (gCurCutsceneTimer == 584) m->actionState = 3;
+    if (gCurCutsceneTimer == 575) play_sound(SOUND_LUCY_DOOR_SHUTS,  m->marioObj->header.gfx.cameraToObject);
+    else if (gCurCutsceneTimer == 584) m->actionState = 3;
+
     if (gCurCutsceneTimer > TEMPLE_INTRO_DOOR_SLAM_LUCY_NOTICE) {
         if (gCurCutsceneTimer < TEMPLE_INTRO_LUCY_CLOSE_UP) {
             m->mouthState = LUCY_MOUTH_OPEN;
@@ -2250,11 +2252,15 @@ s32 act_camp_intro(struct MarioState *m) {
             m->eyeState = LUCY_EYE_OPEN;
             m->mouthState = LUCY_MOUTH_CLOSED;
             m->actionState = 1;
+            play_sound(SOUND_LUCY_SEES_ORB, m->marioObj->header.gfx.cameraToObject);
         }
         break;
 
     case 1:
-        if (gCurCutsceneTimer > CUTSCENE_INTRO_LUCY_LOOKS_OVER + 5) m->mouthState = LUCY_MOUTH_OPEN;
+        if (gCurCutsceneTimer > CUTSCENE_INTRO_LUCY_LOOKS_OVER + 5) {
+            m->mouthState = LUCY_MOUTH_OPEN;
+            // play_sound(SOUND_LUCY_SEES_ORB, m->marioObj->header.gfx.cameraToObject);
+        }
         else m->mouthState = LUCY_MOUTH_CLOSED;
 
         set_custom_mario_animation(m, LUCY_SITTING_LOOKING_OVER_ANIM);
@@ -2309,6 +2315,10 @@ s32 act_orb_reveal(struct MarioState *m) {
         m->faceAngle[1] = DEGREES(90);
         m->marioObj->header.gfx.angle[1] = m->faceAngle[1];
         m->actionState = 0;
+    }
+
+    if (gCurCutsceneTimer == ORB_REVEAL_INSIDE_ORB - 8) {
+        play_sound(SOUND_LUCY_SEES_ORB, m->marioObj->header.gfx.cameraToObject);
     }
 
     switch (m->actionState) {
@@ -2559,7 +2569,7 @@ static void end_peach_cutscene_dialog_1(struct MarioState *m) {
 #endif
             set_cutscene_message(160, 227, 1, 60);
 #ifndef VERSION_JP
-            play_sound(SOUND_PEACH_POWER_OF_THE_STARS, sEndPeachObj->header.gfx.cameraToObject);
+            play_sound(SOUND_LUCY_SEES_ORB, sEndPeachObj->header.gfx.cameraToObject);
 #endif
             break;
 
@@ -2599,7 +2609,7 @@ static void end_peach_cutscene_dialog_2(struct MarioState *m) {
 #endif
             set_cutscene_message(160, 227, 2, 30);
 #ifndef VERSION_JP
-            play_sound(SOUND_PEACH_THANKS_TO_YOU, sEndPeachObj->header.gfx.cameraToObject);
+            play_sound(SOUND_LUCY_DOOR_SHUTS, sEndPeachObj->header.gfx.cameraToObject);
 #endif
             break;
 
@@ -2618,7 +2628,7 @@ static void end_peach_cutscene_dialog_2(struct MarioState *m) {
 #endif
             set_cutscene_message(160, 227, 3, 30);
 #ifndef VERSION_JP
-            play_sound(SOUND_PEACH_THANK_YOU_MARIO, sEndPeachObj->header.gfx.cameraToObject);
+            play_sound(SOUND_LUCY_FINAL_WOAH, sEndPeachObj->header.gfx.cameraToObject);
 #endif
             break;
 
