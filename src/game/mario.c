@@ -1839,6 +1839,14 @@ void handle_cutscene(void) {
             break;
         case CUTSCENE_SLIDE:
             set_fov_function(CAM_FOV_APP_80);
+            set_pitch_change(get_relative_position_between_ranges(
+                gMarioState->pos[1],
+                7000.0f,
+                -11000.0f,
+                1.0f,
+                0.6f
+            ));
+            // print_text_fmt_int(20, 20, "%d", (s32)gMarioState->pos[1]);
             break;
         case CUTSCENE_END:
             // CTODO
@@ -1876,6 +1884,7 @@ void execute_mario_warp(void) {
             level_trigger_warp(gMarioState, sWarpOp >> 16);
             set_delayed_mario_warp(0);
             set_current_cutscene(NO_CUTSCENE);
+            set_pitch_change(1.0f);
         }
     }
 }

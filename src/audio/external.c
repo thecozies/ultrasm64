@@ -2191,14 +2191,17 @@ void get_currently_playing_sound(u8 bank, u8 *numPlayingSounds, u8 *numSoundsInB
 
 s32 check_bank_playing_sound(u8 bank) {
     u8 i;
-    u8 count = 0;
 
     for (i = 0; i < sMaxChannelsForSoundBank[bank]; i++) {
         if (sCurrentSound[bank][i] != 0xff) {
-            count++;
+            return TRUE;
         }
     }
-    return count > 0;
+    return FALSE;
+}
+
+void set_pitch_change(f32 change) {
+    gPitchChange = change;
 }
 
 /**

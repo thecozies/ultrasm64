@@ -6,6 +6,8 @@
 #include "internal.h"
 #include "playback.h"
 
+extern f32 gPitchChange;
+
 void seq_channel_layer_disable(struct SequenceChannelLayer *seqPlayer);
 void sequence_channel_disable(struct SequenceChannel *seqPlayer);
 void sequence_player_disable(struct SequencePlayer* seqPlayer);
