@@ -33,7 +33,7 @@ extern Lights1 mario_white_v3_lights;
 extern Lights1 mario_shoesides_lights;
 extern Lights1 mario_laces_lights;
 extern Lights1 mario_shoes_logo_lights;
-extern u8 mario_eyes_rgba16[];
+extern u8 lucy_eyes_open[];
 extern u8 mario_mouth_sad_rgba16[];
 extern u8 mario_eyes_half_open_ci8[];
 extern u8 mario_eyes_half_open_ci8_pal_rgba16[];

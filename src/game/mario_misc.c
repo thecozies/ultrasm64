@@ -667,17 +667,17 @@ Gfx *geo_lucy_eyes(s32 callContext, struct GraphNode *node, UNUSED void *context
 
         switch (gMarioState->eyeState) {
             case LUCY_EYE_HALF:
-                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, lucy_eyes_half_open);
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, lucy_eyes_half_open);
                 break;
             case LUCY_EYE_SHUT:
-                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, lucy_eyes_shut);
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, lucy_eyes_shut);
                 break;
             case LUCY_EYE_WIDE:
-                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, lucy_eyes_wide);
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, lucy_eyes_wide);
                 break;
             case LUCY_EYE_OPEN:
             default:
-                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, mario_eyes_rgba16);
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, lucy_eyes_open);
         }
 
         gSPEndDisplayList(dlHead);
