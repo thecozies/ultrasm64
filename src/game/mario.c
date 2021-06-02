@@ -2039,6 +2039,8 @@ void handle_lucy_blinks(struct MarioState *m) {
             set_lucy_eye_state(m, LUCY_EYE_HALF);
         }
         break;
+    case LUCY_EYE_SAD:
+        if (gCurCutscene == NO_CUTSCENE) set_lucy_eye_state(m, LUCY_EYE_OPEN);
     }
 }
 

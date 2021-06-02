@@ -2187,7 +2187,7 @@ s32 act_temple_1_intro(struct MarioState *m) {
             m->mouthState = LUCY_MOUTH_OPEN;
             m->eyeState = LUCY_EYE_WIDE;
         } else if (gCurCutsceneTimer == TEMPLE_INTRO_LUCY_CLOSE_UP) {
-            m->eyeState = LUCY_EYE_OPEN;
+            m->eyeState = LUCY_EYE_SAD;
         }
     }
 
@@ -2259,12 +2259,14 @@ s32 act_camp_intro(struct MarioState *m) {
     case 1:
         if (gCurCutsceneTimer > CUTSCENE_INTRO_LUCY_LOOKS_OVER + 5) {
             m->mouthState = LUCY_MOUTH_OPEN;
+            m->eyeState = LUCY_EYE_SAD;
             // play_sound(SOUND_LUCY_SEES_ORB, m->marioObj->header.gfx.cameraToObject);
         }
         else m->mouthState = LUCY_MOUTH_CLOSED;
 
         set_custom_mario_animation(m, LUCY_SITTING_LOOKING_OVER_ANIM);
         if (gCurCutsceneTimer >= CUTSCENE_INTRO_LUCY_WALKS_OVER) {
+            m->eyeState = LUCY_EYE_OPEN;
             m->actionState = 2;
             m->pos[0] = 149.0f;
             m->pos[2] = CAMP_WALK_OVER_START;
@@ -2353,6 +2355,7 @@ s32 act_orb_reveal(struct MarioState *m) {
         case 2:
             set_custom_mario_animation(m, LUCY_IDLE_ANIM);
             m->mouthState = LUCY_MOUTH_OPEN;
+            m->eyeState = LUCY_EYE_SAD;
             break;
     }
     return FALSE;

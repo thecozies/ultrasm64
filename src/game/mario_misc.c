@@ -675,6 +675,9 @@ Gfx *geo_lucy_eyes(s32 callContext, struct GraphNode *node, UNUSED void *context
             case LUCY_EYE_WIDE:
                 gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, lucy_eyes_wide);
                 break;
+            case LUCY_EYE_SAD:
+                gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, lucy_eyes_sad);
+                break;
             case LUCY_EYE_OPEN:
             default:
                 gDPSetTextureImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, lucy_eyes_open);

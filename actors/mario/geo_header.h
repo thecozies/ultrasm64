@@ -226,6 +226,7 @@ extern Gfx mario_material_revert_render_settings[];
 extern u8 lucy_eyes_half_open[];
 extern u8 lucy_eyes_shut[];
 extern u8 lucy_eyes_wide[];
+extern u8 lucy_eyes_sad[];
 extern u8 lucy_mouth_happy_open[];
 extern u8 lucy_mouth_smile[];
 extern u8 lucy_mouth_open[];
