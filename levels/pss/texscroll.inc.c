@@ -30,7 +30,7 @@ void scroll_sts_mat_pss_dl_waterg_layer5() {
 
 void scroll_pss_dl_a__dehwater_mesh_layer_5_vtx_0() {
 	int i = 0;
-	int count = 77;
+	int count = 66;
 	int width = 64 * 0x20;
 	int height = 64 * 0x20;
 
