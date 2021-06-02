@@ -13,6 +13,8 @@
 #define s2d_font_dropshadow billy_obj_dropshadow
 #define s2d_tex             billy_tex
 #define s2d_kerning_table   billy_kerning_table
+#define s2d_lut             billy_lut
+#define s2d_dl              billy_dl
 extern char s2d_kerning_table[];
 
 // Debug: bypass custom matrix setup
@@ -48,6 +50,9 @@ extern char *proutSprintf(char *dst, const char *src, size_t count);
 // tab glyph width and height
 #define TAB_WIDTH_H TEX_WIDTH * 2
 #define TAB_WIDTH_V TEX_WIDTH / 2
+
+#define seg2virt segmented_to_virtual
+#define IS_RUNNING_ON_EMULATOR (IO_READ(DPC_PIPEBUSY_REG) == 0)
 
 // Texture resolution (pixels on the texture per pixel on the framebuffer)
 #define TEX_RES 1

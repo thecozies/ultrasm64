@@ -10,6 +10,8 @@ int myDegrees = 0;
 uObjMtx final_mtx, rot_mtx;
 int s2d_red = 255, s2d_green = 255, s2d_blue = 255, s2d_alpha = 0;
 int drop_shadow = FALSE;
+int drop_x = 0;
+int drop_y = 0;
 
 Gfx s2d_text_init_dl[] = {
     gsDPPipeSync(),
@@ -37,89 +39,50 @@ Gfx s2d_text_init_dl[] = {
 void s2d_rdp_init(void) {
     gDPPipeSync(gdl_head++);
     gDPSetTextureFilter(gdl_head++, G_TF_POINT);
-    gSPDisplayList(gdl_head++, s2d_text_init_dl);
     gDPSetCycleType(gdl_head++, G_CYC_1CYCLE);
     gDPSetRenderMode(gdl_head++, G_RM_XLU_SPRITE, G_RM_XLU_SPRITE2);
-    gSPObjRenderMode(gdl_head++, G_OBJRM_XLU | G_OBJRM_BILERP);
+    gSPDisplayList(gdl_head++, s2d_text_init_dl);
+    gSPObjRenderMode(gdl_head++, G_OBJRM_XLU);
 }
 
-void setup_font_texture(int idx) {
+void setup_s2d_texture(int idx) {
     gDPPipeSync(gdl_head++);
     gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     gSPObjLoadTxtr(gdl_head++, &s2d_tex[idx]);
 }
 
-// Original Mtx Pipeline
-// Distorts when rotating, but is faster
-// void mtx_pipeline(uObjMtx *m, int x, int y) {
-//     // init
-//     mat2_ident(m, 1);
-//     mat2_ident(&rot_mtx, 1);
-
-//     // create rot matrix
-//     mat2_rotate(&rot_mtx, (myDegrees) * (M_PI / 180.0f));
-//     // scale m
-//     mat2_scale(m, myScale);
-//     mat2_dst_mul(m,m,  &rot_mtx);
-//     mat2_translate(m, x, y);
-
-//     gSPObjMatrix(gdl_head++, m);
-// }
-
-// 0x00000000801658c8 pass
-// 0x0000000080165848 fail
-
-// New matrix pipeline
-// Works with both rotation and scale,
-// but is (probably not noticeably) slower
-void mtx_pipeline2(uObjMtx *m, int x, int y) {
-    // init
-    // Mat4 tmp, scal, translate;
-    Mat4 tmp, scal, translate;
-    // int ioioio = 100;
-    // ioioio++;
-
-    guMtxIdentF(tmp);
-    guScaleF(scal, gS2DScale, gS2DScale, 1.0f);
-    // guRotateF(rot, (f32) myDegrees, 0, 0, 1.0f);
-    guTranslateF(translate, x, y, 0);
-
-    mtxf_mul(tmp, tmp, scal);
-    // mtxf_mul(tmp, tmp, rot);
-    mtxf_mul(tmp, tmp, translate);
-
-    gu_to_gs2dex(m, tmp);
-
-    if (myDegrees != 0) {
-        mat2_translate_vec(m, -(myDegrees) * M_DTOR, 1);
-    }
-
+void mtx_pipeline(uObjMtx *m, int x, int y) {
     gDPPipeSync(gdl_head++);
-    gSPObjMatrix(gdl_head++, m);
+    mat2_ident(m, 1.0f / myScale);
+    mat2_translate(m, x, y);
+    gSPObjSubMatrix(gdl_head++, &m->m.X);
 }
 
 #define CLAMP_0(x) ((x < 0) ? 0 : x)
 
-void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
-    setup_font_texture(c);
+void draw_s2d_dropshadow(char c, int x, int y, uObjMtx *ds) {
+    mtx_pipeline(ds, x, y);
+    setup_s2d_texture(c);
 
-    // mtx_pipeline(mt, x, y);
-    mtx_pipeline2(mt, x, y);
-
-    if (drop_shadow) {
+    if (s2d_red != 0
+        && s2d_green != 0
+        && s2d_blue != 0
+    ) {
         gDPPipeSync(gdl_head++);
         gDPSetEnvColor(gdl_head++,
                    CLAMP_0(s2d_red - 100),
                    CLAMP_0(s2d_green - 100),
                    CLAMP_0(s2d_blue - 100),
                    s2d_alpha);
-        gSPObjSprite(gdl_head++, &s2d_font_dropshadow);
-        gDPPipeSync(gdl_head++);
+        gSPObjRectangleR(gdl_head++, &s2d_font);
         gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
     }
+}
 
-    gDPPipeSync(gdl_head++);
-    gSPObjSprite(gdl_head++, &s2d_font);
+void draw_s2d_glyph(char c, int x, int y, uObjMtx *mt) {
+    mtx_pipeline(mt, x, y);
+    setup_s2d_texture(c);
+    gSPObjRectangleR(gdl_head++, &s2d_font);
 }
 
 

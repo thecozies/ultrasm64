@@ -1,9 +1,12 @@
 #include <ultra64.h>
 #include <PR/gs2dex.h>
 #include <PR/gu.h>
+#include "config.h"
 
 #define ftoq FTOFIX32
 #define qtof FIX32TOF
+
+#define qu510(n)                      ((u16)((n)*0x0400))
 
 void mat2_dst_mul(uObjMtx *dst, uObjMtx *m1, uObjMtx *m2) {
 	dst->m.A = ftoq((qtof(m1->m.A) * qtof(m2->m.A)) + (qtof(m1->m.B) * qtof(m2->m.C)));
@@ -26,16 +29,21 @@ void mat2_copy(uObjMtx *dst, uObjMtx *src) {
 	dst->m.D = src->m.D;
 	dst->m.X = src->m.X;
 	dst->m.Y = src->m.Y;
+	dst->m.BaseScaleX = src->m.BaseScaleX;
+	dst->m.BaseScaleY = src->m.BaseScaleY;
 }
 
 void mat2_ident(uObjMtx *dst, float scale) {
-	dst->m.A = (1 << 16);
+	dst->m.A = FTOFIX32(scale);
+	dst->m.D = FTOFIX32(scale);
 	dst->m.B = 0;
 	dst->m.C = 0;
-	dst->m.D = (1 << 16);
 
 	dst->m.X = 0;
 	dst->m.Y = 0;
+
+	dst->m.BaseScaleX = qu510(scale);
+	dst->m.BaseScaleY = qu510(scale);
 }
 // cos -sin sin cos
 void mat2_rotate(uObjMtx *dst, f32 degrees) {
@@ -55,9 +63,10 @@ void mat2_add(uObjMtx *m1, uObjMtx *m2) {
 
 void mat2_scale(uObjMtx *dst, int scale) {
 	dst->m.A *= scale;
-	// dst->m.B *= scale;
-	// dst->m.C *= scale;
 	dst->m.D *= scale;
+
+	dst->m.BaseScaleX *= scale;
+	dst->m.BaseScaleY *= scale;
 }
 
 #define	FTOFIX16(x)	(long)((x) * (float)(1 << 2))
@@ -84,10 +93,10 @@ void mat2_translate_vec(uObjMtx *m, f32 degrees, f32 mag) {
 
 typedef float Mat4[4][4];
 void gu_to_gs2dex(uObjMtx *m1, Mat4 m2) {
-	m1->m.A = FTOFIX32(m2[0][0]);
+	m1->m.A = m1->m.BaseScaleX = FTOFIX32(m2[0][0]);
 	m1->m.B = FTOFIX32(m2[0][1]);
 	m1->m.C = FTOFIX32(m2[1][0]);
-	m1->m.D = FTOFIX32(m2[1][1]);
+	m1->m.D = m1->m.BaseScaleY = FTOFIX32(m2[1][1]);
 
 	m1->m.X = FTOFIX16(m2[3][0]);
 	m1->m.Y = FTOFIX16(m2[3][1]);

@@ -9,6 +9,11 @@
 #include "s2d_print.h"
 #include "s2d_ustdlib.h"
 
+enum S2DPrintModes {
+	MODE_DRAW_DROPSHADOW,
+	MODE_DRAW_NORMALTEXT,
+};
+
 static int s2d_width(const char *str, int line, int len) {
 	char *p = str;
 	int tmp_len = 0;
@@ -73,7 +78,7 @@ static int s2d_width(const char *str, int line, int len) {
 	return width;
 }
 
-static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len) {
+static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, int len, int mode) {
 	char *p = str;
 	int tmp_len = 0;
 	int orig_x = x;
@@ -81,9 +86,13 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 	int line = 0;
 	int dummyAlpha = 0;
 
-	if (*p == '\0') return;
+	if (*p == '\0') return 0;
 
-	s2d_rdp_init();
+	if (IS_RUNNING_ON_EMULATOR) {
+		s2d_rdp_init();
+	} else {
+		f3d_rdp_init();
+	}
 
 	// resets parameters
 	s2d_red = s2d_green = s2d_blue = 255;
@@ -142,8 +151,11 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 				dummyAlpha = s2d_atoi(p, &p);
 				break;
 			case CH_DROPSHADOW:
-				drop_shadow ^= 1;
-				// CH_SKIP(p);
+				drop_shadow = 1;
+				CH_SKIP(p);
+				drop_x = s2d_atoi(p, &p);
+				CH_SKIP(p);	CH_SKIP(p);
+				drop_y = s2d_atoi(p, &p);
 				break;
 			case '\n':
 				line++;
@@ -177,7 +189,19 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 				break;
 			default:
 				if (current_char != '\0' && current_char != CH_SEPARATOR) {
-					draw_s2d_glyph(current_char, x, y, (buf++));
+					if (IS_RUNNING_ON_EMULATOR) {
+						if (drop_shadow && mode == MODE_DRAW_DROPSHADOW) {
+							draw_s2d_dropshadow(current_char, x + drop_x, y + drop_y, (buf++));
+						} else if (mode == MODE_DRAW_NORMALTEXT) {
+							draw_s2d_glyph(current_char, x, y, (buf++));
+						}
+					} else {
+						if (drop_shadow && mode == MODE_DRAW_DROPSHADOW) {
+							draw_f3d_dropshadow(current_char, x + drop_x, y + drop_y, (buf++));
+						} else if (mode == MODE_DRAW_NORMALTEXT) {
+							draw_f3d_glyph(current_char, x, y, (buf++));
+						}
+					}
 					// (x += (int) (((f32) s2d_kerning_table[current_char]) * gS2DScale));
 					(x += s2d_kerning_table[(int) current_char] * (gS2DScale * 1.2f));
 				}
@@ -188,28 +212,41 @@ static void s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, 
 	} while (tmp_len < len);
 	gS2DScale = 1.0f;
 	myDegrees = 0;
+	return 0;
+}
+
+static int s2d_string_has_dropshadow(const char *str) {
+	char *p = str;
+
+	int result = FALSE;
+
+	do {if (*p == CH_DROPSHADOW) result = TRUE;} while (*(++p) != '\0');
+
+	return result;
 }
 
 void s2d_print(int x, int y, int align, const char *str, uObjMtx *buf) {
 	if (s2d_check_align(align) != 0) return;
 	if (s2d_check_str(str)     != 0) return;
 
-	s2d_snprint(x, y, align, str, buf, s2d_strlen(str));
+	s2d_snprint(x, y, align, str, buf, s2d_strlen(str), MODE_DRAW_DROPSHADOW);
+	s2d_snprint(x, y, align, str, buf, s2d_strlen(str), MODE_DRAW_NORMALTEXT);
 }
 
 void s2d_print_alloc(int x, int y, int align, const char *str) {
 	int len;
-	uObjMtx *b;
-
 	if (s2d_check_align(align) != 0) return;
 	if (s2d_check_str(str)     != 0) return;
 
 	len = s2d_strlen(str);
 
-	b = alloc(sizeof(uObjMtx) * len * 8);
-	if (b == NULL) return;
+	if (s2d_string_has_dropshadow(str)) {
+		uObjMtx *b = alloc(sizeof(uObjMtx) * len);
+		s2d_snprint(x, y, align, str, b, len, MODE_DRAW_DROPSHADOW);
+	}
 
-	s2d_snprint(x, y, align, str, b, len);
+	uObjMtx *b2 = alloc(sizeof(uObjMtx) * len);
+	s2d_snprint(x, y, align, str, b2, len, MODE_DRAW_NORMALTEXT);
 }
 
 void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int *pos) {
@@ -220,9 +257,34 @@ void s2d_type_print(int x, int y, int align, const char *str, uObjMtx *buf, int 
 
 	len = s2d_strlen(str);
 
-	s2d_snprint(x, y, align, str, buf, *pos);
+	s2d_snprint(x, y, align, str, buf, *pos, MODE_DRAW_DROPSHADOW);
+
+	int result = s2d_snprint(x, y, align, str, buf, *pos, MODE_DRAW_NORMALTEXT);
 	if (s2d_timer % 2 == 0) {
-		if (*pos < len) {
+		if (*pos < len && result != 1) {
+			(*pos)++;
+		}
+	}
+}
+
+void s2d_type_print_alloc(int x, int y, int align, const char *str, int *pos) {
+	int len;
+
+	if (s2d_check_align(align) != 0) return;
+	if (s2d_check_str(str)     != 0) return;
+
+	len = s2d_strlen(str);
+
+	uObjMtx *b = alloc(sizeof(uObjMtx) * (*pos));
+
+	if (s2d_string_has_dropshadow(str)) {
+		uObjMtx *b_d = alloc(sizeof(uObjMtx) * (*pos));
+		s2d_snprint(x, y, align, str, b_d, *pos, MODE_DRAW_DROPSHADOW);
+	}
+
+	int result = s2d_snprint(x, y, align, str, b, *pos, MODE_DRAW_NORMALTEXT);
+	if (s2d_timer % 2 == 0) {
+		if (*pos < len && result != 1) {
 			(*pos)++;
 		}
 	}

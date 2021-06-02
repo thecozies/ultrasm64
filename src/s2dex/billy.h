@@ -101,3 +101,7 @@ extern uObjMtx billy_mtx;
 extern uObjSprite billy_obj;
 extern uObjSprite billy_obj_dropshadow;
 extern void call_billy_sprite_dl(int idx, int x, int y, uObjMtx *buffer, int buf_idx);
+extern u8 *billy_lut[];
+extern Vtx billy_vtx[4];
+extern Gfx billy_dl[];
+
