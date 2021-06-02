@@ -1826,6 +1826,8 @@ void set_current_cutscene(s32 cutscene) {
     if (gCurCutscene == CUTSCENE_SLIDE && cutscene != CUTSCENE_SLIDE) {
         set_fov_function(CAM_FOV_DEFAULT);
         gCloseClip = FALSE;
+    } else if (cutscene == CUTSCENE_SLIDE && gCurCutscene != CUTSCENE_SLIDE) {
+        play_sound(SOUND_PEACH_SOMETHING_SPECIAL, gMarioState->marioObj->header.gfx.cameraToObject);
     } else if (gCurCutscene != cutscene) {
         gCurCutsceneTimer = 0;
     }
@@ -1837,17 +1839,19 @@ void handle_cutscene(void) {
         case CUTSCENE_INTRO:
             set_fov_function(CAM_FOV_SET_45);
             break;
-        case CUTSCENE_SLIDE:
+        case CUTSCENE_SLIDE: {
+            f32 warble = (sinf(((f32)gGlobalTimer) * 0.3f) * 0.1f) - 0.05;
             set_fov_function(CAM_FOV_APP_80);
             set_pitch_change(get_relative_position_between_ranges(
                 gMarioState->pos[1],
                 7000.0f,
                 -11000.0f,
                 1.0f,
-                0.6f
+                0.5f + warble
             ));
             // print_text_fmt_int(20, 20, "%d", (s32)gMarioState->pos[1]);
             break;
+        }
         case CUTSCENE_END:
             // CTODO
             break;
