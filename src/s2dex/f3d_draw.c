@@ -12,8 +12,10 @@ void f3d_rdp_init(void) {
     create_dl_ortho_matrix();
     // create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0f, 1.0f, 1.0f);
     gDPPipeSync(gdl_head++);
+    gDPSetTextureFilter(gdl_head++, G_TF_POINT);
     gDPSetCycleType(gdl_head++, G_CYC_1CYCLE);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+    gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER);
     // gDPSetRenderMode(gdl_head++, G_RM_XLU_SPRITE, G_RM_XLU_SPRITE2);
     // gDPSetTextureLUT(gdl_head++, G_TT_NONE);
     // gDPSetTexturePersp(gdl_head++, G_TP_NONE);
@@ -23,6 +25,7 @@ void f3d_rdp_init(void) {
         0, 0, 0, ENVIRONMENT,
         TEXEL0, 0, ENVIRONMENT, 0
     );
+    gDPPipeSync(gdl_head++);
 }
 
 void setup_f3d_texture(int idx) {
@@ -94,7 +97,7 @@ void set_up_texture(int idx) {
 	gDPPipeSync(gDisplayListHead++);
     gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
 
-	gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
+	gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
 	gSPTexture(gDisplayListHead++, 65535, 65535, 0, 0, 1);
 	gDPTileSync(gDisplayListHead++);
 
@@ -123,15 +126,15 @@ void draw_f3d_glyph(char c, int x, int y, uObjMtx *mt) {
 		SCREEN_HEIGHT - y,
 		0.0f
 	);
-
     guScale(scaleMtx, myScale, myScale, 1.0f);
+
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(scaleMtx), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
-    // gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, BORDER_HEIGHT, BORDER_HEIGHT, SCREEN_WIDTH - BORDER_HEIGHT, SCREEN_HEIGHT - BORDER_HEIGHT);
     set_up_texture(c);
     gSPDisplayList(gDisplayListHead++, s2d_dl);
-    gDPPipeSync(gdl_head++);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    gDPPipeSync(gdl_head++);
 }
 
 #undef s

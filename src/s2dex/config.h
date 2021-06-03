@@ -51,8 +51,15 @@ extern char *proutSprintf(char *dst, const char *src, size_t count);
 #define TAB_WIDTH_H TEX_WIDTH * 2
 #define TAB_WIDTH_V TEX_WIDTH / 2
 
+#define FORCE_CONSOLE_COMPATIBILITY 1
+
 #define seg2virt segmented_to_virtual
+
+#if FORCE_CONSOLE_COMPATIBILITY
+#define IS_RUNNING_ON_EMULATOR (0)
+#else
 #define IS_RUNNING_ON_EMULATOR (IO_READ(DPC_PIPEBUSY_REG) == 0)
+#endif
 
 // Texture resolution (pixels on the texture per pixel on the framebuffer)
 #define TEX_RES 1
