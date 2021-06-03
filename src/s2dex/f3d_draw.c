@@ -25,6 +25,7 @@ void f3d_rdp_init(void) {
         0, 0, 0, ENVIRONMENT,
         TEXEL0, 0, ENVIRONMENT, 0
     );
+    gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPPipeSync(gdl_head++);
 }
 
@@ -96,8 +97,6 @@ void draw_f3d_dropshadow(char c, int x, int y, uObjMtx *ds) {
 void set_up_texture(int idx) {
 	gDPPipeSync(gDisplayListHead++);
     gDPSetEnvColor(gdl_head++, s2d_red, s2d_green, s2d_blue, s2d_alpha);
-
-	gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
 	gSPTexture(gDisplayListHead++, 65535, 65535, 0, 0, 1);
 	gDPTileSync(gDisplayListHead++);
 
@@ -112,6 +111,8 @@ void set_up_texture(int idx) {
 	gSPEndDisplayList(gDisplayListHead);
 }
 
+#define ORTHO_TRI_CENTER_OFFSET 8.0f
+
 void draw_f3d_glyph(char c, int x, int y, uObjMtx *mt) {
     Mtx *matrix = (Mtx *) alloc_display_list(sizeof(Mtx));
     Mtx *scaleMtx = (Mtx *) alloc_display_list(sizeof(Mtx));
@@ -122,11 +123,11 @@ void draw_f3d_glyph(char c, int x, int y, uObjMtx *mt) {
 
 	guTranslate(
 		matrix,
-		x,
-		SCREEN_HEIGHT - y,
+		x + (ORTHO_TRI_CENTER_OFFSET * gS2DScale),
+		SCREEN_HEIGHT - y - (ORTHO_TRI_CENTER_OFFSET * gS2DScale),
 		0.0f
 	);
-    guScale(scaleMtx, myScale, myScale, 1.0f);
+    guScale(scaleMtx, gS2DScale, gS2DScale, 1.0f);
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(scaleMtx), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
