@@ -113,7 +113,6 @@ const GeoLayout pss_area_0[] = {
 					GEO_ASM(0, geo_backdrop_move),
 					GEO_TRANSLATE_NODE_WITH_DL(0, 0, 0, 0, sky_dome_sky_dome_001_mesh_2),
 					GEO_DISPLAY_LIST(0, sky_dome_material_revert_render_settings2),
-					GEO_ASM(0, geo_zbuffer_clear),
 					GEO_BRANCH(1, pss_area_0_geo),
 					GEO_RENDER_OBJ(),
 					GEO_ASM(ENVFX_SNOW_WATER, geo_envfx_main),

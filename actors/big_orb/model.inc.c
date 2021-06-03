@@ -1165,7 +1165,7 @@ Gfx mat_big_orb_hazy_layer5[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(SHADE, 0, ENVIRONMENT, 0, SHADE, 0, ENVIRONMENT, 0, SHADE, 0, ENVIRONMENT, 0, SHADE, 0, ENVIRONMENT, 0),
 	gsSPClearGeometryMode(G_ZBUFFER | G_LIGHTING),
-	gsDPSetRenderMode(G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2),
+	gsDPSetRenderMode(G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsSPSetLights1(big_orb_hazy_layer5_lights),
 	gsSPEndDisplayList(),

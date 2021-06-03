@@ -1158,6 +1158,7 @@ Gfx sky_dome_sky_dome_001_mesh_layer_0_tri_0[] = {
 Gfx mat_sky_dome_big_sky_dome_mat[] = {
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(PRIMITIVE, 0, TEXEL0, 0, 0, 0, 0, 1, PRIMITIVE, 0, TEXEL0, 0, 0, 0, 0, 1),
+	gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
 	gsSPClearGeometryMode(G_ZBUFFER),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetPrimColor(0, 0, 202, 188, 240, 255),
@@ -1166,6 +1167,7 @@ Gfx mat_sky_dome_big_sky_dome_mat[] = {
 
 Gfx mat_revert_sky_dome_big_sky_dome_mat[] = {
 	gsDPPipeSync(),
+	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
 	gsSPSetGeometryMode(G_ZBUFFER),
 	gsSPEndDisplayList(),
 };
