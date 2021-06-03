@@ -31,7 +31,7 @@
 #define SCREEN_HEIGHT 240
 
 // Border Height Define for NTSC Versions
-#define BORDER_HEIGHT 0
+#define BORDER_HEIGHT 1
 // #ifdef TARGET_N64
 // #ifndef VERSION_EU
 // #else

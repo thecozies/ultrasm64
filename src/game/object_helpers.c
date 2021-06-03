@@ -263,8 +263,8 @@ Gfx *geo_zbuffer_clear(s32 callContext, UNUSED struct GraphNode *node, UNUSED Ma
         gDPSetColorImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH, gPhysicalZBuffer);
         gDPSetFillColor(dlHead++,
                         GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
-        gDPFillRectangle(dlHead++, 0, BORDER_HEIGHT, SCREEN_WIDTH - 1,
-                        SCREEN_HEIGHT - 1 - BORDER_HEIGHT);
+        gDPFillRectangle(dlHead++, BORDER_HEIGHT, BORDER_HEIGHT, SCREEN_WIDTH - BORDER_HEIGHT,
+                        SCREEN_HEIGHT - BORDER_HEIGHT);
         gDPPipeSync(dlHead++);
         gDPSetCycleType(dlHead++, G_CYC_1CYCLE);
         gDPSetColorImage(dlHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH,
