@@ -28,6 +28,7 @@
 #include "s2dex/init.h"
 #include "s2dex/s2d_draw.h"
 #include "s2dex/s2d_print.h"
+#include "s2dex/s2d_buffer.h"
 #include "puppycam2.h"
 
 // - **Air:**
@@ -140,7 +141,8 @@ char sExtraText[EXTRA_TIPS][198] = {
     "Press " TITLE_PAUSE " to see these tips again." 
 };
 
-char sSkipText[] = "Skip: " TITLE_PAUSE;
+char sSkipText[] =  TITLE_A_BUTTON ": Next tip";
+char sSkipTextPause[] =  TITLE_PAUSE ": End tutorial";
 char sPauseText[] =
     COLOR_GREY "Up: " COLOR_WHITE "Prev tip\n"
     COLOR_GREY "Down: " COLOR_WHITE "Next tip";
@@ -174,6 +176,9 @@ s32 gTutorialDone = FALSE;
 u8 sCurTip = 0;
 s32 sTutorialSkipQueued = FALSE;
 u8 sTutorialFadeAlpha = 0;
+s32 sSkipToLast = FALSE;
+// s32 sAskedForTutorial = FALSE;
+// s32 sFadeAskTutorial = FALSE;
 
 void reset_tutorial(void) {
     sTutorialTitleFadeState = STARTING_SHOW_TUTORIAL;
@@ -298,16 +303,32 @@ void render_skip_text(void) {
     drop_shadow = FALSE;
 
 
-    if (sCurrentTutorial == TUTORIAL_EXTRA) sSkipTimer = sTutorialFadeAlpha;
+    if (
+        sSkipToLast ||
+        (
+            sCurrentTutorial == TUTORIAL_CAMERA &&
+            sCurTip >= CAMERA_TIPS - 1 &&
+            sTutorialFadeState == FADING_SHOW_TUTORIAL
+        )
+    ) sSkipTimer = sTutorialFadeAlpha;
     else sSkipTimer = MIN(255, sSkipTimer + 3);
 
     s2d_alpha = sSkipTimer;
 
     s2d_print_alloc(
-        GFX_DIMENSIONS_FROM_RIGHT_EDGE(20),
-        SCREEN_HEIGHT - 20,
+        GFX_DIMENSIONS_FROM_RIGHT_EDGE(35),
+        SCREEN_HEIGHT - 35,
         ALIGN_RIGHT,
         sSkipText
+    );
+
+    gS2DScale = 0.5f;
+    s2d_alpha = (int)((f32)s2d_alpha * 0.6f);
+    s2d_print_alloc(
+        GFX_DIMENSIONS_FROM_RIGHT_EDGE(10),
+        SCREEN_HEIGHT - 20,
+        ALIGN_RIGHT,
+        sSkipTextPause
     );
 }
 
@@ -358,30 +379,42 @@ void render_pause_hint_text(void) {
 
 // CTODO: Add pause to skip for intro tutorial
 s32 render_tutorial(s32 onPause) {
+    static u8 askTutorialTimer = 0;
     if (!onPause) {
         if (gTutorialDone) return FALSE;
 
-        // CTODO: Remove debug
-        if (
-            gPlayer1Controller->buttonDown & START_BUTTON &&
-            gPlayer1Controller->buttonPressed & A_BUTTON
-        ) {
-            sCurTip = 0;
-            sCurrentTutorial = TUTORIAL_EXTRA;
+        if (sCurrentTutorial != TUTORIAL_EXTRA) {
+            if (askTutorialTimer > 20 && gPlayer1Controller->buttonPressed & START_BUTTON) {
+                sSkipToLast = TRUE;
+                intro_advance_tip();
+            }
+
+            if (askTutorialTimer > 20 && gPlayer1Controller->buttonPressed & A_BUTTON) intro_advance_tip();
+            askTutorialTimer++;
         }
 
-        if (gPlayer1Controller->buttonPressed & START_BUTTON) intro_advance_tip();
-
+        if (sSkipToLast && sTutorialFadeTimer == 1) {
+            sCurTip = CAMERA_TIPS + 1;
+            sCurrentTutorial = TUTORIAL_CAMERA;
+            sSkipToLast = FALSE;
+        }
 
         if (sCurTip >= sNumTips[sCurrentTutorial]) {
             sCurrentTutorial++;
             sCurTip = 0;
         }
 
+
         if (sCurrentTutorial > TUTORIAL_EXTRA) {
             gTutorialDone = TRUE;
             set_current_fog_state(0);
             return FALSE;
+        } else if (sCurrentTutorial == TUTORIAL_EXTRA) {
+            // CTODO: Keep idle anim
+            gTimeStopState &= ~(TIME_STOP_MARIO_AND_DOORS);
+        } else {
+            // CTODO: Keep idle anim
+            gTimeStopState |= TIME_STOP_MARIO_AND_DOORS;
         }
         set_current_fog_state(5);
     }
@@ -406,7 +439,9 @@ s32 render_tutorial(s32 onPause) {
         TRUE
     )) render_tutorial_title();
 
-    if (!onPause) render_skip_text();
+    if (!onPause) {
+        if (sCurrentTutorial != TUTORIAL_EXTRA) render_skip_text();
+    }
     else render_pause_hint_text();
 
     s2d_stop();
