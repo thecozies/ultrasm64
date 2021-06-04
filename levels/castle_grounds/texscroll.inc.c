@@ -167,7 +167,7 @@ void scroll_castle_grounds_dl_afakewater_mesh_layer_5_vtx_0() {
 
 void scroll_castle_grounds_dl_aBlob_001_mesh_layer_5_vtx_0() {
 	int i = 0;
-	int count = 100;
+	int count = 86;
 	int width = 64 * 0x20;
 	int height = 64 * 0x20;
 
@@ -211,7 +211,7 @@ void scroll_castle_grounds_dl_awaters_006_mesh_layer_5_vtx_0() {
 
 void scroll_castle_grounds_dl_aBlob_mesh_layer_5_vtx_0() {
 	int i = 0;
-	int count = 138;
+	int count = 116;
 	int width = 64 * 0x20;
 	int height = 64 * 0x20;
 
@@ -255,7 +255,7 @@ void scroll_castle_grounds_dl_apurpwaters_007_mesh_layer_5_vtx_0() {
 
 void scroll_castle_grounds_dl_apurpwaters_001_mesh_layer_5_vtx_0() {
 	int i = 0;
-	int count = 298;
+	int count = 250;
 	int width = 64 * 0x20;
 	int height = 64 * 0x20;
 
