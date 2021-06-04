@@ -1,8 +1,9 @@
+extern void scroll_castle_grounds_dl_awaters_mesh_layer_5_vtx_0();
 extern void scroll_sts_mat_castle_grounds_dl_water_layer5();
 extern void scroll_sts_mat_castle_grounds_dl_trippy_warp_brick_layer1();
-extern void scroll_castle_grounds_dl_awaters_mesh_layer_5_vtx_0();
 extern void scroll_castle_grounds_dl_awaters_001_mesh_layer_5_vtx_0();
 extern void scroll_castle_grounds_dl_awaters_002_mesh_layer_5_vtx_0();
+extern void scroll_castle_grounds_dl_awaters_005_mesh_layer_5_vtx_0();
 extern void scroll_castle_grounds_dl_awaters_green_mesh_layer_5_vtx_0();
 extern void scroll_castle_grounds_dl_awaters_004_mesh_layer_5_vtx_0();
 extern void scroll_castle_grounds_dl_awaters_003_mesh_layer_5_vtx_0();
