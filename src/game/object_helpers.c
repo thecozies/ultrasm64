@@ -467,6 +467,13 @@ f32 lateral_dist_between_objects(struct Object *obj1, struct Object *obj2) {
     return sqrtf(dx * dx + dz * dz);
 }
 
+f32 lateral_dist_between_object_home_and_object(struct Object *obj1, struct Object *obj2) {
+    f32 dx = obj1->oHomeX - obj2->oPosX;
+    f32 dz = obj1->oHomeZ - obj2->oPosZ;
+
+    return sqrtf(dx * dx + dz * dz);
+}
+
 f32 dist_between_objects(struct Object *obj1, struct Object *obj2) {
     f32 dx = obj1->oPosX - obj2->oPosX;
     f32 dy = obj1->oPosY - obj2->oPosY;

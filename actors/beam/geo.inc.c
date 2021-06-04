@@ -1,7 +1,7 @@
 #include "src/game/envfx_snow.h"
 
 const GeoLayout beam_geo[] = {
-	GEO_NODE_START(),
+	GEO_CULLING_RADIUS(850),
 	GEO_OPEN_NODE(),
 		GEO_TRANSLATE_ROTATE(LAYER_OPAQUE, 0, 3, 0, 0, 90, 0),
 		GEO_OPEN_NODE(),

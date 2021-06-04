@@ -1,7 +1,7 @@
 #include "src/game/envfx_snow.h"
 
 const GeoLayout big_orb_geo[] = {
-	GEO_NODE_START(),
+	GEO_CULLING_RADIUS(850),
 	GEO_OPEN_NODE(),
 		GEO_SHADOW(0, 135, 65),
 		GEO_OPEN_NODE(),

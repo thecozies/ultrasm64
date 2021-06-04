@@ -17,6 +17,7 @@
 // #include "actors/group8.h"
 
 void set_orb_locked_to_cam(void) {
+    // CTODO: Set flag and use GEO_ASM to move pos
     // f32 x = 50.0f * sins(gPuppyCam.yaw);
     // f32 z = 50.0f * coss(gPuppyCam.yaw);
 
@@ -26,22 +27,23 @@ void set_orb_locked_to_cam(void) {
     o->oPosX = gPuppyCam.pos[0];
     o->oPosY = gPuppyCam.pos[1];
     o->oPosZ = gPuppyCam.pos[2];
+    o->header.gfx.scale[0] = -1.0f;
+}
+
+void set_orb_to_home(void) {
+    o->header.gfx.scale[0] = 1.0f;
+    o->oPosX = o->oHomeX;
+    o->oPosY = o->oHomeY;
+    o->oPosZ = o->oHomeZ;
 }
 
 void bhv_big_orb_interact(void) {
     f32 distFromCam = dist_between_object_and_camera(o);
-    f32 lateralDistFromMario = lateral_dist_between_objects(o, gMarioObject);
+    f32 lateralDistFromMario = lateral_dist_between_object_home_and_object(o, gMarioObject);
     gOverrideLOD = distFromCam < BIG_ORB_RADIUS;
 
-    if (gOverrideLOD) {
-        o->oPosX = gPuppyCam.pos[0];
-        o->oPosY = gPuppyCam.pos[1];
-        o->oPosZ = gPuppyCam.pos[2];
-    } else {
-        o->oPosX = o->oHomeX;
-        o->oPosY = lateralDistFromMario < BIG_ORB_RADIUS ? gMarioState->pos[1] : o->oHomeY;
-        o->oPosZ = o->oHomeZ;
-    }
+    if (gOverrideLOD) set_orb_locked_to_cam();
+    else set_orb_to_home();
 
     // if (lateralDistFromMario <= 1500.0f) {
     //     o->header.gfx.scale[1] = approach_f32_asymptotic(
@@ -75,20 +77,15 @@ void bhv_big_orb_interact(void) {
 }
 
 void bhv_big_orb_reveal(void) {
-    s8 insideOrb = gCurCutsceneTimer >= ORB_REVEAL_INSIDE_ORB;
+    s8 insideOrb = gCurCutsceneTimer >= ORB_REVEAL_INSIDE_ORB + 1;
     u8 increaseAmt = insideOrb ? 140 : 180;
 
     f32 maxMag = ABS((sinf(((f32)gCurCutsceneTimer) * 0.1f) * 25.0f) + 5.0f);
 
     o->oOpacity = (sinf(((f32)gCurCutsceneTimer) * 0.25f) * maxMag) + increaseAmt;
 
-    if (insideOrb) {
-        set_orb_locked_to_cam();
-    } else {
-        o->oPosX = o->oHomeX;
-        o->oPosY = o->oHomeY;
-        o->oPosZ = o->oHomeZ;
-    }
+    if (insideOrb) set_orb_locked_to_cam();
+    else set_orb_to_home();
 }
 
 void bhv_big_orb_levitation(void) {
@@ -103,9 +100,8 @@ void bhv_big_orb_levitation(void) {
     f32 maxMag = ABS((sinf(((f32)gCurCutsceneTimer) * 0.1f) * 25.0f) + 5.0f);
     o->oOpacity = (sinf(((f32)gCurCutsceneTimer) * 0.25f) * maxMag) + increaseAmt;
 
-    if (gOverrideLOD) {
-        set_orb_locked_to_cam();
-    } else {
+    if (gOverrideLOD) set_orb_locked_to_cam();
+    else {
     }
 }
 

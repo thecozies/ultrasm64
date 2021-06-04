@@ -1,7 +1,7 @@
 extern const GeoLayout big_orb_geo[];
 extern Lights1 big_orb_hazy_layer5_lights;
 extern u8 big_orb_orb_medium_rgba16[];
-extern Vtx big_orb_big_orb_orb_mesh_layer_5_vtx_0[382];
+extern Vtx big_orb_big_orb_orb_mesh_layer_5_vtx_0[191];
 extern Gfx big_orb_big_orb_orb_mesh_layer_5_tri_0[];
 extern Vtx big_orb_big_orb_haze_mesh_layer_5_vtx_0[17];
 extern Gfx big_orb_big_orb_haze_mesh_layer_5_tri_0[];
