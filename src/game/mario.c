@@ -2140,6 +2140,8 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             }
         }
 
+        if (gMarioState->paralyzed) gMarioState->input = 0;
+
         // The function can loop through many action shifts in one frame,
         // which can lead to unexpected sub-frame behavior. Could potentially hang
         // if a loop of actions were found, but there has not been a situation found.
@@ -2329,11 +2331,13 @@ void init_mario(void) {
     }
 
     gMarioState->lightObj = NULL;
+    gMarioState->paralyzed = FALSE;
 }
 
 void init_mario_from_save_file(void) {
     gGameStarted = TRUE;
     gMarioState->unk00 = 0;
+    gMarioState->paralyzed = FALSE;
     gMarioState->flags = 0;
     gMarioState->action = 0;
     gMarioState->spawnInfo = &gPlayerSpawnInfos[0];

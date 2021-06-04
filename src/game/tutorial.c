@@ -408,13 +408,12 @@ s32 render_tutorial(s32 onPause) {
         if (sCurrentTutorial > TUTORIAL_EXTRA) {
             gTutorialDone = TRUE;
             set_current_fog_state(0);
+            gMarioState->paralyzed = FALSE;
             return FALSE;
         } else if (sCurrentTutorial == TUTORIAL_EXTRA) {
-            // CTODO: Keep idle anim
-            gTimeStopState &= ~(TIME_STOP_MARIO_AND_DOORS);
+            gMarioState->paralyzed = FALSE;
         } else {
-            // CTODO: Keep idle anim
-            gTimeStopState |= TIME_STOP_MARIO_AND_DOORS;
+            gMarioState->paralyzed = TRUE;
         }
         set_current_fog_state(5);
     }
