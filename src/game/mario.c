@@ -37,6 +37,7 @@
 #include "actors/group0.h"
 #include "engine/behavior_script.h"
 #include "rendering_graph_node.h"
+#include "tutorial.h"
 
 u32 unused80339F10;
 s8 filler80339F1C[20];
@@ -2069,6 +2070,16 @@ void handle_lucy_action_mouths(struct MarioState *m) {
     // }
 }
 
+#ifdef CDEBUG
+void reset_intro_statuses(void) {
+    gWaitingToStart = FALSE;
+    gStartWaitTimer = 0;
+    gTutorialDone = TRUE;
+    set_current_fog_state(0);
+    set_current_cutscene(0);
+}
+#endif
+
 /**
  * Main function for executing Mario's behavior.
  */
@@ -2095,8 +2106,13 @@ s32 execute_mario_action(UNUSED struct Object *o) {
 
         if (gMarioState->controller->buttonPressed & D_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
             if (gMarioState->lastParaGroup != -1) gParasitesGrabbed[gMarioState->lastParaGroup]++;
-            set_current_cutscene(0);
+            reset_intro_statuses();
             initiate_warp(LEVEL_PSS, 0, 0x0A, 0);
+        }
+
+        if (gMarioState->controller->buttonPressed & R_JPAD && gMarioState->controller->buttonDown & L_TRIG) {
+            reset_intro_statuses();
+            initiate_warp(LEVEL_CASTLE_GROUNDS, 2, 0x0A, 0);
         }
 
         if (gMarioState->controller->buttonDown & A_BUTTON && gMarioState->controller->buttonDown & L_TRIG) {

@@ -391,6 +391,9 @@ s32 render_tutorial(s32 onPause) {
 
             if (askTutorialTimer > 20 && gPlayer1Controller->buttonPressed & A_BUTTON) intro_advance_tip();
             askTutorialTimer++;
+        } else if (sTutorialFadeState == FULL_SHOW_TUTORIAL && gPlayer1Controller->buttonPressed & START_BUTTON) {
+            set_next_tutorial_state(FADING_SHOW_TUTORIAL, 255, &sTutorialFadeState, &sTutorialFadeTimer, FALSE);
+            set_next_tutorial_state(FADING_SHOW_TUTORIAL, 255, &sTutorialTitleFadeState, &sTutorialTitleFadeTimer, FALSE);
         }
 
         if (sSkipToLast && sTutorialFadeTimer == 1) {
