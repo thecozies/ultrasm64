@@ -105,9 +105,18 @@ void water_ring_act_collected(void) {
     water_ring_set_scale(avgScale);
 }
 
+#define WATER_RING_VISIBILITY_MAX_FADE 5000.0f
+#define WATER_RING_VISIBILITY_MIN_FADE 4250.0f
+
+#define WATER_RING_VISIBILITY_MAX_FADE_TOWER 2000.0f
+#define WATER_RING_VISIBILITY_MIN_FADE_TOWER 1750.0f
+
 void water_ring_act_not_collected(void) {
     // f32 avgScale = (f32) o->oTimer / 225.0 * 3.0 + 0.5;
     f32 avgScale = (f32) min(30.0, o->oTimer) / 50.0 * 3.0 + 0.5;
+    f32 dist, distPow;
+    f32 minFade = gCurrAreaIndex != 5 ? WATER_RING_VISIBILITY_MIN_FADE : WATER_RING_VISIBILITY_MIN_FADE_TOWER;
+    f32 maxFade = gCurrAreaIndex != 5 ? WATER_RING_VISIBILITY_MAX_FADE : WATER_RING_VISIBILITY_MAX_FADE_TOWER;
 
     //! In this case ringSpawner and ringManager are the same object,
     //  because the Jet Stream Ring Spawner is its own parent object.
@@ -117,9 +126,17 @@ void water_ring_act_not_collected(void) {
     water_ring_check_collection(avgScale, ringManager);
     water_ring_set_scale(avgScale);
 
-    set_object_visibility(o, 10000);
+    // set_object_visibility(o, 5000);
+    dist = dist_between_objects(o, gMarioObject);
+    if (dist >= maxFade) {
+        o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
+    } else {
+        o->header.gfx.node.flags &= ~GRAPH_RENDER_INVISIBLE;
+        distPow = get_relative_position_between_ranges(dist, minFade, maxFade, 1.0f, 0.0f);
+        o->oOpacity = sins(o->oTimer * 0x0800) * 20.0f + 180.0f;
+        if (dist >= minFade) o->oOpacity *= distPow; 
+    }
 
-    o->oOpacity = sins(o->oTimer * 0x0800) * 20.0f + 180.0f;
 
     o->oWaterRingAvgScale = avgScale;
 }
