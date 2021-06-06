@@ -5300,8 +5300,9 @@ void warp_camera(f32 displacementX, f32 displacementY, f32 displacementZ) {
     vec3f_add(gLakituState.curFocus, displacement);
     vec3f_add(gLakituState.goalPos, displacement);
     vec3f_add(gLakituState.goalFocus, displacement);
-    vec3s_copy(gPuppyCam.pos, gLakituState.curPos);
-    vec3s_copy(gPuppyCam.focus, gLakituState.curFocus);
+    vec3f_to_vec3s(gPuppyCam.pos, gLakituState.curPos);
+    vec3f_to_vec3s(gPuppyCam.focus, gLakituState.curFocus);
+
     gPuppyCam.targetFloorHeight += displacementY; 
     gPuppyCam.lastTargetFloorHeight += displacementY;
     gPuppyCam.floorY[0] += displacementY;
