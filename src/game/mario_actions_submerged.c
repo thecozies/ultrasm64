@@ -987,7 +987,7 @@ s32 act_water_ground_pound(struct MarioState *m) {
         if (stepResult == WATER_STEP_HIT_FLOOR) {
             play_mario_heavy_landing_sound(m, SOUND_ACTION_TERRAIN_HEAVY_LANDING);
             if (!check_fall_damage(m, ACT_HARD_BACKWARD_GROUND_KB)) {
-                m->particleFlags |= PARTICLE_MIST_CIRCLE | PARTICLE_HORIZONTAL_STAR;
+                m->particleFlags |= PARTICLE_MIST_CIRCLE;
                 set_mario_action(m, ACT_WATER_IDLE, 0);
             }
             set_camera_shake_from_hit(SHAKE_GROUND_POUND);

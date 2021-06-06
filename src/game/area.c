@@ -83,6 +83,7 @@ s32 gCameraWaterLevel = FLOOR_LOWER_LIMIT;
 u8 sFadeAlpha = 0;
 f32 sFPS = 0.0f;
 s8 gGameIsLagging = FALSE;
+u32 gFramesWithoutLag = 30;
 
 char sGameTitle[18] = "Lucy's\nLevitation";
 char sPressStartToPlay[11] = "Press Start";
@@ -166,6 +167,8 @@ void calculate_and_update_fps(void)
 
     sFPS = ((f32)FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
     gGameIsLagging = gIsConsole ? sFPS > GAME_IS_LAGGING_WAIT_FOR_CALC && sFPS < GAME_IS_LAGGING_THRESHOLD : FALSE;
+    if (gGameIsLagging) gFramesWithoutLag = 0;
+    else gFramesWithoutLag = MIN(1000, gFramesWithoutLag + 1);
 }
 
 void print_fps(s32 x, s32 y)
@@ -550,6 +553,7 @@ void render_intro_start_text(void) {
     else if (gGoalFadeState == NO_GOAL && gWaitingToStart) set_next_goal_state(STARTING_SHOW_GOAL, 0);
 
     if (update_text_fade(50, 100000, 45)) {
+        if (gPlayer1Controller->buttonPressed & L_TRIG) gWidescreen = !gWidescreen;
         s2d_print_deferred(
             SCREEN_WIDTH - 10,
             (int) (SCREEN_HEIGHT - 60),

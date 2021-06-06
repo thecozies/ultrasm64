@@ -2195,6 +2195,9 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             }
         }
 
+        // if (gGameIsLagging || gFramesWithoutLag < 5) gMarioState->particleFlags = 0;
+        gMarioState->particleFlags = 0;
+
         sink_mario_in_quicksand(gMarioState);
         squish_mario_model(gMarioState);
         set_submerged_cam_preset_and_spawn_bubbles(gMarioState);

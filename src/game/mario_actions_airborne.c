@@ -452,7 +452,7 @@ u32 common_air_action_step(struct MarioState *m, u32 landAction, s32 animation, 
                     // that the final quarter step detects a ledge, but you are
                     // not able to ledge grab it.
                     if (m->forwardVel >= 38.0f) {
-                        m->particleFlags |= PARTICLE_VERTICAL_STAR;
+                        // m->particleFlags |= PARTICLE_VERTICAL_STAR;
                         set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
                     } else {
                         if (m->forwardVel > 8.0f) {
@@ -847,7 +847,7 @@ s32 act_dive(struct MarioState *m) {
                 m->vel[1] = 0.0f;
             }
 
-            m->particleFlags |= PARTICLE_VERTICAL_STAR;
+            // m->particleFlags |= PARTICLE_VERTICAL_STAR;
             drop_and_set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
             break;
 
@@ -1126,7 +1126,7 @@ s32 act_ground_pound(struct MarioState *m) {
                 } else {
                     play_mario_heavy_landing_sound(m, SOUND_ACTION_TERRAIN_HEAVY_LANDING);
                     if (!check_fall_damage(m, ACT_HARD_BACKWARD_GROUND_KB)) {
-                        m->particleFlags |= PARTICLE_MIST_CIRCLE | PARTICLE_HORIZONTAL_STAR;
+                        m->particleFlags |= PARTICLE_MIST_CIRCLE;
                         set_mario_action(m, ACT_GROUND_POUND_LAND, 0);
                     }
                 }
@@ -1139,7 +1139,7 @@ s32 act_ground_pound(struct MarioState *m) {
                 //     m->vel[1] = 0.0f;
                 // }
 
-                // m->particleFlags |= PARTICLE_VERTICAL_STAR;
+                m->particleFlags |= PARTICLE_VERTICAL_STAR;
                 // set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
                 break;
 
@@ -1547,7 +1547,7 @@ s32 act_air_hit_wall(struct MarioState *m) {
             m->vel[1] = 0.0f;
         }
 
-        m->particleFlags |= PARTICLE_VERTICAL_STAR;
+        // m->particleFlags |= PARTICLE_VERTICAL_STAR;
         return set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
     } else {
         m->wallKickTimer = 5;
@@ -1674,7 +1674,7 @@ s32 act_butt_slide_air(struct MarioState *m) {
             if (m->vel[1] > 0.0f) {
                 m->vel[1] = 0.0f;
             }
-            m->particleFlags |= PARTICLE_VERTICAL_STAR;
+            // m->particleFlags |= PARTICLE_VERTICAL_STAR;
             set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
             break;
 
@@ -1715,7 +1715,7 @@ s32 act_hold_butt_slide_air(struct MarioState *m) {
             }
 
             mario_drop_held_object(m);
-            m->particleFlags |= PARTICLE_VERTICAL_STAR;
+            // m->particleFlags |= PARTICLE_VERTICAL_STAR;
             set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
             break;
 
@@ -1839,7 +1839,7 @@ s32 act_slide_kick(struct MarioState *m) {
                 m->vel[1] = 0.0f;
             }
 
-            m->particleFlags |= PARTICLE_VERTICAL_STAR;
+            // m->particleFlags |= PARTICLE_VERTICAL_STAR;
 
             set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
             break;
@@ -1923,7 +1923,7 @@ s32 act_shot_from_cannon(struct MarioState *m) {
                 m->vel[1] = 0.0f;
             }
 
-            m->particleFlags |= PARTICLE_VERTICAL_STAR;
+            // m->particleFlags |= PARTICLE_VERTICAL_STAR;
             set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
             set_camera_mode(m->area->camera, m->area->camera->defMode, 1);
             break;
@@ -2027,7 +2027,7 @@ s32 act_flying(struct MarioState *m) {
                                                         : SOUND_ACTION_BONK,
                            m->marioObj->header.gfx.cameraToObject);
 
-                m->particleFlags |= PARTICLE_VERTICAL_STAR;
+                // m->particleFlags |= PARTICLE_VERTICAL_STAR;
                 set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
                 set_camera_mode(m->area->camera, m->area->camera->defMode, 1);
             } else {
@@ -2322,7 +2322,7 @@ s32 act_special_triple_jump(struct MarioState *m) {
                     // that the final quarter step detects a ledge, but you are
                     // not able to ledge grab it.
                     if (m->forwardVel >= 38.0f) {
-                        m->particleFlags |= PARTICLE_VERTICAL_STAR;
+                        // m->particleFlags |= PARTICLE_VERTICAL_STAR;
                         set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
                     } else {
                         if (m->forwardVel > 8.0f) {
