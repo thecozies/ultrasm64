@@ -694,10 +694,11 @@ static void geo_process_background(struct GraphNodeBackground *node) {
         Gfx *gfxStart = alloc_display_list(sizeof(Gfx) * 8);
 #endif
         Gfx *gfx = gfxStart;
+        s32 bgColor = GPACK_RGBA5551(gGlobalFog.r, gGlobalFog.g, gGlobalFog.b, 1);
 
         gDPPipeSync(gfx++);
         gDPSetCycleType(gfx++, G_CYC_FILL);
-        gDPSetFillColor(gfx++, node->background);
+        gDPSetFillColor(gfx++, (bgColor << 16) | bgColor);
         gDPFillRectangle(gfx++, GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), BORDER_HEIGHT,
         GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - BORDER_HEIGHT - 1);
         gDPPipeSync(gfx++);
