@@ -120,6 +120,52 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
     G_RM_AA_ZB_XLU_INTER2,
     } } };
 
+/* Rendermode settings for cycle 1 for all 8 layers. */
+struct RenderModeContainer renderModeTable_1Cycle_no_AA[2] = { { {
+    G_RM_OPA_SURF,
+    G_RM_OPA_SURF,
+    G_RM_OPA_SURF,
+    G_RM_OPA_SURF,
+    G_RM_TEX_EDGE,
+    G_RM_XLU_SURF,
+    G_RM_XLU_SURF,
+    G_RM_XLU_SURF,
+    } },
+    { {
+    /* z-buffered */
+    G_RM_ZB_OPA_SURF,
+    G_RM_ZB_OPA_SURF,
+    G_RM_ZB_OPA_DECAL,
+    G_RM_AA_ZB_OPA_INTER,
+    G_RM_AA_ZB_TEX_EDGE,
+    G_RM_ZB_XLU_SURF,
+    G_RM_ZB_XLU_DECAL,
+    G_RM_AA_ZB_XLU_INTER,
+    } } };
+
+/* Rendermode settings for cycle 2 for all 8 layers. */
+struct RenderModeContainer renderModeTable_2Cycle_no_AA[2] = { { {
+    G_RM_OPA_SURF2,
+    G_RM_OPA_SURF2,
+    G_RM_OPA_SURF2,
+    G_RM_OPA_SURF2,
+    G_RM_TEX_EDGE2,
+    G_RM_XLU_SURF2,
+    G_RM_XLU_SURF2,
+    G_RM_XLU_SURF2,
+    } },
+    { {
+    /* z-buffered */
+    G_RM_ZB_OPA_SURF2,
+    G_RM_ZB_OPA_SURF2,
+    G_RM_ZB_OPA_DECAL2,
+    G_RM_AA_ZB_OPA_INTER2,
+    G_RM_AA_ZB_TEX_EDGE2,
+    G_RM_ZB_XLU_SURF2,
+    G_RM_ZB_XLU_DECAL2,
+    G_RM_AA_ZB_XLU_INTER2,
+    } } };
+
 struct GraphNodeRoot *gCurGraphNodeRoot = NULL;
 struct GraphNodeMasterList *gCurGraphNodeMasterList = NULL;
 struct GraphNodePerspective *gCurGraphNodeCamFrustum = NULL;
@@ -157,8 +203,8 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     struct DisplayListNode *currList;
     s32 i;
     s32 enableZBuffer = (node->node.flags & GRAPH_RENDER_Z_BUFFER) != 0;
-    struct RenderModeContainer *modeList = &renderModeTable_1Cycle[enableZBuffer];
-    struct RenderModeContainer *mode2List = &renderModeTable_2Cycle[enableZBuffer];
+    struct RenderModeContainer *modeList = gGameIsLagging ? &renderModeTable_1Cycle_no_AA[enableZBuffer] : &renderModeTable_1Cycle[enableZBuffer];
+    struct RenderModeContainer *mode2List = gGameIsLagging ? &renderModeTable_2Cycle_no_AA[enableZBuffer] : &renderModeTable_2Cycle[enableZBuffer];
 
     // @bug This is where the LookAt values should be calculated but aren't.
     // As a result, environment mapping is broken on Fast3DEX2 without the
@@ -331,6 +377,8 @@ static void geo_process_level_of_detail(struct GraphNodeLevelOfDetail *node) {
 	f32 distanceFromCam = -gMatStack[gMatStackIndex][3][2];
     if (gOverrideLOD) {
         distanceFromCam = -10001.0f;
+    } else if (!gIsConsole) {
+        distanceFromCam = 0.0f;
     }
     if ((f32)node->minDistance <= distanceFromCam && distanceFromCam < (f32)node->maxDistance) {
         if (node->node.children != 0) {

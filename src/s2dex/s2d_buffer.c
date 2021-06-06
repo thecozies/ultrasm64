@@ -10,6 +10,7 @@ struct s2d_pos {
 	int y;
     int align;
     u8 alpha;
+	f32 size;
 };
 static struct s2d_pos s2d_positions[S2D_BUFFERSIZE];
 static char *s2d_charBuffer[S2D_BUFFERSIZE];
@@ -29,12 +30,13 @@ void s2d_reset_defer_index(void) {
 // 	s2d_charBuffer_index++;
 // }
 
-void s2d_print_deferred(int x, int y, int align, u8 alpha, const char *str) {
+void s2d_print_deferred(int x, int y, int align, u8 alpha, f32 size, const char *str) {
 	s2d_charBuffer[s2d_charBuffer_index] = str;
 	s2d_positions[s2d_charBuffer_index].x = x;
 	s2d_positions[s2d_charBuffer_index].y = y;
 	s2d_positions[s2d_charBuffer_index].align = align;
 	s2d_positions[s2d_charBuffer_index].alpha = alpha;
+	s2d_positions[s2d_charBuffer_index].size = size;
 
 	s2d_charBuffer_index++;
 }
@@ -42,6 +44,7 @@ void s2d_print_deferred(int x, int y, int align, u8 alpha, const char *str) {
 void s2d_handle_deferred(void) {
 	for (int i = 0; i < s2d_charBuffer_index; i++) {
         s2d_alpha = s2d_positions[i].alpha;
+		gS2DScale = s2d_positions[i].size;
 		s2d_print_alloc(
 			s2d_positions[i].x,
 			s2d_positions[i].y,

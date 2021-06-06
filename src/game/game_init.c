@@ -74,6 +74,7 @@ struct Controller *gPlayer3Controller = &gControllers[2];
 struct DemoInput *gCurrDemoInput = NULL; // demo input sequence
 u16 gDemoInputListID = 0;
 struct DemoInput gRecordedDemoInput = { 0 }; // possibly removed in EU. TODO: Check
+s8 gIsConsole = TRUE;
 
 /**
  * Initializes the Reality Display Processor (RDP).
@@ -641,6 +642,8 @@ void thread5_game_loop(UNUSED void *arg) {
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
     set_sound_mode(save_file_get_sound_mode());
     rendering_init();
+
+    gIsConsole = IO_READ(DPC_PIPEBUSY_REG) != 0;
 
     while (TRUE) {
         // if the reset timer is active, run the process to reset the game.

@@ -141,6 +141,7 @@ extern s16 gPauseScreenMode;
 extern s16 gSaveOptSelectIndex;
 extern s16 gGoalFadeState;
 extern s8 gIntroTextShowing;
+extern s8 gGameIsLagging;
 
 extern struct SpawnInfo *gMarioSpawnInfo;
 

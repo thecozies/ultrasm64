@@ -58,7 +58,7 @@ extern char *proutSprintf(char *dst, const char *src, size_t count);
 #if FORCE_CONSOLE_COMPATIBILITY
 #define IS_RUNNING_ON_EMULATOR (0)
 #else
-#define IS_RUNNING_ON_EMULATOR (IO_READ(DPC_PIPEBUSY_REG) == 0)
+#define IS_RUNNING_ON_EMULATOR (!gIsConsole)
 #endif
 
 // Texture resolution (pixels on the texture per pixel on the framebuffer)

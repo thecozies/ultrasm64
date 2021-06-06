@@ -81,6 +81,8 @@ s32 gIntroTextTimer = 0;
 // s32 gIntroTextPos = 0;
 s32 gCameraWaterLevel = FLOOR_LOWER_LIMIT;
 u8 sFadeAlpha = 0;
+f32 sFPS = 0.0f;
+s8 gGameIsLagging = FALSE;
 
 char sGameTitle[18] = "Lucy's\nLevitation";
 char sPressStartToPlay[11] = "Press Start";
@@ -143,6 +145,8 @@ const char *gNoControllerMsg[] = {
 
 
 #define FRAMETIME_COUNT 30
+#define GAME_IS_LAGGING_WAIT_FOR_CALC 15.0f
+#define GAME_IS_LAGGING_THRESHOLD 27.0f
 
 OSTime frameTimes[FRAMETIME_COUNT];
 u8 curFrameTimeIndex = 0;
@@ -150,7 +154,7 @@ u8 curFrameTimeIndex = 0;
 #include "PR/os_convert.h"
 
 // Call once per frame
-f32 calculate_and_update_fps()
+void calculate_and_update_fps(void)
 {
     OSTime newTime = osGetTime();
     OSTime oldTime = frameTimes[curFrameTimeIndex];
@@ -160,17 +164,16 @@ f32 calculate_and_update_fps()
     if (curFrameTimeIndex >= FRAMETIME_COUNT)
         curFrameTimeIndex = 0;
 
-
-    return ((f32)FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
+    sFPS = ((f32)FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
+    gGameIsLagging = gIsConsole ? sFPS > GAME_IS_LAGGING_WAIT_FOR_CALC && sFPS < GAME_IS_LAGGING_THRESHOLD : FALSE;
 }
 
 void print_fps(s32 x, s32 y)
 {
-    f32 fps = calculate_and_update_fps();
     char text[10];
-
-    sprintf(text, "%2.2f", fps);
-    s2d_print_deferred(x, y, ALIGN_LEFT, 140, text);
+    sprintf(text, "%2.2f", sFPS);
+    if (gGameIsLagging) s2d_print_deferred(x, y, ALIGN_LEFT, 255, 0.5f, text);
+    else s2d_print_deferred(x, y, ALIGN_LEFT, 100, 0.5f, text);
 }
 
 void override_viewport_and_clip(Vp *a, Vp *b, u8 c, u8 d, u8 e) {
@@ -552,6 +555,7 @@ void render_intro_start_text(void) {
             (int) (SCREEN_HEIGHT - 60),
             ALIGN_RIGHT,
             MIN(150, sFadeAlpha),
+            1.0f,
             sPressStartToPlay
         );
     }
@@ -692,9 +696,10 @@ void render_game(void) {
         // }
         render_goals();
         render_intro_text();
+        calculate_and_update_fps();
 #ifdef CDEBUG
         if (gPlayer1Controller->buttonPressed & L_TRIG) sShowFPS = !sShowFPS;
-        if (sShowFPS) {
+        if (sShowFPS && gIsConsole) {
             print_fps(20, 40);
         }
 #endif
