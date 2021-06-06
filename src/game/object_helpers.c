@@ -483,9 +483,9 @@ f32 dist_between_objects(struct Object *obj1, struct Object *obj2) {
 }
 
 f32 dist_between_object_and_camera(struct Object *obj) {
-    f32 dx = obj->oHomeX - gPuppyCam.pos[0];
-    f32 dy = obj->oHomeY - gPuppyCam.pos[1];
-    f32 dz = obj->oHomeZ - gPuppyCam.pos[2];
+    f32 dx = obj->oHomeX - gLakituState.pos[0];
+    f32 dy = obj->oHomeY - gLakituState.pos[1];
+    f32 dz = obj->oHomeZ - gLakituState.pos[2];
 
     return sqrtf(dx * dx + dy * dy + dz * dz);
 }

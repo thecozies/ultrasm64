@@ -11,6 +11,7 @@
 #endif
 
 #define ORB_LOD_MIN  2000
+#define ORB_LOD_MID  3500
 #define ORB_LOD_MAX 10000
 
 const GeoLayout parasite_geo[] = {
@@ -40,10 +41,14 @@ const GeoLayout parasite_geo[] = {
 									GEO_OPEN_NODE(),
 										GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, 0, 0, parasite_haze_mesh_layer_5),
 									GEO_CLOSE_NODE(),
-									GEO_RENDER_RANGE(ORB_LOD_MIN, ORB_LOD_MAX),
+									GEO_RENDER_RANGE(ORB_LOD_MIN, ORB_LOD_MID),
 									GEO_OPEN_NODE(),
 										GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, 0, 0, parasite_orbLOD_mesh_layer_5),
 										GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, 0, 0, parasite_hazeLOD_mesh_layer_5),
+									GEO_CLOSE_NODE(),
+									GEO_RENDER_RANGE(ORB_LOD_MID, ORB_LOD_MAX),
+									GEO_OPEN_NODE(),
+										GEO_ANIMATED_PART(LAYER_ALPHA, 0, 0, 0, parasite_zorbBB_mesh_layer_5),
 									GEO_CLOSE_NODE(),
 								GEO_CLOSE_NODE(),
 							GEO_CLOSE_NODE(),

@@ -9,7 +9,12 @@
 #define o gCurrentObject
 #endif
 
+#include "s2dex/s2d_buffer.h"
+
 #define FIRST_ORB_END_Z -1026.0f
+
+#define FADING_ORB_START_DIST 3450.0f
+#define FADING_ORB_END_DIST 400.0f
 
 void bhv_parasite_interact(void) {
     if (gCurrLevelNum == LEVEL_PSS) {
@@ -17,17 +22,21 @@ void bhv_parasite_interact(void) {
             if (gMarioCurrentRoom == o->oRoom) o->oOpacity = MIN(255, o->oOpacity + 10);
             else o->oOpacity = 0;
         } else {
-            if (o->oDistanceToMario >= 5000) o->oOpacity = 0;
-            else if (o->oDistanceToMario < 300) o->oOpacity = 255;
+            f32 camDist = dist_between_object_and_camera(o);
+            if (camDist >= FADING_ORB_START_DIST) o->oOpacity = 0;
+            else if (camDist < FADING_ORB_END_DIST) o->oOpacity = 255;
             else {
                 o->oOpacity = (int) MAX(0, MIN(255, get_relative_position_between_ranges(
-                    o->oDistanceToMario,
-                    300.0f,
-                    5000.0f,
-                    255,
-                    0
+                    camDist,
+                    FADING_ORB_END_DIST,
+                    FADING_ORB_START_DIST,
+                    255.0f,
+                    0.0f
                 )));
             }
+            
+            if (o->oOpacity == 0) cur_obj_hide();
+            else cur_obj_unhide();
         }
     }
     else if (gCurrLevelNum == LEVEL_CASTLE_COURTYARD) {
