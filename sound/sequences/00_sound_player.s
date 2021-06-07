@@ -2170,7 +2170,7 @@ chan_setlayer 0, .layer_CB2
 chan_end
 
 .layer_CB2:
-layer_transpose -3
+layer_transpose 0
 layer_note1 39, 0x1c, 127
 layer_end
 
@@ -2490,7 +2490,7 @@ layer_jump .layer_C4E
   chan_end
 
   .layer_E6F:
-  layer_note1 39, 0x2bc, 127
+  layer_note1 39, 0x208, 127
   layer_end
 
   .sound_mario_waha:
@@ -3280,7 +3280,7 @@ chan_setlayer 0, .layer_1344
 chan_end
 
 .layer_1344:
-layer_note1 39, 0x7f, 115
+layer_note1 39, 0x7f, 127
 layer_end
 
 .sound_general_platform:

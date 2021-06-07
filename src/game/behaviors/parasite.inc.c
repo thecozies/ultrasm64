@@ -76,7 +76,7 @@ void bhv_parasite_interact(void) {
     if (obj_check_if_collided_with_object(o, gMarioObject)) {
         set_collected_para((o->oBehParams >> 16) & 0xFF);
 
-        play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+        play_sound(SOUND_ORB_COLLECT, gGlobalSoundSource);
         cur_obj_change_action(1);
     }
 }

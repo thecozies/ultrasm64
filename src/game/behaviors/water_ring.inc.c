@@ -56,7 +56,7 @@ void water_ring_interaction(void) {
     ringSpawner = o->parentObj;
     if (ringSpawner) {
         ringSpawner->oWaterRingSpawnerRingsCollected++;
-        play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+        play_sound(SOUND_RING_COLLECT, gGlobalSoundSource);
     }
 
     o->oIntangibleTimer = 20;

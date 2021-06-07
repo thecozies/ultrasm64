@@ -9573,7 +9573,7 @@ BAD_RETURN(s32) peach_letter_text(UNUSED struct Camera *c) {
 
 #ifndef VERSION_JP
 BAD_RETURN(s32) play_sound_peach_reading_letter(UNUSED struct Camera *c) {
-    play_sound(SOUND_PEACH_DEAR_MARIO, gGlobalSoundSource);
+    play_sound(SOUND_DOOR_OPENING, gGlobalSoundSource);
 }
 #endif
 

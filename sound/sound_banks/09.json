@@ -55,7 +55,7 @@
         "inst5": {
             "release_rate": 208,
             "envelope": "envelope0",
-            "sound": "05_camera_shutter"
+            "sound": "05_cam_whoosh_custom"
         },
         "inst6": {
             "release_rate": 208,

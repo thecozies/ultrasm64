@@ -138,7 +138,7 @@
         "inst12": {
             "release_rate": 133,
             "envelope": "envelope9",
-            "sound": "0C"
+            "sound": "0C_wow_high_custom"
         },
         "inst13": {
             "release_rate": 152,

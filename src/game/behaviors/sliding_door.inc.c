@@ -7,6 +7,9 @@
 #include "game/area.h"
 #include "game/mario.h"
 #include "object_fields.h"
+#include "sounds.h"
+#include "game/spawn_sound.h"
+#include "external.h"
 
 #define o gCurrentObject
 #endif
@@ -95,7 +98,7 @@ void sliding_door_act_1(void) {
     {
         o->oPosY += (direction * SLIDING_DOOR_VELY_1);
         spawn_mist_particles_variable(0, 0, 45.0f);
-        // play sound for door getting loose
+        if (o->oTimer == SLIDING_DOOR_TIME_START + 1) play_sound(SOUND_DOOR_OPENING, gGlobalSoundSource);
     }
 
     if (ABS(o->oHomeY - o->oPosY) >= SLIDING_DOOR_GOAL_HEIGHT)

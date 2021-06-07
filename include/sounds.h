@@ -222,7 +222,7 @@
 #define SOUND_MARIO_PUNCH_WAH                    /* 0x24248080 */ SOUND_ARG_LOAD(SOUND_BANK_VOICE,    0x24, 0x80, SOUND_NO_PRIORITY_LOSS | SOUND_DISCRETE)
 
 /* Mario Sound Effects (US/EU only) */
-#define SOUND_PEACH_DEAR_MARIO                   /* 0x2428FF80 */ SOUND_ARG_LOAD(SOUND_BANK_VOICE,    0x28, 0xFF, SOUND_NO_PRIORITY_LOSS | SOUND_DISCRETE)
+#define SOUND_DOOR_OPENING                       /* 0x2428FF80 */ SOUND_ARG_LOAD(SOUND_BANK_VOICE,    0x28, 0xFF, SOUND_NO_PRIORITY_LOSS | SOUND_DISCRETE)
 
 // A random number 0-4 is added to the sound ID before playing, producing one of
 // Yahoo! (60% chance), Waha! (20%), or Yippee! (20%).
@@ -356,7 +356,7 @@
 #define SOUND_GENERAL_BOING2                     /* 0x306D4080 */ SOUND_ARG_LOAD(SOUND_BANK_GENERAL,  0x6D, 0x40, SOUND_DISCRETE) // unverified
 #define SOUND_GENERAL_YOSHI_WALK                 /* 0x306E2080 */ SOUND_ARG_LOAD(SOUND_BANK_GENERAL,  0x6E, 0x20, SOUND_DISCRETE) // unverified
 #define SOUND_GENERAL_ENEMY_ALERT1               /* 0x306F3080 */ SOUND_ARG_LOAD(SOUND_BANK_GENERAL,  0x6F, 0x30, SOUND_DISCRETE) // unverified
-#define SOUND_GENERAL_YOSHI_TALK                 /* 0x30703080 */ SOUND_ARG_LOAD(SOUND_BANK_GENERAL,  0x70, 0x30, SOUND_DISCRETE) // unverified
+#define SOUND_RING_COLLECT                 /* 0x30703080 */ SOUND_ARG_LOAD(SOUND_BANK_GENERAL,  0x70, 0x30, SOUND_DISCRETE) // unverified
 #define SOUND_GENERAL_SPLATTERING                /* 0x30713080 */ SOUND_ARG_LOAD(SOUND_BANK_GENERAL,  0x71, 0x30, SOUND_DISCRETE) // unverified
 #define SOUND_GENERAL_BOING3                     /* 0x30720000 */ SOUND_ARG_LOAD(SOUND_BANK_GENERAL,  0x72, 0x00, 0) // unverified, unused
 #define SOUND_GENERAL_GRAND_STAR                 /* 0x30730080 */ SOUND_ARG_LOAD(SOUND_BANK_GENERAL,  0x73, 0x00, SOUND_DISCRETE) // unverified
@@ -544,7 +544,7 @@
 #define SOUND_MENU_CAMERA_UNUSED1                /* 0x701B0000 */ SOUND_ARG_LOAD(SOUND_BANK_MENU,     0x1B, 0x00, 0) // unverified, unused
 #define SOUND_MENU_CAMERA_UNUSED2                /* 0x701C0000 */ SOUND_ARG_LOAD(SOUND_BANK_MENU,     0x1C, 0x00, 0) // unverified, unused
 #define SOUND_MENU_MARIO_CASTLE_WARP             /* 0x701DB080 */ SOUND_ARG_LOAD(SOUND_BANK_MENU,     0x1D, 0xB0, SOUND_DISCRETE) // unverified
-#define SOUND_MENU_STAR_SOUND                    /* 0x701EFF80 */ SOUND_ARG_LOAD(SOUND_BANK_MENU,     0x1E, 0xFF, SOUND_DISCRETE)
+#define SOUND_ORB_COLLECT                        /* 0x701EFF80 */ SOUND_ARG_LOAD(SOUND_BANK_MENU,     0x1E, 0xFF, SOUND_DISCRETE)
 #define SOUND_MENU_THANK_YOU_PLAYING_MY_GAME     /* 0x701FFF80 */ SOUND_ARG_LOAD(SOUND_BANK_MENU,     0x1F, 0xFF, SOUND_DISCRETE)
 #define SOUND_MENU_READ_A_SIGN                   /* 0x70200000 */ SOUND_ARG_LOAD(SOUND_BANK_MENU,     0x20, 0x00, 0) // unverified, unused
 #define SOUND_MENU_EXIT_A_SIGN                   /* 0x70210000 */ SOUND_ARG_LOAD(SOUND_BANK_MENU,     0x21, 0x00, 0) // unverified, unused

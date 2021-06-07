@@ -784,7 +784,7 @@ void copy_action_file_button(struct Object *copyButton, s32 copyFileButtonID) {
             sMainMenuButtons[copyFileButtonID]->oMenuButtonState = MENU_BUTTON_STATE_ZOOM_IN_OUT;
             if (save_file_exists(copyFileButtonID - MENU_BUTTON_COPY_MIN) == FALSE) {
                 // If clicked in a non-existing save file, copy the file
-                play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+                play_sound(SOUND_ORB_COLLECT, gGlobalSoundSource);
 #if ENABLE_RUMBLE
                 queue_rumble_data(5, 80);
 #endif
@@ -1377,7 +1377,7 @@ void bhv_menu_button_manager_init(void) {
 }
 
 #if defined(VERSION_JP)
-    #define SAVE_FILE_SOUND SOUND_MENU_STAR_SOUND
+    #define SAVE_FILE_SOUND SOUND_ORB_COLLECT
 #else
     #define SAVE_FILE_SOUND SOUND_MENU_STAR_SOUND_OKEY_DOKEY
 #endif
