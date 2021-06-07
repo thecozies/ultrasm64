@@ -347,6 +347,8 @@ extern Gfx mat_castle_grounds_dl_floor_bricks_layer1[];
 extern Gfx mat_revert_castle_grounds_dl_floor_bricks_layer1[];
 extern Gfx mat_castle_grounds_dl_black_marble_vtx_layer1[];
 extern Gfx mat_revert_castle_grounds_dl_black_marble_vtx_layer1[];
+extern Gfx mat_castle_grounds_dl_white_marble_vtx_no_AA_layer1[];
+extern Gfx mat_revert_castle_grounds_dl_white_marble_vtx_no_AA_layer1[];
 extern Gfx mat_castle_grounds_dl_black_marble_vtx_safe_layer1[];
 extern Gfx mat_revert_castle_grounds_dl_black_marble_vtx_safe_layer1[];
 extern Gfx mat_castle_grounds_dl_monumentoo_layer1[];

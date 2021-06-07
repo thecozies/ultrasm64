@@ -430,14 +430,14 @@ void scroll_castle_grounds_dl_apurpwaters_005_mesh_layer_5_vtx_0() {
 }
 
 void scroll_castle_grounds() {
-	scroll_sts_mat_castle_grounds_dl_water_layer5();
-	scroll_sts_mat_castle_grounds_dl_trippy_warp_brick_layer1();
 	scroll_castle_grounds_dl_awaters_mesh_layer_5_vtx_0();
+	scroll_sts_mat_castle_grounds_dl_water_layer5();
 	scroll_castle_grounds_dl_awaters_001_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_awaters_002_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_awaters_005_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_awaters_green_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_awaters_004_mesh_layer_5_vtx_0();
+	scroll_sts_mat_castle_grounds_dl_trippy_warp_brick_layer1();
 	scroll_castle_grounds_dl_awaters_003_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_afakewater_mesh_layer_5_vtx_0();
 	scroll_castle_grounds_dl_aBlob_001_mesh_layer_5_vtx_0();
