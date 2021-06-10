@@ -552,7 +552,7 @@ void render_intro_start_text(void) {
     else if (gGoalFadeState == FULL_SHOW_GOAL) sGoalFadeTimer = 0;
     else if (gGoalFadeState == NO_GOAL && gWaitingToStart) set_next_goal_state(STARTING_SHOW_GOAL, 0);
 
-    if (update_text_fade(50, 100000, 45)) {
+    if (update_text_fade(50, 100000, 35)) {
         if (gPlayer1Controller->buttonPressed & L_TRIG) gWidescreen = !gWidescreen;
         s2d_print_deferred(
             SCREEN_WIDTH - 10,

@@ -3037,127 +3037,127 @@ void update_camera(struct Camera *c) {
 
     if (!gPuppyCam.enabled || c->cutscene != 0 || gCurrentArea->camera->mode == CAMERA_MODE_INSIDE_CANNON)
     {
-    // Store previous geometry information
-    sMarioGeometry.prevFloorHeight = sMarioGeometry.currFloorHeight;
-    sMarioGeometry.prevCeilHeight = sMarioGeometry.currCeilHeight;
-    sMarioGeometry.prevFloor = sMarioGeometry.currFloor;
-    sMarioGeometry.prevCeil = sMarioGeometry.currCeil;
-    sMarioGeometry.prevFloorType = sMarioGeometry.currFloorType;
-    sMarioGeometry.prevCeilType = sMarioGeometry.currCeilType;
+        // Store previous geometry information
+        sMarioGeometry.prevFloorHeight = sMarioGeometry.currFloorHeight;
+        sMarioGeometry.prevCeilHeight = sMarioGeometry.currCeilHeight;
+        sMarioGeometry.prevFloor = sMarioGeometry.currFloor;
+        sMarioGeometry.prevCeil = sMarioGeometry.currCeil;
+        sMarioGeometry.prevFloorType = sMarioGeometry.currFloorType;
+        sMarioGeometry.prevCeilType = sMarioGeometry.currCeilType;
 
-    find_mario_floor_and_ceil(&sMarioGeometry);
-    gCheckingSurfaceCollisionsForCamera = TRUE;
-    vec3f_copy(c->pos, gLakituState.goalPos);
-    vec3f_copy(c->focus, gLakituState.goalFocus);
+        find_mario_floor_and_ceil(&sMarioGeometry);
+        gCheckingSurfaceCollisionsForCamera = TRUE;
+        vec3f_copy(c->pos, gLakituState.goalPos);
+        vec3f_copy(c->focus, gLakituState.goalFocus);
 
-    c->yaw = gLakituState.yaw;
-    c->nextYaw = gLakituState.nextYaw;
-    c->mode = gLakituState.mode;
-    c->defMode = gLakituState.defMode;
+        c->yaw = gLakituState.yaw;
+        c->nextYaw = gLakituState.nextYaw;
+        c->mode = gLakituState.mode;
+        c->defMode = gLakituState.defMode;
 
-    camera_course_processing(c);
-    stub_camera_3(c);
-    sCButtonsPressed = find_c_buttons_pressed(sCButtonsPressed, gPlayer1Controller->buttonPressed,
-                                              gPlayer1Controller->buttonDown);
+        camera_course_processing(c);
+        stub_camera_3(c);
+        sCButtonsPressed = find_c_buttons_pressed(sCButtonsPressed, gPlayer1Controller->buttonPressed,
+                                                gPlayer1Controller->buttonDown);
 
-    if (c->cutscene != 0) {
-        sYawSpeed = 0;
-        play_cutscene(c);
-        sFramesSinceCutsceneEnded = 0;
-    } else {
-        // Clear the recent cutscene after 8 frames
-        if (gRecentCutscene != 0 && sFramesSinceCutsceneEnded < 8) {
-            sFramesSinceCutsceneEnded++;
-            if (sFramesSinceCutsceneEnded >= 8) {
-                gRecentCutscene = 0;
-                sFramesSinceCutsceneEnded = 0;
-            }
-        }
-    }
-    // If not in a cutscene, do mode processing
-    if (c->cutscene == 0) {
-        sYawSpeed = 0x400;
-
-        if (sSelectionFlags & CAM_MODE_MARIO_ACTIVE) {
-            switch (c->mode) {
-                case CAMERA_MODE_BEHIND_MARIO:
-                    mode_behind_mario_camera(c);
-                    break;
-
-                case CAMERA_MODE_C_UP:
-                    mode_c_up_camera(c);
-                    break;
-
-                case CAMERA_MODE_WATER_SURFACE:
-                    mode_water_surface_camera(c);
-                    break;
-
-                case CAMERA_MODE_INSIDE_CANNON:
-                    mode_cannon_camera(c);
-                    break;
-
-                default:
-                    mode_mario_camera(c);
-            }
+        if (c->cutscene != 0) {
+            sYawSpeed = 0;
+            play_cutscene(c);
+            sFramesSinceCutsceneEnded = 0;
         } else {
-            switch (c->mode) {
-                case CAMERA_MODE_BEHIND_MARIO:
-                    mode_behind_mario_camera(c);
-                    break;
-
-                case CAMERA_MODE_C_UP:
-                    mode_c_up_camera(c);
-                    break;
-
-                case CAMERA_MODE_WATER_SURFACE:
-                    mode_water_surface_camera(c);
-                    break;
-
-                case CAMERA_MODE_INSIDE_CANNON:
-                    mode_cannon_camera(c);
-                    break;
-
-                case CAMERA_MODE_8_DIRECTIONS:
-                    mode_8_directions_camera(c);
-                    break;
-
-                case CAMERA_MODE_RADIAL:
-                    mode_radial_camera(c);
-                    break;
-
-                case CAMERA_MODE_OUTWARD_RADIAL:
-                    mode_outward_radial_camera(c);
-                    break;
-
-                case CAMERA_MODE_CLOSE:
-                    mode_lakitu_camera(c);
-                    break;
-
-                case CAMERA_MODE_FREE_ROAM:
-                    mode_lakitu_camera(c);
-                    break;
-                case CAMERA_MODE_BOSS_FIGHT:
-                    mode_boss_fight_camera(c);
-                    break;
-
-                case CAMERA_MODE_PARALLEL_TRACKING:
-                    mode_parallel_tracking_camera(c);
-                    break;
-
-                case CAMERA_MODE_SLIDE_HOOT:
-                    mode_slide_camera(c);
-                    break;
-
-                case CAMERA_MODE_FIXED:
-                    mode_fixed_camera(c);
-                    break;
-
-                case CAMERA_MODE_SPIRAL_STAIRS:
-                    mode_spiral_stairs_camera(c);
-                    break;
+            // Clear the recent cutscene after 8 frames
+            if (gRecentCutscene != 0 && sFramesSinceCutsceneEnded < 8) {
+                sFramesSinceCutsceneEnded++;
+                if (sFramesSinceCutsceneEnded >= 8) {
+                    gRecentCutscene = 0;
+                    sFramesSinceCutsceneEnded = 0;
+                }
             }
         }
-    }
+        // If not in a cutscene, do mode processing
+        if (c->cutscene == 0) {
+            sYawSpeed = 0x400;
+
+            if (sSelectionFlags & CAM_MODE_MARIO_ACTIVE) {
+                switch (c->mode) {
+                    case CAMERA_MODE_BEHIND_MARIO:
+                        mode_behind_mario_camera(c);
+                        break;
+
+                    case CAMERA_MODE_C_UP:
+                        mode_c_up_camera(c);
+                        break;
+
+                    case CAMERA_MODE_WATER_SURFACE:
+                        mode_water_surface_camera(c);
+                        break;
+
+                    case CAMERA_MODE_INSIDE_CANNON:
+                        mode_cannon_camera(c);
+                        break;
+
+                    default:
+                        mode_mario_camera(c);
+                }
+            } else {
+                switch (c->mode) {
+                    case CAMERA_MODE_BEHIND_MARIO:
+                        mode_behind_mario_camera(c);
+                        break;
+
+                    case CAMERA_MODE_C_UP:
+                        mode_c_up_camera(c);
+                        break;
+
+                    case CAMERA_MODE_WATER_SURFACE:
+                        mode_water_surface_camera(c);
+                        break;
+
+                    case CAMERA_MODE_INSIDE_CANNON:
+                        mode_cannon_camera(c);
+                        break;
+
+                    case CAMERA_MODE_8_DIRECTIONS:
+                        mode_8_directions_camera(c);
+                        break;
+
+                    case CAMERA_MODE_RADIAL:
+                        mode_radial_camera(c);
+                        break;
+
+                    case CAMERA_MODE_OUTWARD_RADIAL:
+                        mode_outward_radial_camera(c);
+                        break;
+
+                    case CAMERA_MODE_CLOSE:
+                        mode_lakitu_camera(c);
+                        break;
+
+                    case CAMERA_MODE_FREE_ROAM:
+                        mode_lakitu_camera(c);
+                        break;
+                    case CAMERA_MODE_BOSS_FIGHT:
+                        mode_boss_fight_camera(c);
+                        break;
+
+                    case CAMERA_MODE_PARALLEL_TRACKING:
+                        mode_parallel_tracking_camera(c);
+                        break;
+
+                    case CAMERA_MODE_SLIDE_HOOT:
+                        mode_slide_camera(c);
+                        break;
+
+                    case CAMERA_MODE_FIXED:
+                        mode_fixed_camera(c);
+                        break;
+
+                    case CAMERA_MODE_SPIRAL_STAIRS:
+                        mode_spiral_stairs_camera(c);
+                        break;
+                }
+            }
+        }
     }
     // Start any Mario-related cutscenes
     start_cutscene(c, get_cutscene_from_mario_status(c));

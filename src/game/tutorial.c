@@ -472,7 +472,7 @@ void render_ring_tip(void) {
         gS2DScale = 0.5f;
         drop_shadow = FALSE;
         s2d_alpha = sTutorialFadeAlpha;
-        s2d_print_alloc(20, 50, ALIGN_LEFT, sRingJumpText2);
+        s2d_print_alloc(20, SCREEN_HEIGHT - 50, ALIGN_LEFT, sRingJumpText2);
         s2d_stop();
     } else {
         set_current_cutscene(NO_CUTSCENE);

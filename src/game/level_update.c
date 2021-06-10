@@ -200,6 +200,10 @@ u8 gFireAlpha = 0;
 u8 unused3[4];
 u8 unused4[2];
 
+// Frameskip
+s8 gGameLagged = 0;
+OSTime sOldTime = 0;
+OSTime sDeltaTime = 0;
 
 u16 level_control_timer(s32 timerOp) {
     switch (timerOp) {
@@ -1028,7 +1032,15 @@ void adjust_fire_env(void) {
     gFireValue = (u8) MAX(0, (amplitudeX - gFireAlpha));
 }
 
+s32 is_non_action_cutscene_active(void) {
+    return gCurCutscene &&
+        gCurCutscene != CUTSCENE_TOWERCLIMB &&
+        gCurCutscene != CUTSCENE_RING_REMINDER;
+}
+
 s32 play_mode_normal(void) {
+    OSTime newTime = osGetTime();
+
     if (gCurrDemoInput != NULL) {
         print_intro_text();
         if (gPlayer1Controller->buttonPressed & END_DEMO) {
@@ -1047,7 +1059,55 @@ s32 play_mode_normal(void) {
         gHudDisplay.timer += 1;
     }
 
-    area_update_objects();
+    sDeltaTime += newTime - sOldTime;
+    sOldTime = newTime;
+    if (
+        gIsConsole && (
+            gCurrLevelNum == LEVEL_PSS
+            ||
+            is_non_action_cutscene_active()
+        )
+    ) {
+        gGameLagged = -1;
+        while (sDeltaTime > 1562744) {
+            sDeltaTime -= 1562744;
+            if (sTimerRunning && gHudDisplay.timer < 17999) {
+                gHudDisplay.timer += 1;
+            }
+            gGameLagged += 1;
+
+            if (gGameLagged) {
+                u16 pressedButtons = gPlayer1Controller->buttonPressed;
+                u16 heldButtons = gPlayer1Controller->buttonDown;
+                if (is_non_action_cutscene_active() && !gWaitingToStart) {
+                    gCurCutsceneTimer++;
+                }
+
+                gPlayer1Controller->buttonPressed = 0;
+                gPlayer1Controller->buttonDown = 0;
+                if (gCurrentArea != NULL) update_camera(gCurrentArea->camera);
+                gPlayer1Controller->buttonPressed = pressedButtons;
+                gPlayer1Controller->buttonDown = heldButtons;
+            } 
+
+            area_update_objects();
+            scroll_textures();
+            if (gGameLagged && gCurrentArea != NULL && gCurrentArea->camera->cutscene != 0) {
+                play_cutscene(gCurrentArea->camera);
+            }
+        }
+    } else {
+        sDeltaTime = 0;
+        if (sTimerRunning && gHudDisplay.timer < 17999) {
+            gHudDisplay.timer += 1;
+        }
+
+        gGameLagged = 0;
+
+        area_update_objects();
+        scroll_textures();
+    }
+
     update_hud_values();
 
     if (gCurrentArea != NULL) {
@@ -1201,19 +1261,27 @@ s32 update_level(void) {
 
     switch (sCurrPlayMode) {
         case PLAY_MODE_NORMAL:
-            changeLevel = play_mode_normal(); scroll_textures();
+            changeLevel = play_mode_normal(); // scroll_textures();
             break;
         case PLAY_MODE_PAUSED:
             changeLevel = play_mode_paused();
+            sDeltaTime = 0;
+            sOldTime = osGetTime();
             break;
         case PLAY_MODE_CHANGE_AREA:
             changeLevel = play_mode_change_area();
+            sDeltaTime = 0;
+            sOldTime = osGetTime();
             break;
         case PLAY_MODE_CHANGE_LEVEL:
             changeLevel = play_mode_change_level();
+            sDeltaTime = 0;
+            sOldTime = osGetTime();
             break;
         case PLAY_MODE_FRAME_ADVANCE:
             changeLevel = play_mode_frame_advance();
+            sDeltaTime = 0;
+            sOldTime = osGetTime();
             break;
     }
 
@@ -1294,6 +1362,8 @@ s32 lvl_init_or_update(s16 initOrUpdate, UNUSED s32 unused) {
     switch (initOrUpdate) {
         case 0:
             result = init_level();
+            sDeltaTime = 0;
+            sOldTime = osGetTime();
             break;
         case 1:
             result = update_level();

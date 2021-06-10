@@ -11,6 +11,7 @@
 #include "game/obj_behaviors_2.h"
 #include "game/object_helpers.h"
 #include "game/object_list_processor.h"
+#include "game/level_update.h" // Frameskip
 #include "graph_node.h"
 #include "surface_collision.h"
 
@@ -910,6 +911,17 @@ void cur_obj_update(void) {
     f32 distanceFromMario;
     BhvCommandProc bhvCmdProc;
     s32 bhvProcResult;
+#ifdef TARGET_N64
+    // Frameskip
+    if (gIsConsole && gGameLagged) {
+        s32 hasAnimation = (gCurrentObject->header.gfx.node.flags & GRAPH_RENDER_HAS_ANIMATION) != 0;
+
+        if (gGameLagged && hasAnimation && gCurrentObject->header.gfx.animInfo.curAnim != NULL) {
+            struct AnimInfo *animInfo = &gCurrentObject->header.gfx.animInfo;
+            animInfo->animFrame = geo_update_animation_frame(animInfo, &animInfo->animFrameAccelAssist);
+        }
+    }
+#endif
 
     // Calculate the distance from the object to Mario.
     if (objFlags & OBJ_FLAG_COMPUTE_DIST_TO_MARIO) {
