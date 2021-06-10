@@ -545,7 +545,7 @@ Gfx mat_beam_inner_beam_layer5[] = {
 	gsSPSetGeometryMode(G_TEXTURE_GEN),
 	gsSPClearGeometryMode(G_CULL_BACK),
 	gsDPSetCycleType(G_CYC_2CYCLE),
-	gsDPSetRenderMode(G_RM_PASS, G_RM_ZB_XLU_SURF2),
+	gsDPSetRenderMode(G_RM_PASS, G_RM_AA_ZB_XLU_SURF2),
 	gsSPTexture(4031, 4031, 0, 0, 1),
 	gsDPTileSync(),
 	gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_8b, 32, beam_water_big_chungus__ia4),
