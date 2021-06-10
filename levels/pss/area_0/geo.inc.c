@@ -41,6 +41,7 @@ const GeoLayout pss_dl_a_main2room_geo[] = {
 			GEO_RENDER_RANGE(-10000, 20000),
 			GEO_OPEN_NODE(),
 				GEO_DISPLAY_LIST(5, pss_dl_a__dehwater_mesh_layer_5),
+				GEO_DISPLAY_LIST(1, pss_dl_a__dehwater_mesh_layer_1),
 			GEO_CLOSE_NODE(),
 			GEO_TRANSLATE_NODE(LAYER_OPAQUE, 594, 3000, 0),
 			GEO_OPEN_NODE(),
@@ -119,9 +120,9 @@ const GeoLayout pss_area_0[] = {
 				GEO_CLOSE_NODE(),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
+		GEO_DISPLAY_LIST(5, pss_dl_material_revert_render_settings),
 		GEO_DISPLAY_LIST(1, pss_dl_material_revert_render_settings),
 		GEO_DISPLAY_LIST(4, pss_dl_material_revert_render_settings),
-		GEO_DISPLAY_LIST(5, pss_dl_material_revert_render_settings),
 	GEO_CLOSE_NODE(),
 	GEO_END(),
 };

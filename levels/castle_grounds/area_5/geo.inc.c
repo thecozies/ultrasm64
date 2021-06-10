@@ -38,7 +38,7 @@ const GeoLayout castle_grounds_area_5_geo[] = {
 		GEO_CLOSE_NODE(),
 		GEO_TRANSLATE_NODE(LAYER_OPAQUE, -126, -2126, 1377),
 		GEO_OPEN_NODE(),
-			GEO_RENDER_RANGE(-1000, 3000),
+			GEO_RENDER_RANGE(-1000, 4000),
 			GEO_OPEN_NODE(),
 				GEO_DISPLAY_LIST(5, castle_grounds_dl_apurpwaters_004_mesh_layer_5),
 			GEO_CLOSE_NODE(),
@@ -79,8 +79,8 @@ const GeoLayout castle_grounds_area_5[] = {
 				GEO_CLOSE_NODE(),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
-		GEO_DISPLAY_LIST(1, castle_grounds_dl_material_revert_render_settings),
 		GEO_DISPLAY_LIST(5, castle_grounds_dl_material_revert_render_settings),
+		GEO_DISPLAY_LIST(1, castle_grounds_dl_material_revert_render_settings),
 	GEO_CLOSE_NODE(),
 	GEO_END(),
 };

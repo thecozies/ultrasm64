@@ -11,6 +11,8 @@ extern void scroll_castle_grounds_dl_afakewater_mesh_layer_5_vtx_0();
 extern void scroll_castle_grounds_dl_aBlob_001_mesh_layer_5_vtx_0();
 extern void scroll_castle_grounds_dl_awaters_006_mesh_layer_5_vtx_0();
 extern void scroll_castle_grounds_dl_awaters_007_mesh_layer_5_vtx_0();
+extern void scroll_castle_grounds_dl_awaters_008_mesh_layer_1_vtx_0();
+extern void scroll_sts_mat_castle_grounds_dl_water_opa_layer1();
 extern void scroll_castle_grounds_dl_a_Blob_mesh_layer_5_vtx_0();
 extern void scroll_castle_grounds_dl_a_Blob_001_mesh_layer_5_vtx_0();
 extern void scroll_castle_grounds_dl_a_purpwaters_007_mesh_layer_5_vtx_0();
