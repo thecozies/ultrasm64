@@ -50,6 +50,12 @@ void bhv_cutscene_obj_force_yaw(void) {
     }
 }
 
+void bhv_cutscene_ring_reminder(void) {
+    o->oLateralDistToMario = ABS(lateral_dist_between_objects(o, gMarioObject));
+
+    if (gCurCutscene != CUTSCENE_RING_REMINDER && o->oLateralDistToMario < 1000.0f) set_current_cutscene(CUTSCENE_RING_REMINDER);
+}
+
 void bhv_cutscene_obj_loop(void) {
     s32 cutscene = (o->oBehParams >> 16) & 0xFF;
     // if (current_mario_room_check(o->oRoom)) {
@@ -59,6 +65,9 @@ void bhv_cutscene_obj_loop(void) {
             break;
         case CUTSCENE_FORCE_YAW:
             bhv_cutscene_obj_force_yaw();
+            break;
+        case CUTSCENE_RING_REMINDER:
+            bhv_cutscene_ring_reminder();
             break;
     }
     // }

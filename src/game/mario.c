@@ -44,6 +44,7 @@ s8 filler80339F1C[20];
 s8 gCheckingWaterForMario = FALSE;
 s8 gGameStarted = FALSE;
 s8 gWaitingToStart = TRUE;
+s8 sRemindedAboutRing = FALSE;
 u32 gStartWaitTimer = 0;
 
 s8 gCurCutscene = 0;
@@ -1824,11 +1825,15 @@ void set_current_cutscene(s32 cutscene) {
 
     if (cutscene == CUTSCENE_LUCYS_LEVITATION) set_mario_action(gMarioState, ACT_LUCYS_LEVITATION, 0);
 
+    if (cutscene == CUTSCENE_RING_REMINDER && sRemindedAboutRing) return;
+
     if (gCurCutscene == CUTSCENE_SLIDE && cutscene != CUTSCENE_SLIDE) {
         set_fov_function(CAM_FOV_DEFAULT);
         gCloseClip = FALSE;
     } else if (cutscene == CUTSCENE_SLIDE && gCurCutscene != CUTSCENE_SLIDE) {
         play_sound(SOUND_PEACH_SOMETHING_SPECIAL, gMarioState->marioObj->header.gfx.cameraToObject);
+    } else if (cutscene == CUTSCENE_RING_REMINDER && gCurCutscene != CUTSCENE_RING_REMINDER) {
+        sRemindedAboutRing = TRUE;
     } else if (gCurCutscene != cutscene) {
         gCurCutsceneTimer = 0;
     }

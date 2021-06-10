@@ -106,6 +106,10 @@ char sAirText[AIR_TIPS][198] = {
     "jump again in the air with " TITLE_A_BUTTON "."
 };
 
+char sRingJumpText2[] =
+    "Passing through a ring will\n"
+    "give you an extra jump.";
+
 char sWaterText[WATER_TIPS][198] = {
     "Move any lateral direction using only the \n"
     TITLE_STICK ".",
@@ -449,4 +453,29 @@ s32 render_tutorial(s32 onPause) {
     s2d_stop();
 
     return TRUE;
+}
+
+void render_ring_tip(void) {
+    if (gCurCutsceneTimer == 0) {
+        reset_tutorial();
+    }
+
+    if (update_tutorial_fade(
+        TUTORIAL_FADE_IN_LEN,
+        TUTORIAL_SHOW_LEN,
+        TUTORIAL_FADE_OUT_LEN,
+        &sTutorialFadeState,
+        &sTutorialFadeTimer,
+        FALSE
+    ) && sTutorialFadeAlpha >= 5) {
+        s2d_init();
+        gS2DScale = 0.5f;
+        drop_shadow = FALSE;
+        s2d_alpha = sTutorialFadeAlpha;
+        s2d_print_alloc(20, 50, ALIGN_LEFT, sRingJumpText2);
+        s2d_stop();
+    } else {
+        set_current_cutscene(NO_CUTSCENE);
+        reset_tutorial();
+    }
 }

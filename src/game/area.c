@@ -700,6 +700,7 @@ void render_game(void) {
         // }
         render_goals();
         render_intro_text();
+        if (gCurCutscene == CUTSCENE_RING_REMINDER) render_ring_tip();
         calculate_and_update_fps();
 #ifdef CDEBUG
         if (gPlayer1Controller->buttonPressed & L_TRIG) sShowFPS = !sShowFPS;
