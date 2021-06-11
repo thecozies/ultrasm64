@@ -220,7 +220,7 @@ extern Vtx castle_grounds_dl_azentry_slide_mesh_layer_1_vtx_0[30];
 extern Gfx castle_grounds_dl_azentry_slide_mesh_layer_1_tri_0[];
 extern Vtx castle_grounds_dl_aBlob_001_mesh_layer_5_vtx_0[86];
 extern Gfx castle_grounds_dl_aBlob_001_mesh_layer_5_tri_0[];
-extern Vtx castle_grounds_dl_awaters_006_mesh_layer_5_vtx_0[15];
+extern Vtx castle_grounds_dl_awaters_006_mesh_layer_5_vtx_0[18];
 extern Gfx castle_grounds_dl_awaters_006_mesh_layer_5_tri_0[];
 extern Vtx castle_grounds_dl_awaters_007_mesh_layer_5_vtx_0[15];
 extern Gfx castle_grounds_dl_awaters_007_mesh_layer_5_tri_0[];
