@@ -24,7 +24,7 @@
 #include "rendering_graph_node.h"
 
 #define OFFSET 30.0f
-#define STEPS 1
+#define STEPS 4
 #define DECELERATION 0.75f
 #define DEADZONE 20
 #define SCRIPT_MEMORY_POOL 0x1000
@@ -1078,6 +1078,21 @@ f32 vec3f_dist(Vec3f fromVec, Vec3f toVec) {
     return sqrtf((fromVec[0] - toVec[0]) * (fromVec[0] - toVec[0]) + (fromVec[1] - toVec[1]) * (fromVec[1] - toVec[1]) + (fromVec[2] - toVec[2]) * (fromVec[2] - toVec[2]));
 }
 
+/**
+ * Pitch the camera down when the camera is facing down a slope
+ */
+// s16 get_floor_pitch(void) {
+//     struct Surface *floor = gMarioState->floor;
+//     if (floor && gMarioState->action & (ACT_FLAG_MOVING | ACT_FLAG_STATIONARY)) {
+//         s16 slopeAngle = atan2s(floor->normal.z, floor->normal.x);
+//         if (ABS(slopeAngle - gPuppyCam.yawTarget) > 0x8000) {
+//             f32 steepness = sqrtf(floor->normal.x * floor->normal.x + floor->normal.z * floor->normal.z);
+//             return DEGREES(steepness);
+//         }
+//     }
+//     return 0;
+// }
+
 static s16 get_pitch_offset(void)
 {
     struct Surface *surf;
@@ -1121,7 +1136,11 @@ static void puppycam_projection(void)
     Vec3s targetPos, targetPos2, targetPos3;
     u8 panD = (gPuppyCam.flags & PUPPYCAM_BEHAVIOUR_PANSHIFT)/8192;
     u32 isSwimming = gMarioState->action & ACT_FLAG_SWIMMING;
+    // s16 floorSteepness = get_floor_pitch();
     gPuppyCam.pitchTarget = get_pitch_offset();
+    // if (floorSteepness) {
+    //     gPuppyCam.pitchTarget = floorSteepness;
+    // }
 
     if (
         gPuppyCam.options.turnAggression > 0 &&
