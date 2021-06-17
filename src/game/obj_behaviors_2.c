@@ -932,6 +932,7 @@ static void treat_far_home_as_mario(f32 threshold) {
 #include "behaviors/mad_piano.inc.c"
 #include "behaviors/flying_bookend_switch.inc.c"
 #include "behaviors/sliding_door.inc.c"
+#include "behaviors/candle.inc.c"
 #include "behaviors/checkpoint.inc.c"
 
 /**

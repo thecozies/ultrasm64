@@ -6208,6 +6208,7 @@ const BehaviorScript bhvCandle[] = {
     SET_HITBOX_WITH_OFFSET(/*Radius*/ 50, /*Height*/ 25, /*Downwards offset*/ 25),
     SET_INT(oIntangibleTimer, 0),
     CALL_NATIVE(bhv_init_room),
+    CALL_NATIVE(bhv_candle_init),
     BEGIN_LOOP(),
         SET_INT(oInteractStatus, 0),
     END_LOOP(),

@@ -616,6 +616,9 @@ static void geo_process_scale(struct GraphNodeScale *node) {
  */
 static void geo_process_billboard(struct GraphNodeBillboard *node) {
     Vec3f translation;
+    Vec3f translation2 = { 0.0f, 0.0f, 0.0f };
+    Vec3s rotation = { 0, 0, 0 };
+    Mat4 mtxR;
     Mtx *mtx = alloc_display_list(sizeof(*mtx));
 
     gMatStackIndex++;
@@ -628,6 +631,8 @@ static void geo_process_billboard(struct GraphNodeBillboard *node) {
     } else if (gCurGraphNodeObject != NULL) {
         mtxf_scale_vec3f(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex],
                          gCurGraphNodeObject->scale);
+        rotation[0] = gCurGraphNodeObject->angle[0];
+        mtxf_rotate_xyz(gMatStack[gMatStackIndex], rotation);
     }
 
     mtxf_to_mtx(mtx, gMatStack[gMatStackIndex]);

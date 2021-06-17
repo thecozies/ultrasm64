@@ -354,6 +354,36 @@ void mtxf_rotate_xyz_and_translate(Mat4 dest, Vec3f b, Vec3s c) {
 }
 
 /**
+ * Build a matrix that rotates around the x axis, then the y axis, then the z
+ * axis
+ */
+void mtxf_rotate_xyz(Mat4 dest, Vec3s c) {
+    register f32 sx = sins(c[0]);
+    register f32 cx = coss(c[0]);
+
+    register f32 sy = sins(c[1]);
+    register f32 cy = coss(c[1]);
+
+    register f32 sz = sins(c[2]);
+    register f32 cz = coss(c[2]);
+
+    dest[0][0] = cy * cz;
+    dest[0][1] = cy * sz;
+    dest[0][2] = -sy;
+    dest[0][3] = 0;
+
+    dest[1][0] = sx * sy * cz - cx * sz;
+    dest[1][1] = sx * sy * sz + cx * cz;
+    dest[1][2] = sx * cy;
+    dest[1][3] = 0;
+
+    dest[2][0] = cx * sy * cz + sx * sz;
+    dest[2][1] = cx * sy * sz - sx * cz;
+    dest[2][2] = cx * cy;
+    dest[2][3] = 0;
+}
+
+/**
  * Set 'dest' to a transformation matrix that turns an object to face the camera.
  * 'mtx' is the look-at matrix from the camera
  * 'position' is the position of the object in the world
