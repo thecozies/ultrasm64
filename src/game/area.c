@@ -68,8 +68,8 @@ struct GlobalFog sTemple1Room4Fog = { 73, 63, 52, 0xFF, 812, 1100 };
 struct GlobalFog sTrippyFog = { 73, 63, 52, 0xFF, 750, 1100 };
 struct GlobalFog sTemple2Fog = { 94, 88, 105, 0xDF, 830, 1100 };
 struct GlobalFog sTutorialFog = { 22, 22, 22, 0xFF, 350, 1000 };
-struct GlobalFog sEndFog = { 74, 68, 85, 0xDF, 830, 1100 };
-struct GlobalFog sEndTunnelFog = { 24, 20, 28, 0xFF, 750, 1000 };
+struct GlobalFog sEndFog = { 74, 68, 85, 0xDF, 900, 1100 };
+struct GlobalFog sEndTunnelFog = { 24, 20, 28, 0xFF, 850, 1000 };
 struct GlobalFog sEndFinalFog = { 114, 108, 125, 0xDF, 900, 1100 };
 struct GlobalFog sCampFog = { 0x17, 0x17, 0x17, 0xDF, 800, 1000 };
 
@@ -87,7 +87,11 @@ u32 gFramesWithoutLag = 30;
 
 char sGameTitle[18] = "Lucy's\nLevitation";
 char sPressStartToPlay[11] = "Press Start";
+char sNewGame[] = "New Game";
+char sContinueGame[] = "Continue";
 s32 sTimesRenderedText = 0;
+s8 gSelectedOption = 0;
+s8 gHasCheckpoint = FALSE;
 
 s8 sCurFog = DEFAULT_FOG;
 
@@ -393,6 +397,7 @@ void play_transition(s16 transType, s16 time, u8 red, u8 green, u8 blue) {
     gWarpTransition.type = transType;
     gWarpTransition.time = time;
     gWarpTransition.pauseRendering = FALSE;
+    reset_transition_fade_timer(0);
 
     // The lowest bit of transType determines if the transition is fading in or out.
     if (transType & 1) {
@@ -547,21 +552,42 @@ void render_intro_text(void) {
     //     sFadeAlpha = MAX(sFadeAlpha - (255 / release), 0);
     // }
 
-void render_intro_start_text(void) {
+void title_screen_waiting_to_start(void) {
+    u32 saveFlags = save_file_get_flags();
+    gHasCheckpoint = saveFlags & SAVE_FLAG_HAS_CHECKPOINT;
+
     if (gGoalFadeState == FULL_SHOW_GOAL && !gWaitingToStart) set_next_goal_state(FADING_SHOW_GOAL, 150);
     else if (gGoalFadeState == FULL_SHOW_GOAL) sGoalFadeTimer = 0;
     else if (gGoalFadeState == NO_GOAL && gWaitingToStart) set_next_goal_state(STARTING_SHOW_GOAL, 0);
 
-    if (update_text_fade(50, 100000, 35)) {
-        if (gPlayer1Controller->buttonPressed & L_TRIG) gWidescreen = !gWidescreen;
-        s2d_print_deferred(
-            SCREEN_WIDTH - 10,
-            (int) (SCREEN_HEIGHT - 60),
-            ALIGN_RIGHT,
-            MIN(150, sFadeAlpha),
-            1.0f,
-            sPressStartToPlay
-        );
+    if (update_text_fade(50, 0xFFFFFFF, 35)) {
+        if (gHasCheckpoint) {
+            s2d_print_deferred(
+                20,
+                (int) (SCREEN_HEIGHT - 70),
+                ALIGN_LEFT,
+                MIN(200, sFadeAlpha * (gSelectedOption == 0 ? 1.0f : 0.4f)),
+                0.5f,
+                sContinueGame
+            );
+            s2d_print_deferred(
+                20,
+                (int) (SCREEN_HEIGHT - 50),
+                ALIGN_LEFT,
+                MIN(200, sFadeAlpha * (gSelectedOption == 1 ? 1.0f : 0.4f)),
+                0.5f,
+                sNewGame
+            );
+        } else {
+            s2d_print_deferred(
+                SCREEN_WIDTH - 10,
+                (int) (SCREEN_HEIGHT - 60),
+                ALIGN_RIGHT,
+                MIN(150, sFadeAlpha),
+                1.0f,
+                sPressStartToPlay
+            );
+        }
     }
 }
 
@@ -644,12 +670,12 @@ void render_s2dex(void) {
 
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
-        if (!gWaitingToStart) gCurCutsceneTimer++;
+        if (!gWaitingToStart && !(gContinuing && gCurCutscene == CUTSCENE_INTRO)) gCurCutsceneTimer++;
         if (gGameStarted) update_fog();
         if (
             (gWaitingToStart && gStartWaitTimer > 55) ||
             (!gWaitingToStart && gCurCutscene == CUTSCENE_INTRO && gCurCutsceneTimer < 100)
-        ) render_intro_start_text();
+        ) title_screen_waiting_to_start();
 
         geo_process_root(gCurrentArea->unk04, D_8032CE74, D_8032CE78, gFBSetColor);
 

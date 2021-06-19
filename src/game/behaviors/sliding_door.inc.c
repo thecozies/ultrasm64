@@ -119,7 +119,7 @@ void sliding_door_act_1(void) {
             }
             else
             {
-                set_current_cutscene(NO_CUTSCENE);
+                set_current_cutscene(CUTSCENE_NONE);
             }
         }
     }

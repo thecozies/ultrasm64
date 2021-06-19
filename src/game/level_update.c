@@ -197,8 +197,7 @@ s8 gParasitesGoalsSet[17] = {
 u8 gFireValue = 0;
 u8 gFireAlpha = 0;
 
-u8 unused3[4];
-u8 unused4[2];
+s8 gContinuing = FALSE;
 
 // Frameskip
 s8 gGameLagged = 0;
@@ -281,15 +280,15 @@ void load_level_init_text(u32 arg) {
 
     switch (dialogID) {
         case DIALOG_129:
-            gotAchievement = save_file_get_flags() & SAVE_FLAG_HAVE_VANISH_CAP;
+            gotAchievement = save_file_get_flags() & SAVE_FLAG_BEAT_GAME;
             break;
 
         case DIALOG_130:
-            gotAchievement = save_file_get_flags() & SAVE_FLAG_HAVE_METAL_CAP;
+            gotAchievement = save_file_get_flags() & SAVE_FLAG_HAS_CHECKPOINT;
             break;
 
         case DIALOG_131:
-            gotAchievement = save_file_get_flags() & SAVE_FLAG_HAVE_WING_CAP;
+            gotAchievement = save_file_get_flags() & SAVE_FLAG_STARTED;
             break;
 
         case 255:
@@ -827,6 +826,13 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 else play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x14, 0xFF, 0xFF, 0xFF);
                 break;
 
+            case WARP_OP_CONTINUE:
+                gContinuing = TRUE;
+                sDelayedWarpTimer = 30;
+                sSourceWarpNodeId = 0xDD;
+                play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x1E, 0x00, 0x00, 0x00);
+                break;
+
             case WARP_OP_CREDITS_START:
                 sDelayedWarpTimer = 30;
                 play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x1E, 0x00, 0x00, 0x00);
@@ -859,11 +865,9 @@ void initiate_delayed_warp(void) {
     struct ObjectWarpNode *warpNode;
     s32 destWarpNode;
 
-    if (sDelayedWarpOp != WARP_OP_NONE) {
-        set_current_cutscene(NO_CUTSCENE);
-    }
 
     if (sDelayedWarpOp != WARP_OP_NONE && --sDelayedWarpTimer == 0) {
+        set_current_cutscene(CUTSCENE_NONE);
         reset_dialog_render_state();
 
         if (gDebugLevelSelect && (sDelayedWarpOp & WARP_OP_TRIGGERS_LEVEL_SELECT)) {
@@ -912,6 +916,9 @@ void initiate_delayed_warp(void) {
                                   destWarpNode, 0);
                     break;
 
+                case WARP_OP_CONTINUE:
+                    initiate_warp(LEVEL_CASTLE_GROUNDS, save_file_get_checkpoint_area(), 0xDD, 0);
+                    break;
                 default:
                     warpNode = area_get_warp_node(sSourceWarpNodeId);
 

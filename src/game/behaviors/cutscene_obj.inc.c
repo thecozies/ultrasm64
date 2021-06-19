@@ -25,7 +25,7 @@ void bhv_cutscene_obj_towerclimb(void) {
         gPuppyCam.flags |= PUPPYCAM_BEHAVIOUR_INPUT_8DIR;
 
     } else if (gCurCutscene == CUTSCENE_TOWERCLIMB) {
-        set_current_cutscene(NO_CUTSCENE);
+        set_current_cutscene(CUTSCENE_NONE);
         gPuppyCam.yawTarget = gPuppyCam.yaw;
         gPuppyCam.targetObj2 = NULL;
         gPuppyCam.flags |= PUPPYCAM_BEHAVIOUR_COLLISION;
@@ -45,7 +45,7 @@ void bhv_cutscene_obj_force_yaw(void) {
         gPuppyCam.flags &= ~PUPPYCAM_BEHAVIOUR_YAW_ROTATION;
 
     } else if (gCurCutscene == CUTSCENE_FORCE_YAW) {
-        set_current_cutscene(NO_CUTSCENE);
+        set_current_cutscene(CUTSCENE_NONE);
         gPuppyCam.flags |= PUPPYCAM_BEHAVIOUR_YAW_ROTATION;
     }
 }

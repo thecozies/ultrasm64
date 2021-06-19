@@ -475,7 +475,7 @@ void render_ring_tip(void) {
         s2d_print_alloc(20, SCREEN_HEIGHT - 50, ALIGN_LEFT, sRingJumpText2);
         s2d_stop();
     } else {
-        set_current_cutscene(NO_CUTSCENE);
+        set_current_cutscene(CUTSCENE_NONE);
         reset_tutorial();
     }
 }

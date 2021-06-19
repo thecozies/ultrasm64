@@ -17,6 +17,11 @@ u8 sTransitionColorFadeCount[4] = { 0 };
 u16 sTransitionTextureFadeCount[2] = { 0 };
 // static u16 *sFrameBuffers[3];
 
+void reset_transition_fade_timer(s8 fadeTimer) {
+    sTransitionColorFadeCount[fadeTimer] = 0;
+    sTransitionTextureFadeCount[fadeTimer] = 0;
+}
+
 s32 set_and_reset_transition_fade_timer(s8 fadeTimer, u8 transTime) {
     s32 reset = FALSE;
 

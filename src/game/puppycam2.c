@@ -1380,13 +1380,15 @@ void towerclimb_cutscene(void) {
     //     0.2f
     // );
     // gPuppyCam.yaw = gPuppyCam.yawTarget - approach_f32_asymptotic((s16)(gPuppyCam.yawTarget - gPuppyCam.yaw), 0, 0.2f);
-    s16 newTarget = (s16) obj_angle_to_object(gPuppyCam.targetObj2, gPuppyCam.targetObj) + gPuppyCam.yawTarget;
-    if (!handle_wall_bonk_cam()) {
-        gPuppyCam.yaw = newTarget - approach_f32_asymptotic(
-            (s16) (newTarget - gPuppyCam.yaw),
-            0,
-            0.1f
-        );
+    if (gPuppyCam.targetObj2) {
+        s16 newTarget = (s16) obj_angle_to_object(gPuppyCam.targetObj2, gPuppyCam.targetObj) + gPuppyCam.yawTarget;
+        if (!handle_wall_bonk_cam()) {
+            gPuppyCam.yaw = newTarget - approach_f32_asymptotic(
+                (s16) (newTarget - gPuppyCam.yaw),
+                0,
+                0.1f
+            );
+        }
     }
 }
 
@@ -1421,7 +1423,7 @@ void temple_intro_cutscene(void) {
         set_fov_function(CAM_FOV_SET_45);
     }
     else if (gCurCutsceneTimer >= TEMPLE_INTRO_FINAL_FRAME) {
-        set_current_cutscene(NO_CUTSCENE);
+        set_current_cutscene(CUTSCENE_NONE);
         set_mario_action(gMarioState, ACT_IDLE, 2);
 
         set_fov_function(CAM_FOV_DEFAULT);
@@ -1541,7 +1543,7 @@ void orb_reveal_cutscene(void) {
         gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
         gPuppyCam.yawTarget = gPuppyCam.yaw;
         gCloseClip = FALSE;
-        set_current_cutscene(NO_CUTSCENE);
+        set_current_cutscene(CUTSCENE_NONE);
         set_fov_45();
         set_fov_function(CAM_FOV_DEFAULT);
     } else {
@@ -1572,7 +1574,7 @@ void lucys_levitation_cutscene(void) {
     //     gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
     //     gPuppyCam.yawTarget = gPuppyCam.yaw;
     //     gCloseClip = FALSE;
-    //     set_current_cutscene(NO_CUTSCENE);
+    //     set_current_cutscene(CUTSCENE_NONE);
     //     set_fov_45();
     //     set_fov_function(CAM_FOV_DEFAULT);
     // } else {

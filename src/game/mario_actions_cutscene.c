@@ -805,10 +805,10 @@ s32 act_unlocking_key_door(struct MarioState *m) {
     if (is_anim_at_end(m)) {
         if (m->usedObj->oBehParams >> 24 == 1) {
             save_file_set_flags(SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR);
-            save_file_clear_flags(SAVE_FLAG_HAVE_KEY_2);
+            save_file_clear_flags(SAVE_FLAG_CHALLENGE_MODE);
         } else {
             save_file_set_flags(SAVE_FLAG_UNLOCKED_BASEMENT_DOOR);
-            save_file_clear_flags(SAVE_FLAG_HAVE_KEY_1);
+            save_file_clear_flags(SAVE_FLAG_SPEEDRUN_MODE);
         }
         set_mario_action(m, ACT_WALKING, 0);
     }
@@ -2235,7 +2235,8 @@ s32 act_camp_intro(struct MarioState *m) {
     struct Surface *surf;
     s32 val14;
 
-    if (m->actionTimer++ == 0) {
+    if (m->actionTimer == 0) {
+        m->actionTimer++;
         m->pos[0] = 193.0f;
         m->pos[1] -= 40.0f;
         m->pos[2] = 339.0f;
@@ -2297,7 +2298,7 @@ s32 act_camp_intro(struct MarioState *m) {
     default:
         set_custom_mario_animation(m, LUCY_IDLE_ANIM);
         if (gCurCutsceneTimer >= CUTSCENE_INTRO_END) {
-            set_current_cutscene(NO_CUTSCENE);
+            set_current_cutscene(CUTSCENE_NONE);
             set_mario_action(m, ACT_IDLE, 2);
         }
         break;

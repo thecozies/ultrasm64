@@ -7,7 +7,7 @@
 #include "types.h"
 
 
-#define NO_CUTSCENE               0
+#define CUTSCENE_NONE               0
 #define CUTSCENE_INTRO            1
 #define CUTSCENE_SLIDE            2
 #define CUTSCENE_END              3
@@ -130,6 +130,7 @@ void init_mario_from_save_file(void);
 void set_current_cutscene(s32 cutscene);
 void set_delayed_mario_warp(s32 warpOp);
 void slow_warp_mario_to_checkpoint(void);
+void set_object_checkpoint(void);
 extern s8 gCheckingWaterForMario;
 extern s8 gGameStarted;
 extern s8 gCurCutscene;

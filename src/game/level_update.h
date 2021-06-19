@@ -17,6 +17,7 @@
 #define WARP_OP_WARP_DOOR     0x03
 #define WARP_OP_WARP_OBJECT   0x04
 #define WARP_OP_TELEPORT      0x05
+#define WARP_OP_CONTINUE      0x06
 #define WARP_OP_STAR_EXIT     0x11
 #define WARP_OP_DEATH         0x12
 #define WARP_OP_WARP_FLOOR    0x13
@@ -92,11 +93,11 @@ extern s16 sDelayedWarpOp;
 extern s16 sDelayedWarpTimer;
 extern s16 sSourceWarpNodeId;
 extern s32 sDelayedWarpArg;
-extern u8 unused4[2];
 extern s8 sTimerRunning;
 
 extern u8 gFireValue;
 extern u8 gFireAlpha;
+extern s8 gContinuing;
 
 struct HudDisplay {
     /*0x00*/ s16 lives;
@@ -136,6 +137,7 @@ s32 lvl_init_or_update(s16 initOrUpdate, UNUSED s32 unused);
 s32 lvl_init_from_save_file(UNUSED s16 arg0, s32 levelNum);
 s32 lvl_set_current_level(UNUSED s16 arg0, s32 levelNum);
 s32 lvl_play_the_end_screen_sound(UNUSED s16 arg0, UNUSED s32 arg1);
+void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3);
 void basic_update(UNUSED s16 *arg);
 
 #endif // LEVEL_UPDATE_H

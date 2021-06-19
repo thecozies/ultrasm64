@@ -46,6 +46,7 @@ s8 gGameStarted = FALSE;
 s8 gWaitingToStart = TRUE;
 s8 sRemindedAboutRing = FALSE;
 u32 gStartWaitTimer = 0;
+s8 sWaitingForStickReturn = FALSE;
 
 s8 gCurCutscene = 0;
 u32 gCurCutsceneTimer = 0;
@@ -1811,17 +1812,37 @@ void check_and_set_checkpoint(struct MarioState *m) {
             m->floor->vertex3
         );
         vec3s_copy(m->checkpointAngle, m->faceAngle);
+        // save_file_set_checkpoint(m->checkpointPos[0], m->checkpointPos[1], m->checkpointPos[2], m->faceAngle);
+    }
+}
+
+void set_object_checkpoint(void) {
+    gMarioState->checkpointPos[0] = gCurrentObject->oPosX;
+    gMarioState->checkpointPos[1] = gCurrentObject->oPosY;
+    gMarioState->checkpointPos[2] = gCurrentObject->oPosZ;
+    gMarioState->checkpointAngle[0] = gCurrentObject->oFaceAnglePitch;
+    gMarioState->checkpointAngle[1] = gCurrentObject->oFaceAngleYaw;
+    gMarioState->checkpointAngle[2] = gCurrentObject->oFaceAngleRoll;
+
+    if (!save_file_check_checkpoint_exists(gCurrentObject->oPosX, gCurrentObject->oPosY, gCurrentObject->oPosZ)) {
+        save_file_set_checkpoint(
+            gMarioState->checkpointPos[0],
+            gMarioState->checkpointPos[1],
+            gMarioState->checkpointPos[2],
+            gMarioState->checkpointAngle
+        );
+        save_file_do_save(gCurrSaveFileNum - 1);
     }
 }
 
 void set_current_cutscene(s32 cutscene) {
-    if (gCurCutscene == CUTSCENE_INTRO && !sIntroCutsceneDone && cutscene == NO_CUTSCENE) {
+    if (gCurCutscene == CUTSCENE_INTRO && !sIntroCutsceneDone && cutscene == CUTSCENE_NONE) {
         sIntroCutsceneDone = TRUE;
         set_fov_function(CAM_FOV_DEFAULT);
     }
 
     if (cutscene == CUTSCENE_ORB_REVEAL) set_mario_action(gMarioState, ACT_ORB_REVEAL, 0);
-    else if (gCurCutscene == CUTSCENE_ORB_REVEAL && cutscene == NO_CUTSCENE) set_mario_action(gMarioState, ACT_IDLE, 2);
+    else if (gCurCutscene == CUTSCENE_ORB_REVEAL && cutscene == CUTSCENE_NONE) set_mario_action(gMarioState, ACT_IDLE, 2);
 
     if (cutscene == CUTSCENE_LUCYS_LEVITATION) set_mario_action(gMarioState, ACT_LUCYS_LEVITATION, 0);
 
@@ -1866,7 +1887,7 @@ void handle_cutscene(void) {
             break;
         case CUTSCENE_ORB_REVEAL:
             break;
-        case NO_CUTSCENE:
+        case CUTSCENE_NONE:
         default:
             if (!sIntroCutsceneDone && gCurrLevelNum == LEVEL_CASTLE_COURTYARD) {
                 set_current_cutscene(CUTSCENE_INTRO);
@@ -1893,7 +1914,7 @@ void execute_mario_warp(void) {
         if ((sWarpOp & 0xFFFF) == 0) {
             level_trigger_warp(gMarioState, sWarpOp >> 16);
             set_delayed_mario_warp(0);
-            set_current_cutscene(NO_CUTSCENE);
+            set_current_cutscene(CUTSCENE_NONE);
             set_pitch_change(1.0f);
         }
     }
@@ -2046,7 +2067,7 @@ void handle_lucy_blinks(struct MarioState *m) {
         }
         break;
     case LUCY_EYE_SAD:
-        if (gCurCutscene == NO_CUTSCENE) set_lucy_eye_state(m, LUCY_EYE_OPEN);
+        if (gCurCutscene == CUTSCENE_NONE) set_lucy_eye_state(m, LUCY_EYE_OPEN);
     }
 }
 
@@ -2084,6 +2105,41 @@ void reset_intro_statuses(void) {
     set_current_cutscene(0);
 }
 #endif
+
+void handle_waiting_to_start(void) {
+    if (gWaitingToStart) {
+        gStartWaitTimer++;
+
+        if (gStartWaitTimer > 60 && gPlayer1Controller->buttonDown & (START_BUTTON | A_BUTTON)) {
+            if (gHasCheckpoint && gSelectedOption == 0) {
+                gWaitingToStart = FALSE;
+                gStartWaitTimer = 0;
+                gTutorialDone = TRUE;
+                level_trigger_warp(gMarioState, WARP_OP_CONTINUE);
+                // initiate_warp(LEVEL_CASTLE_GROUNDS, warpArea, 0xDD, 0);
+            } else {
+                gWaitingToStart = FALSE;
+                gStartWaitTimer = 0;
+            }
+        }
+
+        if (gPlayer1Controller->buttonPressed & L_TRIG) gWidescreen = !gWidescreen;
+
+        if (!sWaitingForStickReturn) {
+            if (gPlayer1Controller->rawStickY > 60 || gPlayer1Controller->buttonPressed & U_JPAD) {
+                gSelectedOption = MAX(0, gSelectedOption - 1);
+                if (gPlayer1Controller->rawStickY > 60) sWaitingForStickReturn = TRUE;
+            }
+
+            if (gPlayer1Controller->rawStickY < -60 || gPlayer1Controller->buttonPressed & D_JPAD) {
+                gSelectedOption = MIN(1, gSelectedOption + 1);
+                if (gPlayer1Controller->rawStickY < -60) sWaitingForStickReturn = TRUE;
+            }
+        } else if (ABS(gPlayer1Controller->rawStickY) < 4) {
+            sWaitingForStickReturn = FALSE;
+        }
+    }
+}
 
 /**
  * Main function for executing Mario's behavior.
@@ -2142,24 +2198,17 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         // if (
         //     gMarioState->controller->buttonDown & START_BUTTON &&
         //     gMarioState->controller->buttonDown & B_BUTTON &&
-        //     gCurCutscene > NO_CUTSCENE
+        //     gCurCutscene > CUTSCENE_NONE
         // ) gCurCutsceneTimer++;
         // f32 speed = sqrtf((gMarioState->vel[0] * gMarioState->vel[0]) + (gMarioState->vel[1] * gMarioState->vel[1]) + (gMarioState->vel[2] * gMarioState->vel[2]));
         // print_text_fmt_int(80, 20, "%d", (s32) speed);
 #endif
 
+        handle_waiting_to_start();
         handle_cutscene();
         execute_mario_warp();
         handle_lucy_blinks(gMarioState);
         handle_lucy_action_mouths(gMarioStates);
-        if (gWaitingToStart) {
-            if (gStartWaitTimer++ > 60 && gMarioState->controller->buttonDown & START_BUTTON) {
-                gWaitingToStart = FALSE;
-                gStartWaitTimer = 0;
-            } else {
-                gMarioState->input = 0;
-            }
-        }
 
         if (gMarioState->paralyzed) gMarioState->input = 0;
 
@@ -2243,7 +2292,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
  **************************************************/
 
 void init_mario(void) {
-    Vec3s capPos;
+    // Vec3s capPos;
     struct Object *capObject;
 
     gGameStarted = TRUE;
@@ -2337,21 +2386,28 @@ void init_mario(void) {
     vec3f_copy(gMarioState->marioObj->header.gfx.pos, gMarioState->pos);
     vec3s_set(gMarioState->marioObj->header.gfx.angle, 0, gMarioState->faceAngle[1], 0);
 
-    if (save_file_get_cap_pos(capPos)) {
-        capObject = spawn_object(gMarioState->marioObj, MODEL_MARIOS_CAP, bhvNormalCap);
+    if (gCurrLevelNum == LEVEL_CASTLE_GROUNDS && gContinuing) {
+        Vec3s checkpointPos;
+        save_file_get_checkpoint(checkpointPos, gMarioState->faceAngle);
 
-        capObject->oPosX = capPos[0];
-        capObject->oPosY = capPos[1];
-        capObject->oPosZ = capPos[2];
+        vec3s_copy(gMarioState->checkpointAngle, gMarioState->faceAngle);
+        vec3s_to_vec3f(gMarioState->pos, checkpointPos);
+        vec3f_copy(gMarioState->checkpointPos, gMarioState->pos);
 
-        capObject->oForwardVelS32 = 0;
+        set_current_cutscene(CUTSCENE_NONE);
 
-        capObject->oMoveAngleYaw = 0;
-    }
+        if (gCurrAreaIndex < 2) set_current_fog_state(DEFAULT_FOG);
+        else set_current_fog_state(TEMPLE2_FOG);
 
-    if (gCurrLevelNum == LEVEL_CASTLE_GROUNDS && gCurrAreaIndex == 1) {
+        gContinuing = FALSE;
+    } else if (gCurrLevelNum == LEVEL_CASTLE_GROUNDS && gCurrAreaIndex == 1) {
         set_current_cutscene(CUTSCENE_INTRO_TEMPLE);
+        save_file_set_checkpoint(-1107, -249, -6, gMarioState->checkpointAngle);
+        save_file_do_save(gCurrSaveFileNum - 1);
         set_current_fog_state(0);
+    } else if (gCurrLevelNum == LEVEL_CASTLE_GROUNDS) {
+        save_file_set_checkpoint(gMarioState->pos[0], gMarioState->pos[1], gMarioState->pos[2], gMarioState->faceAngle);
+        save_file_do_save(gCurrSaveFileNum - 1);
     }
 
     gMarioState->lightObj = NULL;

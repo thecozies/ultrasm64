@@ -458,14 +458,14 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex) {
 
     switch (gCurrLevelNum) {
         case LEVEL_BOWSER_1:
-            if (!(save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_1 | SAVE_FLAG_UNLOCKED_BASEMENT_DOOR))) {
-                save_file_set_flags(SAVE_FLAG_HAVE_KEY_1);
+            if (!(save_file_get_flags() & (SAVE_FLAG_SPEEDRUN_MODE | SAVE_FLAG_UNLOCKED_BASEMENT_DOOR))) {
+                save_file_set_flags(SAVE_FLAG_SPEEDRUN_MODE);
             }
             break;
 
         case LEVEL_BOWSER_2:
-            if (!(save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR))) {
-                save_file_set_flags(SAVE_FLAG_HAVE_KEY_2);
+            if (!(save_file_get_flags() & (SAVE_FLAG_CHALLENGE_MODE | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR))) {
+                save_file_set_flags(SAVE_FLAG_CHALLENGE_MODE);
             }
             break;
 
@@ -564,7 +564,7 @@ u32 save_file_get_star_flags(s32 fileIndex, s32 courseIndex) {
     if (courseIndex == -1) {
         starFlags = SAVE_FLAG_TO_STAR_FLAG(gSaveBuffer.files[fileIndex][0].flags);
     } else {
-        starFlags = gSaveBuffer.files[fileIndex][0].courseStars[courseIndex] & 0x7F;
+        // starFlags = gSaveBuffer.files[fileIndex][0].courseStars[courseIndex] & 0x7F;
     }
 
     return starFlags;
@@ -578,7 +578,7 @@ void save_file_set_star_flags(s32 fileIndex, s32 courseIndex, u32 starFlags) {
     if (courseIndex == -1) {
         gSaveBuffer.files[fileIndex][0].flags |= STAR_FLAG_TO_SAVE_FLAG(starFlags);
     } else {
-        gSaveBuffer.files[fileIndex][0].courseStars[courseIndex] |= starFlags;
+        // gSaveBuffer.files[fileIndex][0].courseStars[courseIndex] |= starFlags;
     }
 
     gSaveBuffer.files[fileIndex][0].flags |= SAVE_FLAG_FILE_EXISTS;
@@ -593,38 +593,84 @@ s32 save_file_get_course_coin_score(s32 fileIndex, s32 courseIndex) {
  * Return TRUE if the cannon is unlocked in the current course.
  */
 s32 save_file_is_cannon_unlocked(void) {
-    return (gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] & 0x80) != 0;
+    // return (gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] & 0x80) != 0;
+    return TRUE;
 }
 
 /**
  * Sets the cannon status to unlocked in the current course.
  */
 void save_file_set_cannon_unlocked(void) {
-    gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] |= 0x80;
+    // gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] |= 0x80;
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= SAVE_FLAG_FILE_EXISTS;
     gSaveFileModified = TRUE;
 }
 
 void save_file_set_cap_pos(s16 x, s16 y, s16 z) {
-    struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
+    // struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
 
-    saveFile->capLevel = gCurrLevelNum;
-    saveFile->capArea = gCurrAreaIndex;
-    vec3s_set(saveFile->capPos, x, y, z);
-    save_file_set_flags(SAVE_FLAG_CAP_ON_GROUND);
+    // saveFile->capLevel = gCurrLevelNum;
+    // saveFile->capArea = gCurrAreaIndex;
+    // vec3s_set(saveFile->capPos, x, y, z);
+    // save_file_set_flags(SAVE_FLAG_CAP_ON_GROUND);
 }
 
 s32 save_file_get_cap_pos(Vec3s capPos) {
+    // struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
+    // s32 flags = save_file_get_flags();
+
+    // if (saveFile->capLevel == gCurrLevelNum && saveFile->capArea == gCurrAreaIndex
+    //     && (flags & SAVE_FLAG_CAP_ON_GROUND)) {
+    //     vec3s_copy(capPos, saveFile->capPos);
+    //     return TRUE;
+    // }
+    return FALSE;
+}
+
+void save_file_set_checkpoint(s16 x, s16 y, s16 z, Vec3s angle) {
+    struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
+
+    saveFile->lastArea = gCurrAreaIndex;
+    vec3s_set(saveFile->checkpointPos, x, y, z);
+    vec3s_copy(saveFile->checkpointAngle, angle);
+    save_file_set_flags(SAVE_FLAG_STARTED | SAVE_FLAG_HAS_CHECKPOINT);
+}
+
+s32 save_file_get_checkpoint(Vec3s pos, Vec3s angle) {
     struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
     s32 flags = save_file_get_flags();
 
-    if (saveFile->capLevel == gCurrLevelNum && saveFile->capArea == gCurrAreaIndex
-        && (flags & SAVE_FLAG_CAP_ON_GROUND)) {
-        vec3s_copy(capPos, saveFile->capPos);
-        return TRUE;
+    if (flags & SAVE_FLAG_HAS_CHECKPOINT) {
+        vec3s_copy(pos, saveFile->checkpointPos);
+        vec3s_copy(angle, saveFile->checkpointAngle);
+        return saveFile->lastArea;
     }
+
+    return 0;
+}
+
+s32 save_file_check_checkpoint_exists(s16 x, s16 y, s16 z) {
+    struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
+    s32 flags = save_file_get_flags();
+
+    if (flags & SAVE_FLAG_HAS_CHECKPOINT) {
+        return saveFile->checkpointPos[0] == x && saveFile->checkpointPos[1] == y && saveFile->checkpointPos[2] == z;
+    }
+
     return FALSE;
 }
+
+s32 save_file_get_checkpoint_area(void) {
+    struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
+    s32 flags = save_file_get_flags();
+
+    if (flags & SAVE_FLAG_HAS_CHECKPOINT) {
+        return saveFile->lastArea;
+    }
+
+    return 0;
+}
+
 
 void save_file_set_sound_mode(u16 mode) {
     set_sound_mode(mode);
@@ -639,20 +685,20 @@ u16 save_file_get_sound_mode(void) {
 }
 
 void save_file_move_cap_to_default_location(void) {
-    if (save_file_get_flags() & SAVE_FLAG_CAP_ON_GROUND) {
-        switch (gSaveBuffer.files[gCurrSaveFileNum - 1][0].capLevel) {
-            case LEVEL_SSL:
-                save_file_set_flags(SAVE_FLAG_CAP_ON_KLEPTO);
-                break;
-            case LEVEL_SL:
-                save_file_set_flags(SAVE_FLAG_CAP_ON_MR_BLIZZARD);
-                break;
-            case LEVEL_TTM:
-                save_file_set_flags(SAVE_FLAG_CAP_ON_UKIKI);
-                break;
-        }
-        save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
-    }
+    // if (save_file_get_flags() & SAVE_FLAG_CAP_ON_GROUND) {
+    //     switch (gSaveBuffer.files[gCurrSaveFileNum - 1][0].capLevel) {
+    //         case LEVEL_SSL:
+    //             save_file_set_flags(SAVE_FLAG_CAP_ON_KLEPTO);
+    //             break;
+    //         case LEVEL_SL:
+    //             save_file_set_flags(SAVE_FLAG_CAP_ON_MR_BLIZZARD);
+    //             break;
+    //         case LEVEL_TTM:
+    //             save_file_set_flags(SAVE_FLAG_CAP_ON_UKIKI);
+    //             break;
+    //     }
+    //     save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
+    // }
 }
 
 #ifdef VERSION_EU

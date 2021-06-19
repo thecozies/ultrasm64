@@ -8,6 +8,7 @@
 
 #include "course_table.h"
 #include "puppycam2.h"
+#include "level_update.h"
 
 #define EEPROM_SIZE 0x200
 #define NUM_SAVE_FILES 4
@@ -20,19 +21,17 @@ struct SaveBlockSignature
 
 struct SaveFile
 {
-    // Location of lost cap.
-    // Note: the coordinates get set, but are never actually used, since the
-    // cap can always be found in a fixed spot within the course
-    u8 capLevel;
-    u8 capArea;
-    Vec3s capPos;
+    u8 challengeMode;
+    u8 lastArea;
+    Vec3s checkpointPos;
+    Vec3s checkpointAngle;
 
     u32 flags;
 
     // Star flags for each course.
     // The most significant bit of the byte *following* each course is set if the
     // cannon is open.
-    u8 courseStars[COURSE_COUNT];
+    u8 orbsGrabbed[17];
 
     u8 courseCoinScores[COURSE_STAGES_COUNT];
 
@@ -87,11 +86,11 @@ extern s8 gLevelToCourseNumTable[];
 
 // game progress flags
 #define SAVE_FLAG_FILE_EXISTS            /* 0x00000001 */ (1 << 0)
-#define SAVE_FLAG_HAVE_WING_CAP          /* 0x00000002 */ (1 << 1)
-#define SAVE_FLAG_HAVE_METAL_CAP         /* 0x00000004 */ (1 << 2)
-#define SAVE_FLAG_HAVE_VANISH_CAP        /* 0x00000008 */ (1 << 3)
-#define SAVE_FLAG_HAVE_KEY_1             /* 0x00000010 */ (1 << 4)
-#define SAVE_FLAG_HAVE_KEY_2             /* 0x00000020 */ (1 << 5)
+#define SAVE_FLAG_STARTED                /* 0x00000002 */ (1 << 1)
+#define SAVE_FLAG_HAS_CHECKPOINT         /* 0x00000004 */ (1 << 2)
+#define SAVE_FLAG_BEAT_GAME              /* 0x00000008 */ (1 << 3)
+#define SAVE_FLAG_SPEEDRUN_MODE          /* 0x00000010 */ (1 << 4)
+#define SAVE_FLAG_CHALLENGE_MODE         /* 0x00000020 */ (1 << 5)
 #define SAVE_FLAG_UNLOCKED_BASEMENT_DOOR /* 0x00000040 */ (1 << 6)
 #define SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR /* 0x00000080 */ (1 << 7)
 #define SAVE_FLAG_DDD_MOVED_BACK         /* 0x00000100 */ (1 << 8)
@@ -155,6 +154,10 @@ s32 save_file_get_cap_pos(Vec3s capPos);
 void save_file_set_sound_mode(u16 mode);
 u16 save_file_get_sound_mode(void);
 void save_file_move_cap_to_default_location(void);
+void save_file_set_checkpoint(s16 x, s16 y, s16 z, Vec3s angle);
+s32 save_file_get_checkpoint(Vec3s pos, Vec3s angle);
+s32 save_file_get_checkpoint_area(void);
+s32 save_file_check_checkpoint_exists(s16 x, s16 y, s16 z);
 
 void disable_warp_checkpoint(void);
 void check_if_should_set_warp_checkpoint(struct WarpNode *warpNode);
