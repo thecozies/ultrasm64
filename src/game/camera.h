@@ -750,9 +750,7 @@ void play_sound_button_change_blocked(void);
 void play_sound_rbutton_changed(void);
 void play_sound_if_cam_switched_to_lakitu_or_mario(void);
 s32 radial_camera_input(struct Camera *c, UNUSED f32 unused);
-s32 trigger_cutscene_dialog(s32 trigger);
 void handle_c_button_movement(struct Camera *c);
-void start_cutscene(struct Camera *c, u8 cutscene);
 u8 get_cutscene_from_mario_status(struct Camera *c);
 void warp_camera(f32 displacementX, f32 displacementY, f32 displacementZ);
 void approach_camera_height(struct Camera *c, f32 goal, f32 inc);
@@ -774,7 +772,6 @@ void set_fov_shake(s16 amplitude, s16 decay, s16 shakeSpeed);
 
 void set_fov_function(u8 func);
 void set_fov_45(void);
-void cutscene_set_fov_shake_preset(u8 preset);
 void set_fov_shake_from_point_preset(u8 preset, f32 posX, f32 posY, f32 posZ);
 void obj_rotate_towards_point(struct Object *o, Vec3f point, s16 pitchOff, s16 yawOff, s16 pitchDiv, s16 yawDiv);
 
