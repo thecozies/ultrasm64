@@ -8,6 +8,7 @@
 #include "s2d_draw.h"
 #include "s2d_print.h"
 #include "s2d_ustdlib.h"
+#include "s2d_error.h"
 
 enum S2DPrintModes {
 	MODE_DRAW_DROPSHADOW,

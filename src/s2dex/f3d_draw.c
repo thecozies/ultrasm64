@@ -25,7 +25,8 @@ void f3d_rdp_init(void) {
         0, 0, 0, ENVIRONMENT,
         TEXEL0, 0, ENVIRONMENT, 0
     );
-    gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    // gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_CLD_SURF, G_RM_CLD_SURF2);
     gDPPipeSync(gdl_head++);
 }
 
