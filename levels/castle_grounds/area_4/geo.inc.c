@@ -39,6 +39,10 @@ const GeoLayout castle_grounds_area_4_geo[] = {
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
 		GEO_TRANSLATE_NODE(LAYER_OPAQUE, 3407, -7489, 0),
+		GEO_RENDER_RANGE(-500, 2500),
+		GEO_OPEN_NODE(),
+			GEO_DISPLAY_LIST(6, castle_grounds_dl_vines_001_mesh_layer_6),
+		GEO_CLOSE_NODE(),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
@@ -67,9 +71,10 @@ const GeoLayout castle_grounds_area_4[] = {
 				GEO_CLOSE_NODE(),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
-		GEO_DISPLAY_LIST(1, castle_grounds_dl_material_revert_render_settings),
 		GEO_DISPLAY_LIST(4, castle_grounds_dl_material_revert_render_settings),
+		GEO_DISPLAY_LIST(1, castle_grounds_dl_material_revert_render_settings),
 		GEO_DISPLAY_LIST(5, castle_grounds_dl_material_revert_render_settings),
+		GEO_DISPLAY_LIST(6, castle_grounds_dl_material_revert_render_settings),
 	GEO_CLOSE_NODE(),
 	GEO_END(),
 };
