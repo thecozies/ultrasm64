@@ -205,7 +205,7 @@
 #define COL_TRI_INIT(surfType, triNum) surfType, triNum
 
 // Collision Tri
-#define COL_TRI(v1, v2, v3) v1, v2, v3
+#define COL_TRI(v1, v2, v3) v1, v2, v3, 0
 
 // Collision Tri With Special Params
 #define COL_TRI_SPECIAL(v1, v2, v3, param) v1, v2, v3, param
@@ -224,5 +224,10 @@
 
 // Water Box
 #define COL_WATER_BOX(id, x1, z1, x2, z2, y) id, x1, z1, x2, z2, y
+
+#define SURF_PARAM_AGGRESSIVE_VERTICAL 0x0100
+#define SURF_PARAM_45_CAM 0x0101
+#define SURF_PARAM_45_CAM_22_5 0x0103
+#define SURF_PARAM_STATIC_HEIGHT_CAM 0x0102
 
 #endif // SURFACE_TERRAINS_H
