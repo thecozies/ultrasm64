@@ -68,7 +68,12 @@ struct gPuppyStruct
     u8 enabled;
     s16 swimPitch;
     struct gPuppyOptions options;
-
+    s8 fixedActive;
+    struct Object *fixedObj;
+    s8 is45Cam;
+    s8 isVertCam;
+    s8 allowAnalogControl;
+    s8 allowControl;
 };
 
 //A second container for bounds that have 2 pairs of coordinates. Optional.
@@ -134,6 +139,7 @@ extern u16 gPuppyVolumeCount;
 extern struct MemoryPool *gPuppyMemoryPool;
 extern s16 gPrevPuppyZoomDist;
 extern s16 gPrevPuppyTargetYaw;
+extern s8 gFixedNewlyActive;
 extern void puppycam_boot(void);
 extern void puppycam_init(void);
 extern void puppycam_loop(void);
