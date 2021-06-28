@@ -7,7 +7,7 @@
 #include "types.h"
 
 
-#define CUTSCENE_NONE               0
+#define CUTSCENE_NONE             0
 #define CUTSCENE_INTRO            1
 #define CUTSCENE_SLIDE            2
 #define CUTSCENE_END              3

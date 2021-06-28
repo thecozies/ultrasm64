@@ -46,7 +46,6 @@ s8 gGameStarted = FALSE;
 s8 gWaitingToStart = TRUE;
 s8 sRemindedAboutRing = FALSE;
 u32 gStartWaitTimer = 0;
-s8 sWaitingForStickReturn = FALSE;
 
 s8 gCurCutscene = 0;
 u32 gCurCutsceneTimer = 0;
@@ -2106,41 +2105,6 @@ void reset_intro_statuses(void) {
 }
 #endif
 
-void handle_waiting_to_start(void) {
-    if (gWaitingToStart) {
-        gStartWaitTimer++;
-
-        if (gStartWaitTimer > 60 && gPlayer1Controller->buttonDown & (START_BUTTON | A_BUTTON)) {
-            if (gHasCheckpoint && gSelectedOption == 0) {
-                gWaitingToStart = FALSE;
-                gStartWaitTimer = 0;
-                gTutorialDone = TRUE;
-                level_trigger_warp(gMarioState, WARP_OP_CONTINUE);
-                // initiate_warp(LEVEL_CASTLE_GROUNDS, warpArea, 0xDD, 0);
-            } else {
-                gWaitingToStart = FALSE;
-                gStartWaitTimer = 0;
-            }
-        }
-
-        if (gPlayer1Controller->buttonPressed & L_TRIG) gWidescreen = !gWidescreen;
-
-        if (!sWaitingForStickReturn) {
-            if (gPlayer1Controller->rawStickY > 60 || gPlayer1Controller->buttonPressed & U_JPAD) {
-                gSelectedOption = MAX(0, gSelectedOption - 1);
-                if (gPlayer1Controller->rawStickY > 60) sWaitingForStickReturn = TRUE;
-            }
-
-            if (gPlayer1Controller->rawStickY < -60 || gPlayer1Controller->buttonPressed & D_JPAD) {
-                gSelectedOption = MIN(1, gSelectedOption + 1);
-                if (gPlayer1Controller->rawStickY < -60) sWaitingForStickReturn = TRUE;
-            }
-        } else if (ABS(gPlayer1Controller->rawStickY) < 4) {
-            sWaitingForStickReturn = FALSE;
-        }
-    }
-}
-
 /**
  * Main function for executing Mario's behavior.
  */
@@ -2202,6 +2166,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         // ) gCurCutsceneTimer++;
         // f32 speed = sqrtf((gMarioState->vel[0] * gMarioState->vel[0]) + (gMarioState->vel[1] * gMarioState->vel[1]) + (gMarioState->vel[2] * gMarioState->vel[2]));
         // print_text_fmt_int(80, 20, "%d", (s32) speed);
+        // fadeout_level_music(1);
 #endif
 
         handle_waiting_to_start();
