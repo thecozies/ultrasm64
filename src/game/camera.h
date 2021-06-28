@@ -278,6 +278,7 @@
 #define CAM_FOV_ZOOM_30     12
 #define CAM_FOV_SET_29      13
 #define CAM_FOV_SET_CUSTOM  14
+#define CAM_FOV_APP_CUSTOM  15
 
 #define FOV_24MM  84.06f
 #define FOV_35MM  63.44f

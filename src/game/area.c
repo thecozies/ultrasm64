@@ -85,13 +85,28 @@ f32 sFPS = 0.0f;
 s8 gGameIsLagging = FALSE;
 u32 gFramesWithoutLag = 30;
 
-char sGameTitle[18] = "Lucy's\nLevitation";
-char sPressStartToPlay[11] = "Press Start";
+char sGameTitle[] = "Lucy's\nLevitation";
+char sPressStartToPlay[] = "Press Start";
 char sNewGame[] = "New Game";
 char sContinueGame[] = "Continue";
+char sContinueGameDisabled[] = COLOR_GREY "Continue";
+char sEnabled[] = "Enabled";
+char sDisabled[] = COLOR_GREY "Disabled";
+char s16By9[] = "Widescreen:";
+char sChallengeMode[] = "Challenge Mode:";
+char sSpeedrunMode[] = "Speedrun Mode:";
+char sOptions[] = "Options";
+char sOptionsReturn[] = "Return";
+
+u8 gChallengeMode = FALSE;
+u8 gSpeedrunMode = FALSE;
+
 s32 sTimesRenderedText = 0;
+s8 sNumOptions = 1;
 s8 gSelectedOption = 0;
+s8 sWaitingForStickReturn = FALSE;
 s8 gHasCheckpoint = FALSE;
+s8 sOptionsMenuOpen = FALSE;
 
 s8 sCurFog = DEFAULT_FOG;
 
@@ -541,16 +556,203 @@ void render_intro_text(void) {
     }
 }
 
-    // if (gGoalFadeState == STARTING_SHOW_GOAL) {
-    //     if (sGoalFadeTimer >= attack) set_next_goal_state(FULL_SHOW_GOAL, 255);
-    //     sFadeAlpha = MIN(sFadeAlpha + 9, 255);
-    // } else if (gGoalFadeState == FULL_SHOW_GOAL && sGoalFadeTimer >= sustain) {
-    //     set_next_goal_state(FADING_SHOW_GOAL, 255);
-    //     sFadeAlpha = 255;
-    // } else if (gGoalFadeState == FADING_SHOW_GOAL) { // FADING_SHOW_GOAL
-    //     if (sGoalFadeTimer > release) set_next_goal_state(NO_GOAL, 0);
-    //     sFadeAlpha = MAX(sFadeAlpha - (255 / release), 0);
-    // }
+enum DEFAULT_START_OPTIONS {
+    OPT_CONTINUE,
+    OPT_NEW_GAME,
+    OPT_OPTIONS
+};
+
+enum DEFAULT_OPTIONS_MENU_OPTIONS {
+    OPT_WIDE,
+    OPT_RETURN
+};
+
+enum SPECIAL_OPTIONS_MENU_OPTIONS {
+    OPT_SPECIAL_WIDE,
+    OPT_SPECIAL_CHALLENGE,
+    OPT_SPECIAL_SPEEDRUN,
+    OPT_SPECIAL_RETURN
+};
+
+// called from mario.c due to needing to warp mario before his code is executed
+void handle_waiting_to_start(void) {
+    if (gWaitingToStart) {
+        s8 canAccessOpt0 = (sOptionsMenuOpen || (gHasCheckpoint && !gChallengeMode && !gSpeedrunMode));
+        s8 minOpt = canAccessOpt0 ? 0 : 1;
+        gStartWaitTimer++;
+
+        if (!canAccessOpt0 && gSelectedOption == 0) gSelectedOption = 1;
+        if (gSelectedOption > sNumOptions - 1) gSelectedOption = sNumOptions - 1;
+
+        if (sOptionsMenuOpen && gPlayer1Controller->buttonPressed & B_BUTTON) {
+            sOptionsMenuOpen = FALSE;
+            return;
+        }
+
+        if (gStartWaitTimer > 60 && gPlayer1Controller->buttonPressed & (START_BUTTON | A_BUTTON)) {
+            if (sOptionsMenuOpen && sNumOptions == 2) {
+                // opt menu
+                switch (gSelectedOption)
+                {
+                    case OPT_WIDE:
+                        gWidescreen = !gWidescreen;
+                        break;
+                    case OPT_RETURN:
+                    default:
+                        sOptionsMenuOpen = FALSE;
+                        break;
+                }
+            } else if (sOptionsMenuOpen) {
+                // special opt menu
+                switch (gSelectedOption)
+                {
+                    case OPT_SPECIAL_WIDE:
+                        gWidescreen = !gWidescreen;
+                        break;
+                    case OPT_SPECIAL_CHALLENGE:
+                        gChallengeMode = !gChallengeMode;
+                        break;
+                    case OPT_SPECIAL_SPEEDRUN:
+                        gSpeedrunMode = !gSpeedrunMode;
+                        break;
+                    case OPT_SPECIAL_RETURN:
+                    default:
+                        sOptionsMenuOpen = FALSE;
+                        break;
+                }
+            } else {
+                // main menu
+                switch (gSelectedOption)
+                {
+                    case OPT_CONTINUE:
+                        gWaitingToStart = FALSE;
+                        gStartWaitTimer = 0;
+                        gTutorialDone = TRUE;
+                        level_trigger_warp(gMarioState, WARP_OP_CONTINUE);
+                        break;
+                    case OPT_NEW_GAME:
+                        gWaitingToStart = FALSE;
+                        gStartWaitTimer = 0;
+                        break;
+                    case OPT_OPTIONS:
+                    default:
+                        sOptionsMenuOpen = TRUE;
+                        break;
+                }
+            }
+            return;
+        }
+
+        if (!sWaitingForStickReturn) {
+            if (gPlayer1Controller->rawStickY > 60 || gPlayer1Controller->buttonPressed & U_JPAD) {
+                gSelectedOption = MAX(minOpt, gSelectedOption - 1);
+                if (gPlayer1Controller->rawStickY > 60) sWaitingForStickReturn = TRUE;
+            }
+
+            if (gPlayer1Controller->rawStickY < -60 || gPlayer1Controller->buttonPressed & D_JPAD) {
+                gSelectedOption = MIN(sNumOptions - 1, gSelectedOption + 1);
+                if (gPlayer1Controller->rawStickY < -60) sWaitingForStickReturn = TRUE;
+            }
+        } else if (ABS(gPlayer1Controller->rawStickY) < 4) {
+            sWaitingForStickReturn = FALSE;
+        }
+    }
+}
+
+#define OPT_STATUS_LEFT 90
+
+void render_start_options(void) {
+    sNumOptions = save_file_get_flags() & SAVE_FLAG_BEAT_GAME ? 4 : 2;
+
+    if (sNumOptions == 2) {
+        s2d_print_deferred(
+            20,
+            (int) (SCREEN_HEIGHT - 70),
+            ALIGN_LEFT,
+            MIN(200, sFadeAlpha * (gSelectedOption == 0 ? 1.0f : 0.4f)),
+            0.5f,
+            s16By9
+        );
+        s2d_print_deferred(
+            OPT_STATUS_LEFT,
+            (int) (SCREEN_HEIGHT - 70),
+            ALIGN_LEFT,
+            MIN(200, sFadeAlpha * (gSelectedOption == 0 ? 1.0f : 0.4f)),
+            0.5f,
+            gWidescreen ? sEnabled : sDisabled
+        );
+
+        s2d_print_deferred(
+            20,
+            (int) (SCREEN_HEIGHT - 50),
+            ALIGN_LEFT,
+            MIN(200, sFadeAlpha * (gSelectedOption == 1 ? 1.0f : 0.4f)),
+            0.5f,
+            sOptionsReturn
+        );
+    } else {
+        s2d_print_deferred(
+            20,
+            (int) (SCREEN_HEIGHT - 110),
+            ALIGN_LEFT,
+            MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_WIDE ? 1.0f : 0.4f)),
+            0.5f,
+            s16By9
+        );
+        s2d_print_deferred(
+            OPT_STATUS_LEFT,
+            (int) (SCREEN_HEIGHT - 110),
+            ALIGN_LEFT,
+            MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_WIDE ? 1.0f : 0.4f)),
+            0.5f,
+            gWidescreen ? sEnabled : sDisabled
+        );
+
+        s2d_print_deferred(
+            20,
+            (int) (SCREEN_HEIGHT - 90),
+            ALIGN_LEFT,
+            MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_CHALLENGE ? 1.0f : 0.4f)),
+            0.5f,
+            sChallengeMode
+        );
+        s2d_print_deferred(
+            OPT_STATUS_LEFT,
+            (int) (SCREEN_HEIGHT - 90),
+            ALIGN_LEFT,
+            MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_CHALLENGE ? 1.0f : 0.4f)),
+            0.5f,
+            gChallengeMode ? sEnabled : sDisabled
+        );
+
+        s2d_print_deferred(
+            20,
+            (int) (SCREEN_HEIGHT - 70),
+            ALIGN_LEFT,
+            MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_SPEEDRUN ? 1.0f : 0.4f)),
+            0.5f,
+            sSpeedrunMode
+        );
+        s2d_print_deferred(
+            OPT_STATUS_LEFT,
+            (int) (SCREEN_HEIGHT - 70),
+            ALIGN_LEFT,
+            MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_SPEEDRUN ? 1.0f : 0.4f)),
+            0.5f,
+            gSpeedrunMode ? sEnabled : sDisabled
+        );
+
+        s2d_print_deferred(
+            20,
+            (int) (SCREEN_HEIGHT - 50),
+            ALIGN_LEFT,
+            MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_RETURN ? 1.0f : 0.4f)),
+            0.5f,
+            sOptionsReturn
+        );
+    }
+    
+}
 
 void title_screen_waiting_to_start(void) {
     u32 saveFlags = save_file_get_flags();
@@ -561,31 +763,35 @@ void title_screen_waiting_to_start(void) {
     else if (gGoalFadeState == NO_GOAL && gWaitingToStart) set_next_goal_state(STARTING_SHOW_GOAL, 0);
 
     if (update_text_fade(50, 0xFFFFFFF, 35)) {
-        if (gHasCheckpoint) {
+        if (sOptionsMenuOpen) {
+            render_start_options();
+        } else {
+            sNumOptions = 3;
+            s2d_print_deferred(
+                20,
+                (int) (SCREEN_HEIGHT - 90),
+                ALIGN_LEFT,
+                MIN(200, sFadeAlpha * (gSelectedOption == 0 ? 1.0f : (gHasCheckpoint ? 0.4f : 0.2f))),
+                0.5f,
+                gHasCheckpoint ? sContinueGame : sContinueGameDisabled
+            );
+
             s2d_print_deferred(
                 20,
                 (int) (SCREEN_HEIGHT - 70),
-                ALIGN_LEFT,
-                MIN(200, sFadeAlpha * (gSelectedOption == 0 ? 1.0f : 0.4f)),
-                0.5f,
-                sContinueGame
-            );
-            s2d_print_deferred(
-                20,
-                (int) (SCREEN_HEIGHT - 50),
                 ALIGN_LEFT,
                 MIN(200, sFadeAlpha * (gSelectedOption == 1 ? 1.0f : 0.4f)),
                 0.5f,
                 sNewGame
             );
-        } else {
+
             s2d_print_deferred(
-                SCREEN_WIDTH - 10,
-                (int) (SCREEN_HEIGHT - 60),
-                ALIGN_RIGHT,
-                MIN(150, sFadeAlpha),
-                1.0f,
-                sPressStartToPlay
+                20,
+                (int) (SCREEN_HEIGHT - 50),
+                ALIGN_LEFT,
+                MIN(200, sFadeAlpha * (gSelectedOption == 2 ? 1.0f : 0.4f)),
+                0.5f,
+                sOptions
             );
         }
     }

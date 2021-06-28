@@ -177,6 +177,7 @@ void set_collected_para(s32 group);
 void set_current_fog_state(s32 fogState);
 void set_next_goal_state(s32 state, s32 nextAlpha);
 void reset_collected_para(void);
+void handle_waiting_to_start(void);
 
 enum FOG_OPTIONS {
     DEFAULT_FOG,

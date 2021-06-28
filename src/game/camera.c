@@ -4660,16 +4660,6 @@ void clear_cutscene_vars(UNUSED struct Camera *c) {
 }
 
 /**
- * Start the cutscene, `cutscene`, if it is not already playing.
- */
-// void start_cutscene(struct Camera *c, u8 cutscene) {
-//     if (c->cutscene != cutscene) {
-//         c->cutscene = cutscene;
-//         clear_cutscene_vars(c);
-//     }
-// }
-
-/**
  * Look up the victory dance cutscene in sDanceCutsceneTable
  *
  * First the index entry is determined based on the course and the star that was just picked up
@@ -6873,6 +6863,10 @@ void set_fov_custom(void) {
     sFOVState.fov = gCustomFOV;
 }
 
+void app_fov_custom(void) {
+    sFOVState.fov = approach_f32_asymptotic(sFOVState.fov, gCustomFOV, 0.1f);
+}
+
 void set_fov_29(UNUSED struct MarioState *m) {
     sFOVState.fov = 25.f;
 }
@@ -6957,6 +6951,9 @@ Gfx *geo_camera_fov(s32 callContext, struct GraphNode *g, UNUSED void *context) 
                 break;
             case CAM_FOV_SET_CUSTOM:
                 set_fov_custom();
+                break;
+            case CAM_FOV_APP_CUSTOM:
+                app_fov_custom();
                 break;
             case CAM_FOV_SET_29:
                 set_fov_29(marioState);
