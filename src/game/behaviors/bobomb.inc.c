@@ -295,8 +295,8 @@ void bobomb_buddy_act_idle(void) {
 
     collisionFlags = object_step();
 
-    if ((sp1a == 5) || (sp1a == 16))
-        cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);
+    // if ((sp1a == 5) || (sp1a == 16))
+    //     cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);
 
     if (o->oDistanceToMario < 1000.0f)
         o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x140);
@@ -384,8 +384,8 @@ void bobomb_buddy_act_talk(void) {
 
 void bobomb_buddy_act_turn_to_talk(void) {
     s16 sp1e = o->header.gfx.animInfo.animFrame;
-    if ((sp1e == 5) || (sp1e == 16))
-        cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);
+    // if ((sp1e == 5) || (sp1e == 16))
+    //     cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);
 
     o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oAngleToMario, 0x1000);
     if ((s16) o->oMoveAngleYaw == (s16) o->oAngleToMario)
