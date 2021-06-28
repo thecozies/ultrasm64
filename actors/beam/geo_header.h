@@ -8,3 +8,7 @@ extern Gfx mat_beam_inner_beam_layer5[];
 extern Gfx mat_revert_beam_inner_beam_layer5[];
 extern Gfx beam_beam_mesh_layer_5[];
 extern Gfx beam_material_revert_render_settings[];
+extern Vtx beam_beam_LOD_mesh_layer_5_vtx_cull[8];
+extern Vtx beam_beam_LOD_mesh_layer_5_vtx_0[45];
+extern Gfx beam_beam_LOD_mesh_layer_5_tri_0[];
+extern Gfx beam_beam_LOD_mesh_layer_5[];
