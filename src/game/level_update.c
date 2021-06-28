@@ -1099,9 +1099,9 @@ s32 play_mode_normal(void) {
 
             area_update_objects();
             scroll_textures();
-            if (gGameLagged && gCurrentArea != NULL && gCurrentArea->camera->cutscene != 0) {
-                play_cutscene(gCurrentArea->camera);
-            }
+            // if (gGameLagged && gCurrentArea != NULL && gCurrentArea->camera->cutscene != 0) {
+            //     play_cutscene(gCurrentArea->camera);
+            // }
         }
     } else {
         sDeltaTime = 0;
