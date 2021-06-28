@@ -90,7 +90,7 @@ s32 check_fall_damage(struct MarioState *m, u32 hardFallAction) {
                 play_sound(SOUND_MARIO_ATTACKED, m->marioObj->header.gfx.cameraToObject);
                 return drop_and_set_mario_action(m, hardFallAction, 4);
             } else if (fallHeight > damageHeight && !mario_floor_is_slippery(m)) {
-                m->squishTimer = 30;
+                m->squishTimer = 20;
 #if ENABLE_RUMBLE
                 queue_rumble_data(5, 80);
 #endif
