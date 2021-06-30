@@ -128,7 +128,7 @@ const LevelScript level_castle_grounds_entry[] = {
 		OBJECT(MODEL_NONE, 1926, -849, 2613, 0, 90, 0, 0x000A0000, bhvCutsceneObj),
 		TERRAIN(castle_grounds_area_2_collision),
 		MACRO_OBJECTS(castle_grounds_area_2_macro_objs),
-		SET_BACKGROUND_MUSIC(0x00, SEQ_STREAMED_TEMPLE_TWO),
+		SET_BACKGROUND_MUSIC(0x00, SEQ_TEMPLE_2),
 		TERRAIN_TYPE(TERRAIN_STONE),
 	END_AREA(),
 
@@ -171,7 +171,7 @@ const LevelScript level_castle_grounds_entry[] = {
 		OBJECT(MODEL_NONE, 2680, -3923, 3550, 0, 0, 0, 0x00000000, bhvJetStreamRingSpawner),
 		TERRAIN(castle_grounds_area_4_collision),
 		MACRO_OBJECTS(castle_grounds_area_4_macro_objs),
-		SET_BACKGROUND_MUSIC(0x00, SEQ_STREAMED_TEMPLE_TWO),
+		SET_BACKGROUND_MUSIC(0x00, SEQ_TEMPLE_2),
 		TERRAIN_TYPE(TERRAIN_STONE),
 	END_AREA(),
 
@@ -205,7 +205,7 @@ const LevelScript level_castle_grounds_entry[] = {
 		OBJECT(MODEL_NONE, 341, 1462, 1235, 0, 0, 0, 0x00000000, bhvJetStreamRingSpawner),
 		TERRAIN(castle_grounds_area_5_collision),
 		MACRO_OBJECTS(castle_grounds_area_5_macro_objs),
-		SET_BACKGROUND_MUSIC(0x00, SEQ_STREAMED_TEMPLE_TWO),
+		SET_BACKGROUND_MUSIC(0x00, SEQ_TEMPLE_2),
 		TERRAIN_TYPE(TERRAIN_STONE),
 	END_AREA(),
 
