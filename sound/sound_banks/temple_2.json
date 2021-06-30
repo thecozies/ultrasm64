@@ -1,0 +1,73 @@
+{
+    "date": "1996-03-19",
+    "sample_bank": "temple_2",
+    "envelopes": {
+        "envelope": [
+            [
+                6,
+                32700
+            ],
+            [
+                6,
+                32700
+            ],
+            [
+                32700,
+                29430
+            ],
+            "hang"
+        ]
+    },
+    "instruments": {
+        "inst0": {
+            "release_rate": 10,
+            "envelope": "envelope",
+            "sound": "00_room1_l_custom"
+        },
+        "inst1": {
+            "release_rate": 10,
+            "envelope": "envelope",
+            "sound": "01_room1_r_custom"
+        },
+        "inst2": {
+            "release_rate": 10,
+            "envelope": "envelope",
+            "sound": "02_room2_l_custom"
+        },
+        "inst3": {
+            "release_rate": 10,
+            "envelope": "envelope",
+            "sound": "03_room2_r_custom"
+        },
+        "inst4": {
+            "release_rate": 10,
+            "envelope": "envelope",
+            "sound": "04_room3_l_custom"
+        },
+        "inst5": {
+            "release_rate": 10,
+            "envelope": "envelope",
+            "sound": "05_room3_r_custom"
+        },
+        "inst6": {
+            "release_rate": 10,
+            "envelope": "envelope",
+            "sound": "06_room4_l_custom"
+        },
+        "inst7": {
+            "release_rate": 10,
+            "envelope": "envelope",
+            "sound": "07_room4_r_custom"
+        }
+    },
+    "instrument_list": [
+        "inst0",
+        "inst1",
+        "inst2",
+        "inst3",
+        "inst4",
+        "inst5",
+        "inst6",
+        "inst7"
+    ]
+}

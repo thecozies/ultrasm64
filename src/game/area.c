@@ -109,6 +109,8 @@ s8 gHasCheckpoint = FALSE;
 s8 sOptionsMenuOpen = FALSE;
 
 s8 sCurFog = DEFAULT_FOG;
+u8 sTimeInRoom[4] = {50, 50, 50, 50};
+u8 sTimeLeftRoom[4] = {0, 0, 0, 0};
 
 enum GOAL_FADE_STATES {
     NO_GOAL,
@@ -874,8 +876,57 @@ void render_s2dex(void) {
     }
 }
 
+enum {
+    TEMPLE2_ROOM1,
+    TEMPLE2_ROOM2,
+    TEMPLE2_ROOM3,
+    TEMPLE2_ROOM4,
+    TEMPLE_2_TRACKS
+};
+
+#define TEMPLE2_ROOM2_X -1993.0f
+
+u8 handle_channel_volume(u8 channel, s8 isInRoom) {
+    if (isInRoom) {
+        sTimeInRoom[channel] = MIN(127, sTimeInRoom[channel] + 1);
+        sTimeLeftRoom[channel] = sTimeInRoom[channel];
+        return sTimeInRoom[channel];
+    } else if (sTimeLeftRoom[channel] != 0) {
+        sTimeLeftRoom[channel] = MAX(0, sTimeInRoom[channel] - 1);
+        sTimeInRoom[channel] = sTimeLeftRoom[channel];
+        return sTimeInRoom[channel];
+    }
+
+    return 0;
+}
+
+void handle_temple_2_channels(void) {
+    if (gCurrLevelNum != LEVEL_CASTLE_GROUNDS || gCurrAreaIndex == 1 || gCurrAreaIndex == 3) return;
+
+    for (u8 i = 0; i < TEMPLE_2_TRACKS; i++)
+    {
+        u8 targetVol = 0;
+        switch (i) {
+            case TEMPLE2_ROOM1:
+                targetVol = handle_channel_volume(i, gCurrAreaIndex == 2 && gMarioState->pos[0] < TEMPLE2_ROOM2_X);
+                break;
+            case TEMPLE2_ROOM2:
+                targetVol = handle_channel_volume(i, gCurrAreaIndex == 2 && gMarioState->pos[0] >= TEMPLE2_ROOM2_X);
+                break;
+            case TEMPLE2_ROOM3:
+                targetVol = handle_channel_volume(i, gCurrAreaIndex == 4);
+                break;
+            case TEMPLE2_ROOM4:
+                targetVol = handle_channel_volume(i, gCurrAreaIndex == 5);
+        }
+        fade_channel_volume_scale(SEQ_PLAYER_LEVEL, i * 2, targetVol, (u16)30);
+        fade_channel_volume_scale(SEQ_PLAYER_LEVEL, (i * 2) + 1, targetVol, (u16)30);
+    }
+}
+
 void render_game(void) {
     if (gCurrentArea != NULL && !gWarpTransition.pauseRendering) {
+        handle_temple_2_channels();
         if (!gWaitingToStart && !(gContinuing && gCurCutscene == CUTSCENE_INTRO)) gCurCutsceneTimer++;
         if (gGameStarted) update_fog();
         if (
