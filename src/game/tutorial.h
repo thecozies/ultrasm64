@@ -6,7 +6,7 @@ extern void next_tip(void);
 extern void prev_tip(void);
 extern void reset_tutorial(void);
 extern void render_pause_hint_text(void);
-extern void render_ring_tip(void);
+extern s32 render_tip(u8 tipType);
 extern s32 gTutorialDone;
 
 #define COLOR_WHITE     COLOR "255 255 255 255"
@@ -35,5 +35,8 @@ extern s32 gTutorialDone;
 #define TITLE_DPAD              COLOR_GREY   "D-Pad"        COLOR_WHITE
 #define TITLE_STICK             COLOR_GREY   "controller stick" COLOR_WHITE
 #define TITLE_PAUSE             COLOR_RED    "start"        COLOR_WHITE
+
+#define TIP_TYPE_RING_REMINDER 1
+#define TIP_TYPE_DOOR_OPENED 2
 
 #endif

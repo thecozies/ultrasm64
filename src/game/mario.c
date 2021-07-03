@@ -44,7 +44,6 @@ s8 filler80339F1C[20];
 s8 gCheckingWaterForMario = FALSE;
 s8 gGameStarted = FALSE;
 s8 gWaitingToStart = TRUE;
-s8 sRemindedAboutRing = FALSE;
 u32 gStartWaitTimer = 0;
 
 s8 gCurCutscene = 0;
@@ -52,6 +51,7 @@ u32 gCurCutsceneTimer = 0;
 s32 sWarpOp = 0;
 s8 sIntroCutsceneDone = FALSE;
 Vec3f gFinalOrbPos = { 0.0f, 0.0f, 0.0f };
+u32 gSpeedRunTimer = 0;
 
 
 /**************************************************
@@ -1845,15 +1845,9 @@ void set_current_cutscene(s32 cutscene) {
 
     if (cutscene == CUTSCENE_LUCYS_LEVITATION) set_mario_action(gMarioState, ACT_LUCYS_LEVITATION, 0);
 
-    if (cutscene == CUTSCENE_RING_REMINDER && sRemindedAboutRing) return;
-
     if (gCurCutscene == CUTSCENE_SLIDE && cutscene != CUTSCENE_SLIDE) {
         set_fov_function(CAM_FOV_DEFAULT);
         gCloseClip = FALSE;
-    } else if (cutscene == CUTSCENE_SLIDE && gCurCutscene != CUTSCENE_SLIDE) {
-        play_sound(SOUND_PEACH_SOMETHING_SPECIAL, gMarioState->marioObj->header.gfx.cameraToObject);
-    } else if (cutscene == CUTSCENE_RING_REMINDER && gCurCutscene != CUTSCENE_RING_REMINDER) {
-        sRemindedAboutRing = TRUE;
     } else if (gCurCutscene != cutscene) {
         gCurCutsceneTimer = 0;
     }
@@ -2156,9 +2150,9 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         // print_text_fmt_int(20, 80, "%d", (s32) gPuppyCam.focus[0]);
         // print_text_fmt_int(20, 50, "%d", (s32) gPuppyCam.focus[1]);
         // print_text_fmt_int(20, 20, "%d", (s32) gPuppyCam.focus[2]);
-        // print_text_fmt_int(80, 80, "%d", (s32) gMarioState->pos[0]);
-        // print_text_fmt_int(80, 50, "%d", (s32) gMarioState->pos[1]);
-        // print_text_fmt_int(80, 20, "%d", (s32) gMarioState->pos[2]);
+        // print_text_fmt_int(10, 80, "%d", (s32) gMarioState->pos[0]);
+        // print_text_fmt_int(10, 50, "%d", (s32) gMarioState->pos[1]);
+        // print_text_fmt_int(10, 20, "%d", (s32) gMarioState->pos[2]);
         // if (
         //     gMarioState->controller->buttonDown & START_BUTTON &&
         //     gMarioState->controller->buttonDown & B_BUTTON &&
@@ -2176,6 +2170,10 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         handle_lucy_action_mouths(gMarioStates);
 
         if (gMarioState->paralyzed) gMarioState->input = 0;
+
+        if (gSpeedrunMode && gCurrLevelNum == LEVEL_CASTLE_GROUNDS) {
+            gSpeedRunTimer++;
+        }
 
         // The function can loop through many action shifts in one frame,
         // which can lead to unexpected sub-frame behavior. Could potentially hang
@@ -2366,9 +2364,11 @@ void init_mario(void) {
 
         gContinuing = FALSE;
     } else if (gCurrLevelNum == LEVEL_CASTLE_GROUNDS && gCurrAreaIndex == 1) {
-        set_current_cutscene(CUTSCENE_INTRO_TEMPLE);
-        save_file_set_checkpoint(-1107, -249, -6, gMarioState->checkpointAngle);
-        save_file_do_save(gCurrSaveFileNum - 1);
+        if (!gSpeedrunMode) {
+            set_current_cutscene(CUTSCENE_INTRO_TEMPLE);
+            save_file_set_checkpoint(-1107, -249, -6, gMarioState->checkpointAngle);
+            save_file_do_save(gCurrSaveFileNum - 1);
+        }
         set_current_fog_state(0);
     } else if (gCurrLevelNum == LEVEL_CASTLE_GROUNDS) {
         save_file_set_checkpoint(gMarioState->pos[0], gMarioState->pos[1], gMarioState->pos[2], gMarioState->faceAngle);

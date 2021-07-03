@@ -71,12 +71,16 @@ void sliding_door_act_1(void) {
 
     if (o->oTimer == 0) {
         gParasitesGoalsSet[parasiteGroup] = TRUE;
-        gPuppyCam.targetObj2 = o;
-        gPrevPuppyZoomDist = gPuppyCam.zoomTarget;
-        gPrevPuppyTargetYaw = gPuppyCam.yawTarget;
-        gPuppyCam.zoomTarget = o->oDistanceToMario + 1000;
-        enable_time_stop_including_mario();
-        set_current_cutscene(CUTSCENE_DOOR_OPEN);
+        if (!gSpeedrunMode && !gChallengeMode) {
+            gPuppyCam.targetObj2 = o;
+            gPrevPuppyZoomDist = gPuppyCam.zoomTarget;
+            gPrevPuppyTargetYaw = gPuppyCam.yawTarget;
+            gPuppyCam.zoomTarget = o->oDistanceToMario + 1000;
+            enable_time_stop_including_mario();
+            set_current_cutscene(CUTSCENE_DOOR_OPEN);
+        } else {
+            set_tip_type(2);
+        }
     }
 
     o->oVelY = 0.0f;

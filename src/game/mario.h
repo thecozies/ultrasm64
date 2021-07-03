@@ -138,5 +138,6 @@ extern u32 gCurCutsceneTimer;
 extern s8 gWaitingToStart;
 extern u32 gStartWaitTimer;
 extern Vec3f gFinalOrbPos;
+extern u32 gSpeedRunTimer;
 
 #endif // MARIO_H

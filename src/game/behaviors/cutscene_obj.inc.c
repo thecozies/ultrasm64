@@ -55,9 +55,10 @@ void bhv_cutscene_obj_force_yaw(void) {
 }
 
 void bhv_cutscene_ring_reminder(void) {
+    if (gChallengeMode || gSpeedrunMode) return;
     o->oLateralDistToMario = ABS(lateral_dist_between_objects(o, gMarioObject));
 
-    if (gCurCutscene != CUTSCENE_RING_REMINDER && o->oLateralDistToMario < 1000.0f) set_current_cutscene(CUTSCENE_RING_REMINDER);
+    if (gCurTipType != 1 && o->oLateralDistToMario < 1000.0f) set_tip_type(1);
 }
 
 void bhv_static_cam(void) {

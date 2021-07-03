@@ -970,8 +970,7 @@ static void determine_ability_to_control_camera(void) {
         (
             gCurCutscene &&
             gCurCutscene != CUTSCENE_TOWERCLIMB &&
-            gCurCutscene != CUTSCENE_FORCE_YAW &&
-            gCurCutscene != CUTSCENE_RING_REMINDER
+            gCurCutscene != CUTSCENE_FORCE_YAW
         )
         || (
             gPuppyCam.fixedActive &&

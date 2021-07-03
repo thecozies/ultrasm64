@@ -128,6 +128,9 @@ char sPuppyOptionText2[] = COLOR_GREY "R: " COLOR_WHITE "Return";
 char sPuppyOptionTitle[] = COLOR_BLUE "Puppycam Options";
 char sAspect169[] = COLOR_GREY "L:" COLOR_WHITE " 16:9";
 char sAspect43[] = COLOR_GREY "L:" COLOR_WHITE " 4:3";
+
+char sDoorOpened[] = "Door Opened";
+
 u8 sSkipTimer = 0;
 
 enum TUTORIAL_FADE_STATES {
@@ -146,9 +149,11 @@ enum TUTORIALS {
 
 s16 sTutorialTitleFadeState = STARTING_SHOW_TUTORIAL;
 s16 sTutorialFadeState = STARTING_SHOW_TUTORIAL;
+s16 sTipFadeState = STARTING_SHOW_TUTORIAL;
 u8 sCurrentTutorial = TUTORIAL_AIR;
 s32 sTutorialTitleFadeTimer = 0;
 s32 sTutorialFadeTimer = 0;
+s32 sTipTimer = 0;
 s32 gTutorialDone = FALSE;
 u8 sCurTip = 0;
 s32 sTutorialSkipQueued = FALSE;
@@ -428,27 +433,49 @@ s32 render_tutorial(s32 onPause) {
     return TRUE;
 }
 
-void render_ring_tip(void) {
-    if (gCurCutsceneTimer == 0) {
-        reset_tutorial();
-    }
-
+s32 render_tip(u8 tipType) {
     if (update_tutorial_fade(
         TUTORIAL_FADE_IN_LEN,
         TUTORIAL_SHOW_LEN,
         TUTORIAL_FADE_OUT_LEN,
-        &sTutorialFadeState,
-        &sTutorialFadeTimer,
+        &sTipFadeState,
+        &sTipTimer,
         FALSE
-    ) && sTutorialFadeAlpha >= 5) {
+    )) {
+        if (sTutorialFadeAlpha < 30) {
+            if (sTipFadeState == FADING_SHOW_TUTORIAL) {
+                sTipFadeState = STARTING_SHOW_TUTORIAL;
+                sTipTimer = 0;
+                return TRUE;
+            }
+            return FALSE;
+        }
         s2d_init();
         gS2DScale = 0.5f;
         drop_shadow = FALSE;
         s2d_alpha = sTutorialFadeAlpha;
-        s2d_print_alloc(20, SCREEN_HEIGHT - 50, ALIGN_LEFT, sRingJumpText2);
+        switch (tipType) {
+            case TIP_TYPE_RING_REMINDER:
+                s2d_print_alloc(20, SCREEN_HEIGHT - 50, ALIGN_LEFT, sRingJumpText2);
+                if (sTipFadeState < FADING_SHOW_TUTORIAL && gMarioState->canAirJump) {
+                    set_next_tutorial_state(FADING_SHOW_TUTORIAL, sTutorialFadeAlpha, &sTipFadeState, &sTipTimer, FALSE);
+                }
+                break;
+            case TIP_TYPE_DOOR_OPENED:
+                gS2DScale = 1.0f;
+                s2d_print_alloc(20, 20, ALIGN_LEFT, "Door Opened");
+                break;
+        }
         s2d_stop();
-    } else {
-        set_current_cutscene(CUTSCENE_NONE);
-        reset_tutorial();
+        if (sTipFadeState == NO_TUTORIAL) {
+            sTipFadeState = STARTING_SHOW_TUTORIAL;
+            sTipTimer = 0;
+            return TRUE;
+        }
+        return FALSE;
     }
+
+    sTipFadeState = STARTING_SHOW_TUTORIAL;
+    sTipTimer = 0;
+    return TRUE;
 }

@@ -112,6 +112,9 @@ s8 sCurFog = DEFAULT_FOG;
 u8 sTimeInRoom[4] = {50, 50, 50, 50};
 u8 sTimeLeftRoom[4] = {0, 0, 0, 0};
 
+u8 gCurTipType = 0;
+s8 sTriggeredRingReminder = FALSE;
+
 enum GOAL_FADE_STATES {
     NO_GOAL,
     STARTING_SHOW_GOAL,
@@ -613,9 +616,11 @@ void handle_waiting_to_start(void) {
                         break;
                     case OPT_SPECIAL_CHALLENGE:
                         gChallengeMode = !gChallengeMode;
+                        gTutorialDone = gSpeedrunMode || gChallengeMode;
                         break;
                     case OPT_SPECIAL_SPEEDRUN:
                         gSpeedrunMode = !gSpeedrunMode;
+                        gTutorialDone = gSpeedrunMode || gChallengeMode;
                         break;
                     case OPT_SPECIAL_RETURN:
                     default:
@@ -635,6 +640,12 @@ void handle_waiting_to_start(void) {
                     case OPT_NEW_GAME:
                         gWaitingToStart = FALSE;
                         gStartWaitTimer = 0;
+                        if (gChallengeMode || gSpeedrunMode) {
+                            gTutorialDone = TRUE;
+                            // CTODO: delay warp
+                            set_current_cutscene(0);
+                            initiate_warp(LEVEL_CASTLE_GROUNDS, 1, 0x0A, 0);
+                        }
                         break;
                     case OPT_OPTIONS:
                     default:
@@ -662,9 +673,16 @@ void handle_waiting_to_start(void) {
 }
 
 #define OPT_STATUS_LEFT 90
+#define OPT_STATUS_LEFT_EXTRA 120
 
 void render_start_options(void) {
     sNumOptions = save_file_get_flags() & SAVE_FLAG_BEAT_GAME ? 4 : 2;
+#ifdef CDEBUG
+    if (sNumOptions == 2) {
+        save_file_set_flags(SAVE_FLAG_BEAT_GAME);
+        sNumOptions = 4;
+    }
+#endif
 
     if (sNumOptions == 2) {
         s2d_print_deferred(
@@ -719,7 +737,7 @@ void render_start_options(void) {
             sChallengeMode
         );
         s2d_print_deferred(
-            OPT_STATUS_LEFT,
+            OPT_STATUS_LEFT_EXTRA,
             (int) (SCREEN_HEIGHT - 90),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_CHALLENGE ? 1.0f : 0.4f)),
@@ -736,7 +754,7 @@ void render_start_options(void) {
             sSpeedrunMode
         );
         s2d_print_deferred(
-            OPT_STATUS_LEFT,
+            OPT_STATUS_LEFT_EXTRA,
             (int) (SCREEN_HEIGHT - 70),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_SPEEDRUN ? 1.0f : 0.4f)),
@@ -868,12 +886,38 @@ void update_fog(void) {
     gGlobalFog.high = MIN_MAX(approach_s16_asymptotic(gGlobalFog.high, targetFog->high, 8), 0, 4000);
 }
 
+void print_speed_run_timer(void) {
+    char timerText[40]; // why the hell do i need to make this huge?
+    u16 timerMins = gSpeedRunTimer / (30 * 60);
+    u16 timerSecs = (gSpeedRunTimer - (timerMins * 1800)) / 30;
+    u16 timerFracSecs = ((gSpeedRunTimer - (timerMins * 1800) - (timerSecs * 30)) & 0xFFFF) / 3;
+    sprintf(timerText, "%d:%02d.%d     ", timerMins, timerSecs, timerFracSecs);
+
+    s2d_print_deferred(
+        20,
+        (int) (SCREEN_HEIGHT - 20),
+        ALIGN_LEFT,
+        180,
+        0.5f,
+        timerText
+    );
+}
+
 void render_s2dex(void) {
-    if (s2d_charBuffer_index) {
+    if (s2d_charBuffer_index || (gSpeedrunMode && gCurrLevelNum == LEVEL_CASTLE_GROUNDS)) {
         s2d_init();
-        s2d_handle_deferred();
+        if (gSpeedrunMode && gCurrLevelNum == LEVEL_CASTLE_GROUNDS) print_speed_run_timer();
+        if (s2d_charBuffer_index) s2d_handle_deferred();
         s2d_stop();
     }
+}
+
+void set_tip_type(u8 tipType) {
+    if (tipType == TIP_TYPE_RING_REMINDER) {
+        if (sTriggeredRingReminder) return;
+        sTriggeredRingReminder = TRUE;
+    }
+    gCurTipType = tipType;
 }
 
 enum {
@@ -983,7 +1027,10 @@ void render_game(void) {
         // }
         render_goals();
         render_intro_text();
-        if (gCurCutscene == CUTSCENE_RING_REMINDER) render_ring_tip();
+        if (gCurTipType) {
+            s8 isDone = render_tip(gCurTipType);
+            if (isDone) set_tip_type(0);
+        }
         calculate_and_update_fps();
 #ifdef CDEBUG
         if (gPlayer1Controller->buttonPressed & L_TRIG) sShowFPS = !sShowFPS;

@@ -132,6 +132,13 @@ void spawn_mist_particles_variable(s32 count, s32 offsetY, f32 size) {
     cur_obj_spawn_particles(&D_8032F270);
 }
 
+void init_object_challenge(void) {
+    s32 challengeObject = o->oBehParams & 0xFF;
+    if ((gChallengeMode && !challengeObject) || (!gChallengeMode && challengeObject)) {
+        obj_mark_for_deletion(o);
+    }
+}
+
 #include "behaviors/sparkle_spawn_star.inc.c"
 #include "behaviors/coin.inc.c"
 #include "behaviors/collide_particles.inc.c"

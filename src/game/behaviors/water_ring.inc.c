@@ -1,4 +1,22 @@
 // water_ring.c.inc
+#ifndef o
+#include "types.h"
+#include "sounds.h"
+#include "audio/external.h"
+#include "game/interaction.h"
+#include "game/level_update.h"
+#include "game/object_helpers.h"
+#include "game/object_list_processor.h"
+#include "game/rendering_graph_node.h"
+#include "game/puppycam2.h"
+#include "object_fields.h"
+#include "object_constants.h"
+#include "model_ids.h"
+#include "behavior_data.h"
+
+#define o gCurrentObject
+#endif
+
 
 f32 water_ring_calc_mario_dist(void) {
     f32 marioDistX = o->oPosX - gMarioObject->header.gfx.pos[0];

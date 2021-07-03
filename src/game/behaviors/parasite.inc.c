@@ -122,6 +122,12 @@ void bhv_parasite_loop(void) {
 
 void bhv_parasite_init(void) {
     s32 parasiteGroup = (o->oBehParams >> 16) & 0xFF;
+    s32 challengeOrb = o->oBehParams & 0xFF;
+    if ((gChallengeMode && !challengeOrb) || (!gChallengeMode && challengeOrb)) {
+        obj_mark_for_deletion(o);
+        o->oOpacity = 0;
+        return;
+    }
     if (gParasitesGoalsSet[parasiteGroup] == FALSE) gParasitesGoals[parasiteGroup]++;
 
     o->oMoveAnglePitch = 0;

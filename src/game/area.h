@@ -145,6 +145,10 @@ extern s8 gGameIsLagging;
 extern u32 gFramesWithoutLag;
 extern s8 gHasCheckpoint;
 extern s8 gSelectedOption;
+extern u8 gChallengeMode;
+extern u8 gSpeedrunMode;
+extern u8 gCurTipType;
+
 
 extern struct SpawnInfo *gMarioSpawnInfo;
 
@@ -178,6 +182,7 @@ void set_current_fog_state(s32 fogState);
 void set_next_goal_state(s32 state, s32 nextAlpha);
 void reset_collected_para(void);
 void handle_waiting_to_start(void);
+void set_tip_type(u8 tipType);
 
 enum FOG_OPTIONS {
     DEFAULT_FOG,
