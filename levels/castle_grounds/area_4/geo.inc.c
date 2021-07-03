@@ -44,7 +44,6 @@ const GeoLayout castle_grounds_area_4_geo[] = {
 				GEO_DISPLAY_LIST(1, castle_grounds_dl_hallway_mesh_layer_1),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
-		GEO_TRANSLATE_NODE(LAYER_OPAQUE, 3407, -7489, 0),
 		GEO_TRANSLATE_NODE(LAYER_OPAQUE, 2700, -4400, 700),
 		GEO_OPEN_NODE(),
 			GEO_RENDER_RANGE(-500, 3000),

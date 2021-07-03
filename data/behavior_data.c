@@ -4149,6 +4149,7 @@ const BehaviorScript bhvBigChillBully[] = {
 const BehaviorScript bhvJetStreamRingSpawner[] = {
     BEGIN(OBJ_LIST_DEFAULT),
     HIDE(),
+    CALL_NATIVE(init_object_challenge),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_jet_stream_ring_spawner_loop),
     END_LOOP(),

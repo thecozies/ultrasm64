@@ -117,7 +117,6 @@ const GeoLayout castle_grounds_dl_aa_ROOM1_geo[] = {
 				GEO_DISPLAY_LIST(1, castle_grounds_dl_azzROOM_001_mesh_layer_1),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
-		GEO_TRANSLATE_NODE(LAYER_OPAQUE, 8932, -5684, 0),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
@@ -135,6 +134,7 @@ const GeoLayout castle_grounds_dl_aa_ROOM1_2_green_geo[] = {
 		GEO_TRANSLATE_NODE_WITH_DL(5, 12764, -5041, 10, castle_grounds_dl_awaters_004_mesh_layer_5),
 		GEO_ASM(5, geo_update_fog),
 		GEO_DISPLAY_LIST(5, castle_grounds_dl_natty_moss_mesh_layer_5),
+		GEO_TRANSLATE_NODE(LAYER_OPAQUE, 8932, -5684, 0),
 		GEO_TRANSLATE_NODE(LAYER_OPAQUE, 8200, -3900, 1900),
 		GEO_OPEN_NODE(),
 			GEO_RENDER_RANGE(-500, 1500),

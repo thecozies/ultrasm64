@@ -78,7 +78,6 @@ const GeoLayout castle_grounds_area_2_geo[] = {
 				GEO_DISPLAY_LIST(1, castle_grounds_dl_azentry_slide_mesh_layer_1),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
-		GEO_TRANSLATE_NODE(LAYER_OPAQUE, -6149, -370, 2641),
 		GEO_TRANSLATE_NODE(LAYER_OPAQUE, 7600, 4800, 2700),
 		GEO_OPEN_NODE(),
 			GEO_RENDER_RANGE(-1000, 1000),
@@ -107,7 +106,6 @@ const GeoLayout castle_grounds_area_2_geo[] = {
 				GEO_DISPLAY_LIST(1, castle_grounds_dl_awaters_008_mesh_layer_1),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
-		GEO_TRANSLATE_NODE(LAYER_OPAQUE, -5524, 6195, 0),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
