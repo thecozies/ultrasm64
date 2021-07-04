@@ -1575,7 +1575,7 @@ s32 act_forward_rollout(struct MarioState *m) {
 
     update_air_without_turn(m);
 
-    switch (perform_air_step(m, 0)) {
+    switch (perform_air_step(m, AIR_STEP_CHECK_LEDGE_GRAB)) {
         case AIR_STEP_NONE:
             if (check_air_jump(m)) return apply_air_jump(m);
             if (m->actionState == 1) {
@@ -1590,6 +1590,11 @@ s32 act_forward_rollout(struct MarioState *m) {
         case AIR_STEP_LANDED:
             set_mario_action(m, ACT_FREEFALL_LAND_STOP, 0);
             play_mario_landing_sound(m, SOUND_ACTION_TERRAIN_LANDING);
+            break;
+
+        case AIR_STEP_GRABBED_LEDGE:
+            set_mario_animation(m, MARIO_ANIM_IDLE_ON_LEDGE);
+            set_mario_action(m, ACT_LEDGE_GRAB, 0);
             break;
 
         case AIR_STEP_HIT_WALL:
