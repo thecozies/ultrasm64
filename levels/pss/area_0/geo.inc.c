@@ -120,9 +120,9 @@ const GeoLayout pss_area_0[] = {
 				GEO_CLOSE_NODE(),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
-		GEO_DISPLAY_LIST(5, pss_dl_material_revert_render_settings),
 		GEO_DISPLAY_LIST(1, pss_dl_material_revert_render_settings),
 		GEO_DISPLAY_LIST(4, pss_dl_material_revert_render_settings),
+		GEO_DISPLAY_LIST(5, pss_dl_material_revert_render_settings),
 	GEO_CLOSE_NODE(),
 	GEO_END(),
 };
