@@ -115,6 +115,9 @@ extern s8 gLevelToCourseNumTable[];
 #define SAVE_FLAG_TO_STAR_FLAG(cmd) (((cmd) >> 24) & 0x7F)
 #define STAR_FLAG_TO_SAVE_FLAG(cmd) ((cmd) << 24)
 
+#define NORMAL_MODE_FILE_NUM 1
+#define CHALLENGE_MODE_FILE_NUM 2
+
 // Variable for setting a warp checkpoint.
 
 // possibly a WarpDest struct where arg is a union. TODO: Check?
@@ -144,6 +147,7 @@ s32 save_file_get_total_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse);
 void save_file_set_flags(u32 flags);
 void save_file_clear_flags(u32 flags);
 u32 save_file_get_flags(void);
+u32 save_file_get_file_num_flags(s16 fileNum);
 u32 save_file_get_star_flags(s32 fileIndex, s32 courseIndex);
 void save_file_set_star_flags(s32 fileIndex, s32 courseIndex, u32 starFlags);
 s32 save_file_get_course_coin_score(s32 fileIndex, s32 courseIndex);

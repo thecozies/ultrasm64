@@ -106,6 +106,7 @@ s8 sNumOptions = 1;
 s8 gSelectedOption = 0;
 s8 sWaitingForStickReturn = FALSE;
 s8 gHasCheckpoint = FALSE;
+s8 gHasChallengeCheckpoint = FALSE;
 s8 sOptionsMenuOpen = FALSE;
 
 s8 sCurFog = DEFAULT_FOG;
@@ -579,10 +580,18 @@ enum SPECIAL_OPTIONS_MENU_OPTIONS {
     OPT_SPECIAL_RETURN
 };
 
+void set_or_clear_special_modes(void) {
+    if (gChallengeMode) save_file_set_flags(SAVE_FLAG_CHALLENGE_MODE);
+    else save_file_clear_flags(SAVE_FLAG_CHALLENGE_MODE);
+
+    if (gSpeedrunMode) save_file_set_flags(SAVE_FLAG_SPEEDRUN_MODE);
+    else save_file_clear_flags(SAVE_FLAG_SPEEDRUN_MODE);
+}
+
 // called from mario.c due to needing to warp mario before his code is executed
 void handle_waiting_to_start(void) {
     if (gWaitingToStart) {
-        s8 canAccessOpt0 = (sOptionsMenuOpen || (gHasCheckpoint && !gChallengeMode && !gSpeedrunMode));
+        s8 canAccessOpt0 = (sOptionsMenuOpen || (gHasCheckpoint && !gSpeedrunMode) || (gHasChallengeCheckpoint && gSpeedrunMode));
         s8 minOpt = canAccessOpt0 ? 0 : 1;
         gStartWaitTimer++;
 
@@ -632,12 +641,19 @@ void handle_waiting_to_start(void) {
                 switch (gSelectedOption)
                 {
                     case OPT_CONTINUE:
+                        if (gChallengeMode) gCurrSaveFileNum = CHALLENGE_MODE_FILE_NUM;
+                        else gCurrSaveFileNum = NORMAL_MODE_FILE_NUM;
+
                         gWaitingToStart = FALSE;
                         gStartWaitTimer = 0;
                         gTutorialDone = TRUE;
                         level_trigger_warp(gMarioState, WARP_OP_CONTINUE);
+                        set_or_clear_special_modes();
                         break;
                     case OPT_NEW_GAME:
+                        if (gChallengeMode) gCurrSaveFileNum = CHALLENGE_MODE_FILE_NUM;
+                        else gCurrSaveFileNum = NORMAL_MODE_FILE_NUM;
+
                         gWaitingToStart = FALSE;
                         gStartWaitTimer = 0;
                         if (gChallengeMode || gSpeedrunMode) {
@@ -645,6 +661,7 @@ void handle_waiting_to_start(void) {
                             // CTODO: delay warp
                             set_current_cutscene(0);
                             initiate_warp(LEVEL_CASTLE_GROUNDS, 1, 0x0A, 0);
+                            set_or_clear_special_modes();
                         }
                         break;
                     case OPT_OPTIONS:
@@ -775,8 +792,10 @@ void render_start_options(void) {
 }
 
 void title_screen_waiting_to_start(void) {
-    u32 saveFlags = save_file_get_flags();
+    u32 saveFlags = save_file_get_file_num_flags(NORMAL_MODE_FILE_NUM);
+    u32 challengeSaveFlags = save_file_get_file_num_flags(CHALLENGE_MODE_FILE_NUM);
     gHasCheckpoint = saveFlags & SAVE_FLAG_HAS_CHECKPOINT;
+    gHasChallengeCheckpoint = challengeSaveFlags & SAVE_FLAG_HAS_CHECKPOINT;
 
     if (gGoalFadeState == FULL_SHOW_GOAL && !gWaitingToStart) set_next_goal_state(FADING_SHOW_GOAL, 150);
     else if (gGoalFadeState == FULL_SHOW_GOAL) sGoalFadeTimer = 0;

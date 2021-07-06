@@ -554,6 +554,13 @@ u32 save_file_get_flags(void) {
     return gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags;
 }
 
+u32 save_file_get_file_num_flags(s16 fileNum) {
+    if (gCurrCreditsEntry != NULL || gCurrDemoInput != NULL) {
+        return 0;
+    }
+    return gSaveBuffer.files[fileNum - 1][0].flags;
+}
+
 /**
  * Return the bitset of obtained stars in the specified course.
  * If course is -1, return the bitset of obtained castle secret stars.
