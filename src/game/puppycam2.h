@@ -50,7 +50,7 @@ struct gPuppyStruct
     Vec3s focus; //Where the camera's looking
     Vec3s pan; //An offset of the camera's focus
     s32 intendedFlags; //The flagset the camera tries to be when it's not held hostage.
-    s32 flags; //Behaviour flags that affect different properties of the camera's behaviour
+    u32 flags; //Behaviour flags that affect different properties of the camera's behaviour
     Vec3s scenePos; //Where the camera is during a cutscene
     Vec3s sceneFocus; //Where the camera looks during a cutscene
     Vec3s shake; //How much the camera's shaking
@@ -124,6 +124,8 @@ enum gPuppyCamBeh
     PUPPYCAM_BEHAVIOUR_PANSHIFT = 0x2000,
 
     PUPPYCAM_BEHAVIOUR_COLLISION = 0x4000,
+
+    PUPPYCAM_FIRST_PERSON = 0x8000,
 
 
     PUPPYCAM_BEHAVIOUR_DEFAULT = PUPPYCAM_BEHAVIOUR_X_MOVEMENT | PUPPYCAM_BEHAVIOUR_Y_MOVEMENT | PUPPYCAM_BEHAVIOUR_Z_MOVEMENT |

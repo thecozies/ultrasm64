@@ -1528,12 +1528,16 @@ void update_mario_inputs(struct MarioState *m) {
 
     debug_print_speed_action_normal(m);
 
-    if (gCameraMovementFlags & CAM_MOVE_C_UP_MODE) {
+    if (gCameraMovementFlags & CAM_MOVE_C_UP_MODE || gPuppyCam.flags & PUPPYCAM_FIRST_PERSON) {
         if (m->action & ACT_FLAG_ALLOW_FIRST_PERSON) {
             m->input |= INPUT_FIRST_PERSON;
         } else {
             gCameraMovementFlags &= ~CAM_MOVE_C_UP_MODE;
         }
+    }
+
+    if (gPuppyCam.flags & PUPPYCAM_FIRST_PERSON) {
+        m->input |= INPUT_FIRST_PERSON;
     }
 
     if (!(m->input & (INPUT_NONZERO_ANALOG | INPUT_A_PRESSED))) {
@@ -2147,6 +2151,19 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             gMarioState->forwardVel = 3.0f * gMarioState->intendedMag;
             gMarioState->action = ACT_DOLPHIN_DIVE;
         }
+        // if (gPlayer1Controller->buttonDown & L_TRIG) {
+        //     if (gPlayer1Controller->buttonDown & U_CBUTTONS) gGlobalFog.high++;
+        //     if (gPlayer1Controller->buttonDown & D_CBUTTONS) gGlobalFog.high = MAX(gGlobalFog.high - 1, gGlobalFog.low + 1);
+        //     if (gPlayer1Controller->buttonDown & R_CBUTTONS) gGlobalFog.low = MIN(gGlobalFog.low + 1, gGlobalFog.high - 1);
+        //     if (gPlayer1Controller->buttonDown & L_CBUTTONS) gGlobalFog.low--;
+        //     if (gPlayer1Controller->buttonDown & C_BUTTONS) {
+        //         gPlayer1Controller->buttonDown = L_TRIG;
+        //         gPlayer1Controller->buttonPressed = 0;
+        //         gMarioState->input = 0;
+        //     }
+        // }
+        // print_text_fmt_int(20, 80, "%d", (s32) gGlobalFog.low);
+        // print_text_fmt_int(20, 50, "%d", (s32) gGlobalFog.high);
         // print_text_fmt_int(20, 80, "%d", (s32) gPuppyCam.focus[0]);
         // print_text_fmt_int(20, 50, "%d", (s32) gPuppyCam.focus[1]);
         // print_text_fmt_int(20, 20, "%d", (s32) gPuppyCam.focus[2]);
