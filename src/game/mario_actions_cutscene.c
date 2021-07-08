@@ -2279,7 +2279,7 @@ s32 act_camp_intro(struct MarioState *m) {
         break;
 
     case 2:
-        if ((m->pos[2] -= 4.0f) <= CAMP_WALK_OVER_END) {
+        if ((m->pos[2] -= 2.5f) <= CAMP_WALK_OVER_END) {
             m->pos[2] = CAMP_WALK_OVER_END;
             m->actionState = 3;
         }
@@ -2308,12 +2308,14 @@ s32 act_camp_intro(struct MarioState *m) {
 
 #define ORB_REVEAL_INIT_X 505.0f
 #define ORB_REVEAL_END_X  2050.0f
+#define ORB_REVEAL_INIT_Z  -95.0f
 
 s32 act_orb_reveal(struct MarioState *m) {
     struct Surface *surf;
     if (m->actionTimer++ == 0) {
         // set initial position
         m->pos[0] = ORB_REVEAL_INIT_X;
+        m->pos[2] = ORB_REVEAL_INIT_Z;
         m->faceAngle[1] = DEGREES(90);
         m->marioObj->header.gfx.angle[1] = m->faceAngle[1];
         m->actionState = 0;
@@ -2457,6 +2459,9 @@ static void gravitate_towards_center_of_orb(struct MarioState *m) {
 
 s32 act_lucys_levitation(struct MarioState *m) {
     Vec3f diff;
+    if (m->actionTimer == 0) {
+        play_cutscene_music(SEQUENCE_ARGS(0, SEQ_LUCYS_LEVITATION));
+    }
     m->actionTimer++;
 
     move_final_orb_pos();
