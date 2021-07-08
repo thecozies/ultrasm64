@@ -591,7 +591,8 @@ void set_or_clear_special_modes(void) {
 // called from mario.c due to needing to warp mario before his code is executed
 void handle_waiting_to_start(void) {
     if (gWaitingToStart) {
-        s8 canAccessOpt0 = (sOptionsMenuOpen || (gHasCheckpoint && !gSpeedrunMode) || (gHasChallengeCheckpoint && gSpeedrunMode));
+        s8 canContinue = !gSpeedrunMode && ((gHasCheckpoint && !gChallengeMode) || (gHasChallengeCheckpoint && gChallengeMode));
+        s8 canAccessOpt0 = (sOptionsMenuOpen || canContinue);
         s8 minOpt = canAccessOpt0 ? 0 : 1;
         gStartWaitTimer++;
 
@@ -600,6 +601,7 @@ void handle_waiting_to_start(void) {
 
         if (sOptionsMenuOpen && gPlayer1Controller->buttonPressed & B_BUTTON) {
             sOptionsMenuOpen = FALSE;
+            gSelectedOption = canContinue ? 0 : 1;
             return;
         }
 
@@ -614,6 +616,7 @@ void handle_waiting_to_start(void) {
                     case OPT_RETURN:
                     default:
                         sOptionsMenuOpen = FALSE;
+                        gSelectedOption = canContinue ? 0 : 1;
                         break;
                 }
             } else if (sOptionsMenuOpen) {
@@ -634,6 +637,7 @@ void handle_waiting_to_start(void) {
                     case OPT_SPECIAL_RETURN:
                     default:
                         sOptionsMenuOpen = FALSE;
+                        gSelectedOption = canContinue ? 0 : 1;
                         break;
                 }
             } else {
@@ -667,6 +671,7 @@ void handle_waiting_to_start(void) {
                     case OPT_OPTIONS:
                     default:
                         sOptionsMenuOpen = TRUE;
+                        gSelectedOption = 0;
                         break;
                 }
             }
@@ -675,13 +680,17 @@ void handle_waiting_to_start(void) {
 
         if (!sWaitingForStickReturn) {
             if (gPlayer1Controller->rawStickY > 60 || gPlayer1Controller->buttonPressed & U_JPAD) {
-                gSelectedOption = MAX(minOpt, gSelectedOption - 1);
-                if (gPlayer1Controller->rawStickY > 60) sWaitingForStickReturn = TRUE;
+                if (gSelectedOption - 1 < minOpt) gSelectedOption = sNumOptions - 1;
+                else gSelectedOption = MAX(minOpt, gSelectedOption - 1);
+
+                sWaitingForStickReturn = TRUE;
             }
 
             if (gPlayer1Controller->rawStickY < -60 || gPlayer1Controller->buttonPressed & D_JPAD) {
-                gSelectedOption = MIN(sNumOptions - 1, gSelectedOption + 1);
-                if (gPlayer1Controller->rawStickY < -60) sWaitingForStickReturn = TRUE;
+                if (gSelectedOption + 1 > sNumOptions - 1) gSelectedOption = minOpt;
+                else gSelectedOption = MIN(sNumOptions - 1, gSelectedOption + 1);
+
+                sWaitingForStickReturn = TRUE;
             }
         } else if (ABS(gPlayer1Controller->rawStickY) < 4) {
             sWaitingForStickReturn = FALSE;
