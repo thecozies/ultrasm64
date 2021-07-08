@@ -713,6 +713,7 @@ s32 is_within_100_units_of_mario(f32 posX, f32 posY, f32 posZ);
 s32 set_or_approach_f32_asymptotic(f32 *dst, f32 goal, f32 scale);
 s32 approach_f32_asymptotic_bool(f32 *current, f32 target, f32 multiplier);
 f32 approach_f32_asymptotic(f32 current, f32 target, f32 multiplier);
+f32 approach_f32_asymptotic_complete(f32 current, f32 target, f32 multiplier, f32 threshold);
 s32 approach_s16_asymptotic_bool(s16 *current, s16 target, s16 divisor);
 s32 approach_s16_asymptotic(s16 current, s16 target, s16 divisor);
 void approach_vec3f_asymptotic(Vec3f current, Vec3f target, f32 xMul, f32 yMul, f32 zMul);

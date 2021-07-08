@@ -61,17 +61,23 @@ u8 gWarpTransBlue = 0;
 s16 gCurrSaveFileNum = 1;
 s16 gCurrLevelNum = LEVEL_MIN;
 
-struct GlobalFog gGlobalFog = { 73, 63, 52, 0xFF, 832, 1000 };
-struct GlobalFog sDefaultFog = { 73, 63, 52, 0xFF, 832, 1000 };
+#define TEMPLE1_FOG { 73, 63, 52, 0xFF, 759, 1035 }
+
+struct GlobalFog gGlobalFog = TEMPLE1_FOG;
+struct GlobalFog sDefaultFog = TEMPLE1_FOG;
 struct GlobalFog sWaterFog = { 0x33, 0x6C, 0x71, 0xDF, 800, 1000 };
-struct GlobalFog sTemple1Room4Fog = { 73, 63, 52, 0xFF, 812, 1100 };
-struct GlobalFog sTrippyFog = { 73, 63, 52, 0xFF, 750, 1100 };
-struct GlobalFog sTemple2Fog = { 94, 88, 105, 0xDF, 830, 1100 };
+// struct GlobalFog sTemple1Room4Fog = { 73, 63, 52, 0xFF, 812, 1100 };
+struct GlobalFog sTemple1Room4Fog = { 73, 63, 52, 0xFF, 900, 1051 };
+// struct GlobalFog sTrippyFog = { 73, 63, 52, 0xFF, 750, 1100 };
+struct GlobalFog sTrippyFog = { 65, 60, 68, 0xFF, 989, 998 };
+// struct GlobalFog sTemple2Fog = { 94, 88, 105, 0xDF, 830, 1100 };
+struct GlobalFog sTemple2Fog = { 94, 88, 105, 0xDF, 808, 1039 };
 struct GlobalFog sTutorialFog = { 22, 22, 22, 0xFF, 350, 1000 };
 struct GlobalFog sEndFog = { 74, 68, 85, 0xDF, 900, 1100 };
 struct GlobalFog sEndTunnelFog = { 24, 20, 28, 0xFF, 850, 1000 };
 struct GlobalFog sEndFinalFog = { 114, 108, 125, 0xDF, 900, 1100 };
-struct GlobalFog sCampFog = { 0x17, 0x17, 0x17, 0xDF, 800, 1000 };
+// struct GlobalFog sCampFog = { 0x17, 0x17, 0x17, 0xDF, 800, 1000 };
+struct GlobalFog sCampFog = { 0x17, 0x17, 0x17, 0xDF, 868, 1000 };
 
 s16 gGoalFadeState = 0;
 s32 sGoalFadeTimer = 0;
@@ -906,12 +912,12 @@ void update_fog(void) {
         }
     }
 
-    gGlobalFog.r = (u8) MIN_MAX(approach_s16_asymptotic(gGlobalFog.r, targetFog->r, 5), 0, 255);
-    gGlobalFog.g = (u8) MIN_MAX(approach_s16_asymptotic(gGlobalFog.g, targetFog->g, 5), 0, 255);
-    gGlobalFog.b = (u8) MIN_MAX(approach_s16_asymptotic(gGlobalFog.b, targetFog->b, 5), 0, 255);
-    gGlobalFog.a = (u8) MIN_MAX(approach_s16_asymptotic(gGlobalFog.a, targetFog->a, 5), 0, 255);
-    gGlobalFog.low = MIN_MAX(approach_s16_asymptotic(gGlobalFog.low, targetFog->low, 8), 0, 4000);
-    gGlobalFog.high = MIN_MAX(approach_s16_asymptotic(gGlobalFog.high, targetFog->high, 8), 0, 4000);
+    gGlobalFog.r = (u8) MIN_MAX((u8)approach_f32_asymptotic_complete(gGlobalFog.r, targetFog->r, 0.2f, 2.0f), 0, 255);
+    gGlobalFog.g = (u8) MIN_MAX((u8)approach_f32_asymptotic_complete(gGlobalFog.g, targetFog->g, 0.2f, 2.0f), 0, 255);
+    gGlobalFog.b = (u8) MIN_MAX((u8)approach_f32_asymptotic_complete(gGlobalFog.b, targetFog->b, 0.2f, 2.0f), 0, 255);
+    gGlobalFog.a = (u8) MIN_MAX((u8)approach_f32_asymptotic_complete(gGlobalFog.a, targetFog->a, 0.2f, 2.0f), 0, 255);
+    gGlobalFog.low = MIN_MAX((s16)approach_f32_asymptotic_complete(gGlobalFog.low, targetFog->low, 0.125f, 2.0f), 0, 4000);
+    gGlobalFog.high = MIN_MAX((s16)approach_f32_asymptotic_complete(gGlobalFog.high, targetFog->high, 0.125f, 2.0f), 0, 4000);
 }
 
 void print_speed_run_timer(void) {

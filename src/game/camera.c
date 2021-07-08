@@ -3654,6 +3654,17 @@ f32 approach_f32_asymptotic(f32 current, f32 target, f32 multiplier) {
 }
 
 /**
+ * Nearly the same as the above function, returns new value instead.
+ */
+f32 approach_f32_asymptotic_complete(f32 current, f32 target, f32 multiplier, f32 threshold) {
+    f32 initTarget = current;
+    current = current + (target - current) * multiplier;
+    if (ABS(current - target) < threshold) current = target;
+    if (ABS(initTarget - current) <= 1.0f && current != target) current = current + ((target - current) * 0.5f);
+    return current;
+}
+
+/**
  * Approaches an s16 value in the same fashion as approach_f32_asymptotic_bool, returns TRUE if target
  * is reached. Note: Since this function takes integers as parameters, the last argument is the
  * reciprocal of what it would be in the previous two functions.
