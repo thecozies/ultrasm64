@@ -4,6 +4,7 @@
 #include "game/object_list_processor.h"
 #include "game/rendering_graph_node.h"
 #include "game/puppycam2.h"
+#include "game/mario.h"
 #include "object_fields.h"
 
 #define o gCurrentObject
@@ -58,9 +59,9 @@ void bhv_parasite_interact(void) {
                 o->header.gfx.scale[2] = 0.020f;
             } else if (gCurCutsceneTimer >= CUTSCENE_INTRO_ORB_APPEAR) {
                 o->oOpacity = MIN(255, o->oOpacity + 10);
-                o->oPosZ = MIN(FIRST_ORB_END_Z, o->oPosZ + 9.0f);
+                o->oPosZ = MIN(FIRST_ORB_END_Z, o->oPosZ + 7.0f);
                 if (gCurCutsceneTimer >= CUTSCENE_INTRO_ORB_APPEAR + 10) {
-                    o->oPosY = MAX(o->oHomeY, o->oPosY - 0.5f);
+                    o->oPosY = MAX(o->oHomeY, o->oPosY - 0.3f);
                 }
                 o->header.gfx.scale[0] = MIN(1.0f, o->header.gfx.scale[0] + 0.02f);
                 o->header.gfx.scale[1] = MIN(1.0f, o->header.gfx.scale[1] + 0.02f);

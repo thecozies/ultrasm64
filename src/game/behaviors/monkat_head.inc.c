@@ -20,12 +20,13 @@ void bhv_monkat_head_phase_in(void) {
             o->oTimer = 0;
             o->oOpacity = 240;
             o->oAction = 1;
+            o->header.gfx.animInfo.animFrame = 160;
         }
     }
 }
 void bhv_monkat_head_phase_out(void) {
-    o->oOpacity = MAX(0, o->oOpacity - 5);
-    o->oPosZ = MAX(o->oPosZ - 5.0f, o->oHomeZ);
+    o->oOpacity = MAX(0, o->oOpacity - 3);
+    o->oPosZ = MAX(o->oPosZ - 3.5f, o->oHomeZ);
     if (gCurCutsceneTimer >= CUTSCENE_INTRO_LUCY_WALKS_OVER) {
         obj_mark_for_deletion(o);
     }

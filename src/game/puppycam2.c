@@ -56,6 +56,8 @@ s8 sFovNeedsReset = 0;
 s8 gFixedNewlyActive = FALSE;
 f32 sFixedLerpAmt = 0.01f;
 f32 sStartingHeight = 0.0f;
+u16 sTimeLeftLerpCutscene = 0;
+s8 sLerpFromLastFrame = FALSE;
 
 #if defined(VERSION_EU)
 static u8 gPCOptionStringsFR[][64] = {{NC_ANALOGUE_FR}, {NC_CAMX_FR}, {NC_CAMY_FR}, {NC_INVERTX_FR}, {NC_INVERTY_FR}, {NC_CAMC_FR}, {NC_CAMP_FR}, {NC_CAMD_FR}};
@@ -1363,16 +1365,21 @@ static void puppycam_projection(void)
 
 }
 
+void approach_cutscene_bars(void) {
+    if (gCurCutsceneTimer == 0) sCutsceneVp.vp.vscale[1] = 480;
+    sCutsceneVp.vp.vscale[0] = 640;
+    sCutsceneVp.vp.vscale[1] = MAX(sCutsceneVp.vp.vscale[1] - 10, 360);
+    sCutsceneVp.vp.vtrans[0] = 640;
+    sCutsceneVp.vp.vtrans[1] = 480;
+    override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
+}
+
 #define DOOR_CUTSCENE_LEN 108
 #define DOOR_LERP_START 30
 #define DOOR_LERP_END 75
 
 void door_cutscene(void) {
-    sCutsceneVp.vp.vscale[0] = 640;
-    sCutsceneVp.vp.vscale[1] = 360;
-    sCutsceneVp.vp.vtrans[0] = 640;
-    sCutsceneVp.vp.vtrans[1] = 480;
-    override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
+    approach_cutscene_bars();
 
     if (gCurCutsceneTimer >= DOOR_LERP_START) {
         struct Surface *surf;
@@ -1426,6 +1433,8 @@ void door_cutscene(void) {
         gPuppyCam.focus[1] = (s16) approach_f32_asymptotic(gPuppyCam.focus[1], target[1], lerp_pow);
         gPuppyCam.focus[2] = (s16) approach_f32_asymptotic(gPuppyCam.focus[2], target[2], lerp_pow);
     }
+    sTimeLeftLerpCutscene = 30;
+    sLerpFromLastFrame = FALSE;
 }
 
 void slide_cutscene(void) {
@@ -1502,6 +1511,8 @@ void temple_intro_cutscene(void) {
         gPuppyCam.focus[0] = -1164;
         gPuppyCam.focus[1] = -124;
         gPuppyCam.focus[2] = -8;
+        sTimeLeftLerpCutscene = 30;
+        sLerpFromLastFrame = FALSE;
         return;
     }
     else if (gCurCutsceneTimer == TEMPLE_INTRO_DOOR_SLAM_SHOT_START - 1) {
@@ -1540,10 +1551,14 @@ void camping_intro_cutscene(void) {
         gPuppyCam.yawTarget = gPuppyCam.yaw;
         vec3s_copy(gPuppyCam.pos, camping_intro[gCurCutsceneTimer][0]);
         vec3s_copy(gPuppyCam.focus, camping_intro[gCurCutsceneTimer][1]);
+        sTimeLeftLerpCutscene = 30;
+        sLerpFromLastFrame = TRUE;
     } else if (gCurCutsceneTimer >= CUTSCENE_INTRO_END) {
         gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
         gPuppyCam.yawTarget = gPuppyCam.yaw;
         gCloseClip = FALSE;
+        sTimeLeftLerpCutscene = 30;
+        sLerpFromLastFrame = TRUE;
     } else {
         vec3s_copy(gPuppyCam.pos, camping_intro[gCurCutsceneTimer][0]);
         vec3s_copy(gPuppyCam.focus, camping_intro[gCurCutsceneTimer][1]);
@@ -1609,11 +1624,14 @@ void orb_reveal_cutscene(void) {
         set_current_cutscene(CUTSCENE_NONE);
         set_fov_45();
         set_fov_function(CAM_FOV_DEFAULT);
+
     } else {
         vec3s_copy(gPuppyCam.pos, final_orb_reveal[gCurCutsceneTimer][0]);
         vec3s_copy(gPuppyCam.focus, final_orb_reveal[gCurCutsceneTimer][1]);
         gPuppyCam.yaw = calculate_yaws(gPuppyCam.pos, gPuppyCam.focus);
     }
+    sTimeLeftLerpCutscene = 30;
+    sLerpFromLastFrame = FALSE;
 }
 
 void lucys_levitation_cutscene(void) {
@@ -2038,23 +2056,47 @@ static void puppycam_apply(void)
         set_fov_function(CAM_FOV_DEFAULT);
         sFovNeedsReset = FALSE;
     }
-    gLakituState.pos[0] = gPuppyCam.pos[0];
-    gLakituState.pos[1] = gPuppyCam.pos[1];
-    gLakituState.pos[2] = gPuppyCam.pos[2];
 
-    gLakituState.focus[0] = gPuppyCam.focus[0];
-    gLakituState.focus[1] = gPuppyCam.focus[1];
-    gLakituState.focus[2] = gPuppyCam.focus[2];
+    if (sTimeLeftLerpCutscene && gCurCutscene == CUTSCENE_NONE && sLerpFromLastFrame) {
+        sTimeLeftLerpCutscene--;
+        sCutsceneVp.vp.vscale[0] = 640;
+        sCutsceneVp.vp.vscale[1] = approach_f32_asymptotic(480, 360, ((f32)sTimeLeftLerpCutscene / 30.0f));
+        sCutsceneVp.vp.vtrans[0] = 640;
+        sCutsceneVp.vp.vtrans[1] = 480;
+        override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
+        gLakituState.pos[0] = approach_f32_asymptotic(gPuppyCam.pos[0], camping_intro[CUTSCENE_INTRO_END - 1][0][0], ((f32)sTimeLeftLerpCutscene / 30.0f));
+        gLakituState.pos[1] = approach_f32_asymptotic(gPuppyCam.pos[1], camping_intro[CUTSCENE_INTRO_END - 1][0][1], ((f32)sTimeLeftLerpCutscene / 30.0f));
+        gLakituState.pos[2] = approach_f32_asymptotic(gPuppyCam.pos[2], camping_intro[CUTSCENE_INTRO_END - 1][0][2], ((f32)sTimeLeftLerpCutscene / 30.0f));
+        gLakituState.focus[0] = approach_f32_asymptotic(gPuppyCam.focus[0], camping_intro[CUTSCENE_INTRO_END - 1][1][0], ((f32)sTimeLeftLerpCutscene / 30.0f));
+        gLakituState.focus[1] = approach_f32_asymptotic(gPuppyCam.focus[1], camping_intro[CUTSCENE_INTRO_END - 1][1][1], ((f32)sTimeLeftLerpCutscene / 30.0f));
+        gLakituState.focus[2] = approach_f32_asymptotic(gPuppyCam.focus[2], camping_intro[CUTSCENE_INTRO_END - 1][1][2], ((f32)sTimeLeftLerpCutscene / 30.0f));
+        gCamera->yaw = calculate_yaws(gLakituState.focus, gLakituState.pos);
+    } else {
+        if (sTimeLeftLerpCutscene && gCurCutscene == CUTSCENE_NONE && !sLerpFromLastFrame) {
+            sTimeLeftLerpCutscene--;
+            sCutsceneVp.vp.vscale[0] = 640;
+            sCutsceneVp.vp.vscale[1] = approach_f32_asymptotic(480, 360, ((f32)sTimeLeftLerpCutscene / 30.0f));
+            sCutsceneVp.vp.vtrans[0] = 640;
+            sCutsceneVp.vp.vtrans[1] = 480;
+            override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
+        }
+        gLakituState.pos[0] = gPuppyCam.pos[0];
+        gLakituState.pos[1] = gPuppyCam.pos[1];
+        gLakituState.pos[2] = gPuppyCam.pos[2];
 
-    gCamera->pos[0] = gPuppyCam.pos[0];
-    gCamera->pos[1] = gPuppyCam.pos[1];
-    gCamera->pos[2] = gPuppyCam.pos[2];
+        gLakituState.focus[0] = gPuppyCam.focus[0];
+        gLakituState.focus[1] = gPuppyCam.focus[1];
+        gLakituState.focus[2] = gPuppyCam.focus[2];
+        gCamera->yaw = gPuppyCam.yaw;
+    }
 
-    gCamera->focus[0] = gPuppyCam.focus[0];
-    gCamera->focus[1] = gPuppyCam.focus[1];
-    gCamera->focus[2] = gPuppyCam.focus[2];
+    gCamera->pos[0] = gLakituState.pos[0];
+    gCamera->pos[1] = gLakituState.pos[1];
+    gCamera->pos[2] = gLakituState.pos[2];
 
-    gCamera->yaw = gPuppyCam.yaw;
+    gCamera->focus[0] = gLakituState.focus[0];
+    gCamera->focus[1] = gLakituState.focus[1];
+    gCamera->focus[2] = gLakituState.focus[2];
 }
 
 //The basic loop sequence, which is called outside.
