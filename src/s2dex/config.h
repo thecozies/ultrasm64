@@ -11,7 +11,7 @@
 // get your font symbols defined here
 #define s2d_font            billy_obj
 #define s2d_font_dropshadow billy_obj_dropshadow
-#define s2d_tex             billy_tex
+#define s2d_tex             stylish_tex
 #define s2d_kerning_table   billy_kerning_table
 #define s2d_lut             billy_lut
 #define s2d_dl              billy_dl

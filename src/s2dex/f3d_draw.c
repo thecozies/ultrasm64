@@ -40,7 +40,7 @@ void setup_f3d_texture(int idx) {
         gdl_head++,
         t(s2d_tex[idx])->block.image,
         s(s2d_font)->s.imageFmt,
-        G_IM_SIZ_8b,
+        G_IM_SIZ_4b,
         s(s2d_font)->s.imageW >> 5,
         s(s2d_font)->s.imageH >> 5,
         s(s2d_font)->s.imagePal,
@@ -101,13 +101,13 @@ void set_up_texture(int idx) {
 	gSPTexture(gDisplayListHead++, 65535, 65535, 0, 0, 1);
 	gDPTileSync(gDisplayListHead++);
 
-	gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_8b, 32, s2d_lut[idx]);
+	gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_8b, 16, s2d_lut[idx]);
 
-	gDPSetTile(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_8b, 4, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0);
+	gDPSetTile(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_8b, 2, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0);
 	gDPLoadSync(gDisplayListHead++);
-	gDPLoadTile(gDisplayListHead++, 7, 0, 0, 124, 124);
+	gDPLoadTile(gDisplayListHead++, 7, 0, 0, 62, 124);
 	gDPPipeSync(gDisplayListHead++);
-	gDPSetTile(gDisplayListHead++, G_IM_FMT_IA, G_IM_SIZ_8b, 4, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0);
+	gDPSetTile(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_4b, 2, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0);
 	gDPSetTileSize(gDisplayListHead++, 0, 0, 0, 124, 124);
 	gSPEndDisplayList(gDisplayListHead);
 }

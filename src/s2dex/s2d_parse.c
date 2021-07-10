@@ -15,6 +15,8 @@ enum S2DPrintModes {
 	MODE_DRAW_NORMALTEXT,
 };
 
+#define KERNING_ADJUSTMENT 1.0f
+
 static int s2d_width(const char *str, int line, int len) {
 	char *p = str;
 	int tmp_len = 0;
@@ -70,7 +72,7 @@ static int s2d_width(const char *str, int line, int len) {
 			default:
 				if (current_char != '\0' && curLine == line)
 					// width += (int) (((f32) s2d_kerning_table[current_char]) * gS2DScale);
-					width += s2d_kerning_table[(int) current_char] * (gS2DScale * 1.2f);
+					width += s2d_kerning_table[(int) current_char] * (gS2DScale * KERNING_ADJUSTMENT);
 		}
 		if (*p == '\0') break;
 		p++;
@@ -204,7 +206,7 @@ static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, i
 						}
 					}
 					// (x += (int) (((f32) s2d_kerning_table[current_char]) * gS2DScale));
-					(x += s2d_kerning_table[(int) current_char] * (gS2DScale * 1.2f));
+					(x += s2d_kerning_table[(int) current_char] * (gS2DScale * KERNING_ADJUSTMENT));
 				}
 		}
 		if (*p == '\0') break;
