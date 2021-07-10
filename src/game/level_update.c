@@ -1075,6 +1075,9 @@ s32 play_mode_normal(void) {
             is_non_action_cutscene_active()
         )
     ) {
+        // u16 pressedButtons = gPlayer1Controller->buttonPressed;
+        // u16 heldButtons = gPlayer1Controller->buttonDown;
+
         gGameLagged = -1;
         while (sDeltaTime > 1562744) {
             sDeltaTime -= 1562744;
@@ -1084,17 +1087,15 @@ s32 play_mode_normal(void) {
             gGameLagged += 1;
 
             if (gGameLagged) {
-                u16 pressedButtons = gPlayer1Controller->buttonPressed;
-                u16 heldButtons = gPlayer1Controller->buttonDown;
                 if (is_non_action_cutscene_active() && !gWaitingToStart) {
                     gCurCutsceneTimer++;
                 }
 
-                gPlayer1Controller->buttonPressed = 0;
-                gPlayer1Controller->buttonDown = 0;
                 if (gCurrentArea != NULL) update_camera(gCurrentArea->camera);
-                gPlayer1Controller->buttonPressed = pressedButtons;
-                gPlayer1Controller->buttonDown = heldButtons;
+                gPlayer1Controller->buttonPressed = 0;
+                // gPlayer1Controller->buttonDown = 0;
+                // gPlayer1Controller->buttonPressed = pressedButtons;
+                // gPlayer1Controller->buttonDown = heldButtons;
             } 
 
             area_update_objects();
@@ -1149,8 +1150,9 @@ s32 play_mode_normal(void) {
 s32 play_mode_paused(void) {
     if (gPauseScreenMode == 0) {
         set_menu_mode(RENDER_PAUSE_SCREEN);
+        lower_background_noise(2);
     } else if (gPauseScreenMode == 1) {
-        raise_background_noise(1);
+        raise_background_noise(2);
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
         set_play_mode(PLAY_MODE_NORMAL);
     } else {
