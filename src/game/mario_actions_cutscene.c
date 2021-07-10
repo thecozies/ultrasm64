@@ -2464,6 +2464,8 @@ s32 act_lucys_levitation(struct MarioState *m) {
     }
     m->actionTimer++;
 
+    if (gCurCutsceneTimer == LUCYS_LEVITATION_START_CREDITS) gShowingCredits = TRUE;
+
     move_final_orb_pos();
     gravitate_towards_center_of_orb(m);
 

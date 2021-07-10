@@ -14,6 +14,7 @@
 #endif
 
 #define ARRAY_COUNT(arr) (s32)(sizeof(arr) / sizeof(arr[0]))
+#define LAST_INDEX(arr) ((s32)(sizeof(arr) / sizeof(arr[0])) - 1)
 
 #define GLUE(a, b) a ## b
 #define GLUE2(a, b) GLUE(a, b)

@@ -5632,7 +5632,12 @@ Gfx mat_mario_skin_v3[] = {
 
 Gfx mat_mario_face_0___Open_Eyes_v3[] = {
 	gsDPPipeSync(),
-	gsDPSetCombineLERP(TEXEL0, SHADE, TEXEL0_ALPHA, SHADE, 0, 0, 0, ENVIRONMENT, TEXEL0, SHADE, TEXEL0_ALPHA, SHADE, 0, 0, 0, ENVIRONMENT),
+	gsDPSetCombineLERP(
+		TEXEL0, SHADE, 	TEXEL0_ALPHA, 	SHADE,
+		0, 		0, 		0, 				ENVIRONMENT,
+		TEXEL0, SHADE, 	TEXEL0_ALPHA, 	SHADE,
+		0, 		0, 		0, 				ENVIRONMENT
+	),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPTileSync(),
 	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, lucy_eyes_open),

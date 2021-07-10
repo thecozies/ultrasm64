@@ -148,6 +148,7 @@ extern s8 gSelectedOption;
 extern u8 gChallengeMode;
 extern u8 gSpeedrunMode;
 extern u8 gCurTipType;
+extern s8 gShowingCredits;
 
 
 extern struct SpawnInfo *gMarioSpawnInfo;

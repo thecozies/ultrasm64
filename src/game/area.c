@@ -30,6 +30,7 @@
 #include "s2dex/s2d_print.h"
 #include "s2dex/s2d_buffer.h"
 #include "tutorial.h"
+#include "credits.h"
 
 
 struct SpawnInfo gPlayerSpawnInfos[1];
@@ -121,6 +122,8 @@ u8 sTimeLeftRoom[4] = {0, 0, 0, 0};
 
 u8 gCurTipType = 0;
 s8 sTriggeredRingReminder = FALSE;
+
+s8 gShowingCredits = FALSE;
 
 enum GOAL_FADE_STATES {
     NO_GOAL,
@@ -1066,7 +1069,12 @@ void render_game(void) {
             if (isDone) set_tip_type(0);
         }
         calculate_and_update_fps();
+        if (gShowingCredits) render_final_credits();
+
 #ifdef CDEBUG
+        // if (gPlayer1Controller->buttonPressed & L_TRIG && gPlayer1Controller->buttonDown & R_TRIG)
+        //     gShowingCredits = TRUE;
+
         if (gPlayer1Controller->buttonPressed & L_TRIG) sShowFPS = !sShowFPS;
         if (sShowFPS && gIsConsole) {
             print_fps(20, 40);

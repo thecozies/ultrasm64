@@ -31,6 +31,8 @@ void s2d_reset_defer_index(void) {
 // }
 
 void s2d_print_deferred(int x, int y, int align, u8 alpha, f32 size, const char *str) {
+	if (alpha == 0) return;
+
 	s2d_charBuffer[s2d_charBuffer_index] = str;
 	s2d_positions[s2d_charBuffer_index].x = x;
 	s2d_positions[s2d_charBuffer_index].y = y;
