@@ -18,6 +18,7 @@
 #define FADING_ORB_END_DIST 400.0f
 
 void bhv_parasite_interact(void) {
+    // cur_obj_play_sound_1(SOUND_0E_ORB_WUB_CUSTOM);
     if (gCurrLevelNum == LEVEL_PSS) {
         if (o->oRoom != -1) {
             if (gMarioCurrentRoom == o->oRoom) o->oOpacity = MIN(255, o->oOpacity + 10);

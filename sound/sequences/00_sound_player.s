@@ -2853,6 +2853,7 @@ sound_ref .sound_general_boat_rock
   sound_ref .sound_general_yoshi_walk
   sound_ref .sound_general_enemy_alert1
 .endif
+sound_ref .sound_1D_orb_wub_custom
 
 .sound_general_activate_cap_switch:
 chan_setbank 5
@@ -7034,6 +7035,7 @@ sound_ref .sound_menu_mario_castle_warp2
   sound_ref .sound_menu_camera_buzz
   sound_ref .sound_menu_camera_turn
 .endif
+sound_ref .sound_1D_orb_wub_custom
 
 .sound_menu_change_select:
 chan_setbank 9
@@ -8192,3 +8194,13 @@ envelope_line 1000 32700
 envelope_line 10 16000
 envelope_line 200 32760
 envelope_goto 3
+
+.sound_1D_orb_wub_custom:
+chan_setbank 5
+chan_setinstr 16
+chan_setlayer 0, .layer_1D_orb_wub_custom
+chan_end
+
+.layer_1D_orb_wub_custom:
+layer_note1_long 39, 0xF0, 127
+layer_end
