@@ -4,6 +4,7 @@
 #include "mtx.h"
 
 #include "s2d_draw.h"
+#include "game/rendering_graph_node.h"
 
 #define s(sprite) ((uObjSprite *)seg2virt(&sprite))
 #define t(texture) ((uObjTxtr *)seg2virt(&texture))
@@ -128,7 +129,9 @@ void draw_f3d_glyph(char c, int x, int y, uObjMtx *mt) {
 		SCREEN_HEIGHT - y - (ORTHO_TRI_CENTER_OFFSET * gS2DScale),
 		0.0f
 	);
-    guScale(scaleMtx, gS2DScale, gS2DScale, 1.0f);
+
+    if (gWidescreen) guScale(scaleMtx, gS2DScale * 0.75f, gS2DScale, 1.0f);
+    else guScale(scaleMtx, gS2DScale, gS2DScale, 1.0f);
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(matrix), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(scaleMtx), G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);

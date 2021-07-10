@@ -192,8 +192,7 @@ s32 gObjectAngleHere = 0;
 
 s8 gOverrideLOD = FALSE;
 s32 gWidescreen = FALSE;
-#define FOUR_BY_3 (4.0f / 3.0f)
-#define SIXTEEN_BY_9 (16.0f / 9.0f)
+
 f32 sAspectRatio = FOUR_BY_3;
 
 /**

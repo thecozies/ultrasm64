@@ -9,6 +9,7 @@
 #include "s2d_print.h"
 #include "s2d_ustdlib.h"
 #include "s2d_error.h"
+#include "game/rendering_graph_node.h"
 
 enum S2DPrintModes {
 	MODE_DRAW_DROPSHADOW,
@@ -16,6 +17,11 @@ enum S2DPrintModes {
 };
 
 #define KERNING_ADJUSTMENT 1.0f
+
+f32 get_kerning_adjustment(void) {
+	if (gWidescreen) return (gS2DScale * KERNING_ADJUSTMENT * 0.75f); 
+	return (gS2DScale * KERNING_ADJUSTMENT);
+}
 
 static int s2d_width(const char *str, int line, int len) {
 	char *p = str;
@@ -72,7 +78,7 @@ static int s2d_width(const char *str, int line, int len) {
 			default:
 				if (current_char != '\0' && curLine == line)
 					// width += (int) (((f32) s2d_kerning_table[current_char]) * gS2DScale);
-					width += s2d_kerning_table[(int) current_char] * (gS2DScale * KERNING_ADJUSTMENT);
+					width += s2d_kerning_table[(int) current_char] * get_kerning_adjustment();
 		}
 		if (*p == '\0') break;
 		p++;
@@ -206,7 +212,7 @@ static int s2d_snprint(int x, int y, int align, const char *str, uObjMtx *buf, i
 						}
 					}
 					// (x += (int) (((f32) s2d_kerning_table[current_char]) * gS2DScale));
-					(x += s2d_kerning_table[(int) current_char] * (gS2DScale * KERNING_ADJUSTMENT));
+					(x += s2d_kerning_table[(int) current_char] * get_kerning_adjustment());
 				}
 		}
 		if (*p == '\0') break;
