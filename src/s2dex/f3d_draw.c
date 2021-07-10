@@ -102,14 +102,14 @@ void set_up_texture(int idx) {
 	gSPTexture(gDisplayListHead++, 65535, 65535, 0, 0, 1);
 	gDPTileSync(gDisplayListHead++);
 
-	gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_8b, 16, s2d_lut[idx]);
+	gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_8b, 24, s2d_lut[idx]);
 
-	gDPSetTile(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_8b, 2, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0);
+	gDPSetTile(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_8b, 3, 0, 7, 0, G_TX_CLAMP | G_TX_NOMIRROR, 6, 0, G_TX_CLAMP | G_TX_NOMIRROR, 6, 0);
 	gDPLoadSync(gDisplayListHead++);
-	gDPLoadTile(gDisplayListHead++, 7, 0, 0, 62, 124);
+	gDPLoadTile(gDisplayListHead++, 7, 0, 0, 94, 188);
 	gDPPipeSync(gDisplayListHead++);
-	gDPSetTile(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_4b, 2, 0, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, 0);
-	gDPSetTileSize(gDisplayListHead++, 0, 0, 0, 124, 124);
+	gDPSetTile(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_4b, 3, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 6, 0, G_TX_CLAMP | G_TX_NOMIRROR, 6, 0);
+	gDPSetTileSize(gDisplayListHead++, 0, 0, 0, 188, 188);
 	gSPEndDisplayList(gDisplayListHead);
 }
 

@@ -4,6 +4,7 @@
 
 extern void s2d_print_deferred(int x, int y, int align, u8 alpha, f32 size, const char *str);
 extern void s2d_handle_deferred(void);
+void s2d_reset_defer_index(void);
 extern int s2d_charBuffer_index;
 
 #endif
