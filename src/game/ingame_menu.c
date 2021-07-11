@@ -24,6 +24,11 @@
 #include "types.h"
 #include "puppycam2.h"
 #include "tutorial.h"
+#include "mario.h"
+#include "s2dex/s2d_buffer.h"
+#include "s2dex/s2d_print.h"
+#include "rendering_graph_node.h"
+#include "sound_init.h"
 
 u16 gDialogColorFadeTimer;
 s8 gLastDialogLineNum;
@@ -2119,7 +2124,7 @@ void shade_screen(void) {
                            GFX_DIMENSIONS_ASPECT_RATIO * SCREEN_HEIGHT / 130.0f, 3.0f, 1.0f);
 // #endif
 
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 110);
+    gDPSetEnvColor(gDisplayListHead++, 0x20, 0x20, 0x20, 180);
     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 }
@@ -2591,6 +2596,168 @@ s32 gCourseDoneMenuTimer = 0;
 s32 gCourseCompleteCoins = 0;
 s8 gHudFlash = 0;
 
+enum PAUSE_OPTS {
+    PAUSE_RETURN,
+    PAUSE_TIPS,
+    PAUSE_WIDE,
+    PAUSE_CAMERA_OPTIONS,
+    PAUSE_RELOAD_CHECKPOINT,
+    PAUSE_QUIT
+};
+
+enum PAUSE_SURE_OPTS {
+    PAUSE_NO,
+    PAUSE_YES
+};
+
+u8 sPauseOpt = PAUSE_RETURN;
+u8 sPauseStoredOpt = PAUSE_RETURN;
+u8 sPauseCheckSure = FALSE;
+u8 sLookingAtTips = FALSE;
+
+void close_pause_menu(void) {
+    level_set_transition(0, NULL);
+    gMenuMode = -1;
+    gDialogBoxState = DIALOG_STATE_OPENING;
+    sPauseOpt = PAUSE_RETURN;
+    sPauseCheckSure = FALSE;
+    sLookingAtTips = FALSE;
+}
+
+
+#define PAUSE_OPT_HEIGHT(optNum) (((SCREEN_HEIGHT / 2) - 20 + (optNum * 20)))
+#define PAUSE_OPT_HEIGHT_C(optNum) (((SCREEN_HEIGHT / 2) - 20 + (optNum * 30)))
+
+#define pause_print_title(str) (s2d_print_deferred(20, 20, ALIGN_LEFT, 255, 1.0f, str))
+#define pause_print_title_c(str) (s2d_print_deferred(SCREEN_WIDTH / 2, 60, ALIGN_CENTER, 255, 1.0f, str))
+#define pause_print_subtitle(str) (s2d_print_deferred(20, 50, ALIGN_LEFT, 200, 0.5f, str))
+#define pause_print_subtitle_right(str) (s2d_print_deferred(GFX_DIMENSIONS_FROM_RIGHT_EDGE(20), 24, ALIGN_RIGHT, 200, 0.5f, str))
+#define pause_print_opt(optNum, str)   (s2d_print_deferred(20,               PAUSE_OPT_HEIGHT(optNum),   ALIGN_LEFT,   (optNum == sPauseOpt ? 255 : 150), 0.5f,  str))
+#define pause_print_opt_c(optNum, str) (s2d_print_deferred(SCREEN_WIDTH / 2, PAUSE_OPT_HEIGHT_C(optNum), ALIGN_CENTER, (optNum == sPauseOpt ? 255 : 150), 0.75f, str))
+#define pause_print_opt_sel (s2d_print_deferred(15, PAUSE_OPT_HEIGHT(sPauseOpt), ALIGN_LEFT, 255, 0.5f, "|"))
+
+s16 render_pause_opts(void) {
+    int lastOpt = sPauseCheckSure ? PAUSE_YES : PAUSE_QUIT;
+
+    if (!sWaitingForStick0)
+    {
+        if (gPlayer1Controller->rawStickY > 60 || gPlayer1Controller->buttonPressed & U_JPAD)
+        {
+            if (sLookingAtTips) prev_tip();
+            else sPauseOpt = sPauseOpt == 0 ? lastOpt : sPauseOpt - 1;
+
+            if (gPlayer1Controller->rawStickY > 60) sWaitingForStick0 = TRUE;
+        }
+
+        if (gPlayer1Controller->rawStickY < -60 || gPlayer1Controller->buttonPressed & D_JPAD)
+        {
+            if (sLookingAtTips) next_tip();
+            else sPauseOpt = sPauseOpt == lastOpt ? 0 : sPauseOpt + 1;
+
+            if (gPlayer1Controller->rawStickY < -60) sWaitingForStick0 = TRUE;
+        }
+    }
+    else if (ABS(gPlayer1Controller->rawStickY) < 4)
+    {
+        sWaitingForStick0 = FALSE;
+    }
+
+    if (sLookingAtTips)
+    {
+        render_tutorial(TRUE);
+        pause_print_subtitle_right(TITLE_B_BUTTON ": Back");
+        if (gPlayer1Controller->buttonPressed & B_BUTTON)
+        {
+            sLookingAtTips = FALSE;
+            sPauseCheckSure = FALSE;
+            sPauseOpt = PAUSE_TIPS;
+        }
+    }
+    else if (sPauseCheckSure)
+    {
+        if (gPlayer1Controller->buttonPressed & B_BUTTON || (gPlayer1Controller->buttonPressed & A_BUTTON && sPauseOpt == PAUSE_NO))
+        {
+            sPauseCheckSure = FALSE;
+            sPauseOpt = sPauseStoredOpt;
+        }
+        else if (gPlayer1Controller->buttonPressed & A_BUTTON && sPauseOpt == PAUSE_YES)
+        {
+            if (sPauseCheckSure == PAUSE_RELOAD_CHECKPOINT) {
+                close_pause_menu();
+                warp_mario_to_checkpoint();
+                return 1;
+            }
+            else if (sPauseCheckSure == PAUSE_QUIT)
+            {
+                sPauseCheckSure = FALSE;
+                sPauseOpt = PAUSE_RETURN;
+
+                // fade_into_special_warp(-2, 0);
+                // close_pause_menu();
+                gMenuMode = -1;
+                gDialogBoxState = DIALOG_STATE_OPENING;
+
+                reset_global_state();
+                
+                return 2;
+            }
+        }
+
+        switch (sPauseCheckSure)
+        {
+            case PAUSE_RELOAD_CHECKPOINT:
+                pause_print_title_c("Reload last checkpoint?");
+                pause_print_opt_c(PAUSE_NO, "Back");
+                pause_print_opt_c(PAUSE_YES, "Reload");
+                break;
+            case PAUSE_QUIT:
+                if (gWidescreen) pause_print_title_c("Are you sure you want to quit?");
+                else pause_print_title_c("Quit game?");
+                pause_print_opt_c(PAUSE_NO, "Back");
+                pause_print_opt_c(PAUSE_YES, "Quit");
+                break;
+        }
+    }
+    else
+    {
+        if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+            sPauseStoredOpt = sPauseOpt;
+            switch (sPauseOpt)
+            {
+            case PAUSE_TIPS:
+                sLookingAtTips = TRUE;
+                break;
+            case PAUSE_WIDE:
+                widescreen_set_save(!gWidescreen);
+                break;
+            case PAUSE_CAMERA_OPTIONS:
+                gPCOptionOpen = TRUE;
+                break;
+            case PAUSE_RELOAD_CHECKPOINT:
+            case PAUSE_QUIT:
+                sPauseCheckSure = sPauseOpt;
+                sPauseOpt = PAUSE_NO;
+                break;
+            case PAUSE_RETURN:
+            default:
+                close_pause_menu();
+                return 1;
+            }
+        }
+
+        pause_print_title("Paused");
+        pause_print_opt(PAUSE_RETURN, "Return");
+        pause_print_opt(PAUSE_TIPS, "Tips/Controls");
+        pause_print_opt(PAUSE_WIDE, "Toggle widescreen");
+        pause_print_opt(PAUSE_CAMERA_OPTIONS, "Camera options");
+        pause_print_opt(PAUSE_RELOAD_CHECKPOINT, "Reload checkpoint");
+        pause_print_opt(PAUSE_QUIT, "Quit game");
+        pause_print_opt_sel;
+    }
+
+    return 0;
+}
+
 s16 render_pause_courses_and_castle(void) {
     s16 num;
 
@@ -2598,112 +2765,70 @@ s16 render_pause_courses_and_castle(void) {
     gInGameLanguage = eu_get_language();
 #endif
 
-puppycam_check_pause_buttons();
+    puppycam_check_pause_buttons();
     if (!gPCOptionOpen)
     {
-    switch (gDialogBoxState) {
-        case DIALOG_STATE_OPENING:
-            gDialogLineNum = 1;
-            gDialogTextAlpha = 0;
-            level_set_transition(-1, NULL);
-#ifdef VERSION_JP
-            // play_sound(SOUND_MENU_PAUSE, gGlobalSoundSource);
-#else
-            // play_sound(SOUND_MENU_PAUSE_HIGHPRIO, gGlobalSoundSource);
-#endif
+        switch (gDialogBoxState) {
+            case DIALOG_STATE_OPENING:
+                gDialogLineNum = 1;
+                gDialogTextAlpha = 0;
+                level_set_transition(-1, NULL);
 
-            if (gCurrCourseNum >= COURSE_MIN && gCurrCourseNum <= COURSE_MAX) {
-                change_dialog_camera_angle();
-                gDialogBoxState = DIALOG_STATE_VERTICAL;
-            } else {
-                highlight_last_course_complete_stars();
-                gDialogBoxState = DIALOG_STATE_HORIZONTAL;
-            }
-            break;
-        case DIALOG_STATE_VERTICAL:
-            shade_screen();
-            // render_pause_my_score_coins();
-            // render_pause_red_coins();
-
-            // if (gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT) {
-            //     render_pause_course_options(99, 93, &gDialogLineNum, 15);
-            // }
-
-#ifdef VERSION_EU
-            if (gPlayer3Controller->buttonPressed & (A_BUTTON | Z_TRIG | START_BUTTON))
-#else
-            if (gPlayer3Controller->buttonPressed & A_BUTTON
-             || gPlayer3Controller->buttonPressed & START_BUTTON)
-#endif
-            {
-                level_set_transition(0, NULL);
-                // play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
-                gDialogBoxState = DIALOG_STATE_OPENING;
-                gMenuMode = -1;
-
-                if (gDialogLineNum == 2) {
-                    num = gDialogLineNum;
+                if (gCurrCourseNum >= COURSE_MIN && gCurrCourseNum <= COURSE_MAX) {
+                    change_dialog_camera_angle();
+                    gDialogBoxState = DIALOG_STATE_VERTICAL;
                 } else {
-                    num = 1;
+                    highlight_last_course_complete_stars();
+                    gDialogBoxState = DIALOG_STATE_HORIZONTAL;
                 }
+                break;
+            case DIALOG_STATE_VERTICAL:
+                shade_screen();
 
-                return num;
-            }
-            break;
-        case DIALOG_STATE_HORIZONTAL:
-            shade_screen();
-            // print_hud_pause_colorful_str();
-            // render_pause_castle_menu_box(160, 143);
-            // render_pause_castle_main_strings(104, 60);
+                if (gPlayer3Controller->buttonPressed & START_BUTTON)
+                {
+                    level_set_transition(0, NULL);
+                    // play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
+                    gDialogBoxState = DIALOG_STATE_OPENING;
+                    gMenuMode = -1;
 
-#ifdef VERSION_EU
-            if (gPlayer3Controller->buttonPressed & (A_BUTTON | Z_TRIG | START_BUTTON))
-#else
-            if (gPlayer3Controller->buttonPressed & A_BUTTON
-             || gPlayer3Controller->buttonPressed & START_BUTTON)
-#endif
-            {
-                level_set_transition(0, NULL);
-                // play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
-                gMenuMode = -1;
-                gDialogBoxState = DIALOG_STATE_OPENING;
+                    if (gDialogLineNum == 2) {
+                        num = gDialogLineNum;
+                    } else {
+                        num = 1;
+                    }
 
-                return 1;
-            }
-            break;
+                    return num;
+                }
+                break;
+            case DIALOG_STATE_HORIZONTAL:
+                shade_screen();
+
+                if (gPlayer3Controller->buttonPressed & START_BUTTON)
+                {
+                    close_pause_menu();
+                    return 1;
+                }
+                break;
+        }
+
+        if (gDialogTextAlpha < 250) {
+            gDialogTextAlpha += 25;
+        }
     }
-
-    if (gDialogTextAlpha < 250) {
-        gDialogTextAlpha += 25;
-    }
-}
     else
     {
         shade_screen();
         puppycam_display_options();
+        pause_print_title("Puppycam Options");
+        pause_print_subtitle(TITLE_B_BUTTON ": Back");
     }
 
     // puppycam_render_option_text();
     if (!gPCOptionOpen) {
-        if (!sWaitingForStick0) {
-            if (gPlayer1Controller->rawStickY > 60 || gPlayer1Controller->buttonPressed & U_JPAD) {
-                prev_tip();
-                if (gPlayer1Controller->rawStickY > 60) sWaitingForStick0 = TRUE;
-            }
-
-            if (gPlayer1Controller->rawStickY < -60 || gPlayer1Controller->buttonPressed & D_JPAD) {
-                next_tip();
-                if (gPlayer1Controller->rawStickY < -60) sWaitingForStick0 = TRUE;
-            }
-        } else if (ABS(gPlayer1Controller->rawStickY) < 4) {
-            sWaitingForStick0 = FALSE;
-        }
-        render_tutorial(TRUE);
-    } else {
-        s2d_init();
-        render_pause_hint_text();
-        s2d_stop();
+        return render_pause_opts();
     }
+
     return 0;
 }
 

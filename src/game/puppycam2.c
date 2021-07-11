@@ -163,8 +163,9 @@ void puppycam_boot(void)
     gPuppyVolumeCount = 0;
     gPuppyCam.enabled = 1;
     puppycam_default_config();
-
-    // puppycam_get_save();
+    puppycam_get_save();
+    if (gPuppyCam.options.sensitivityX == 0 || gPuppyCam.options.sensitivityY == 0) puppycam_default_config();
+    widescreen_get_save();
 }
 
 #if defined(VERSION_EU)
@@ -219,8 +220,6 @@ static void puppycam_display_box(s16 x1, s16 y1, s16 x2, s16 y2, u8 r, u8 g, u8 
 void puppycam_change_setting(s8 toggle)
 {
     if (gPlayer1Controller->buttonDown & A_BUTTON)
-        toggle*= 5;
-    if (gPlayer1Controller->buttonDown & B_BUTTON)
         toggle*= 10;
 
     if (gPCOptions[gPCOptionSelected].gPCOptionMin == FALSE && gPCOptions[gPCOptionSelected].gPCOptionMax == TRUE)
@@ -329,21 +328,13 @@ extern struct SaveBuffer gSaveBuffer;
 
 void puppycam_check_pause_buttons()
 {
-    if (gPlayer1Controller->buttonPressed & R_TRIG)
+    if (gPlayer1Controller->buttonPressed & B_BUTTON)
     {
         // play_sound(SOUND_MENU_CHANGE_SELECT, gGlobalSoundSource);
-        if (gPCOptionOpen == 0)
-        {
-            gPCOptionOpen = 1;
-            #if defined(VERSION_EU)
-            newcam_set_language();
-            #endif
-        }
-
-        else
+        if (gPCOptionOpen)
         {
             gPCOptionOpen = 0;
-            // puppycam_set_save();
+            puppycam_set_save();
         }
     }
 

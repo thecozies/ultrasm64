@@ -32,12 +32,6 @@
 #include "rumble_init.h"
 #include "tutorial.h"
 
-#define PLAY_MODE_NORMAL 0
-#define PLAY_MODE_PAUSED 2
-#define PLAY_MODE_CHANGE_AREA 3
-#define PLAY_MODE_CHANGE_LEVEL 4
-#define PLAY_MODE_FRAME_ADVANCE 5
-
 #define WARP_TYPE_NOT_WARPING 0
 #define WARP_TYPE_CHANGE_LEVEL 1
 #define WARP_TYPE_CHANGE_AREA 2
@@ -238,6 +232,7 @@ u32 pressed_pause(void) {
         !intangible &&
         !val4 &&
         !gWarpTransition.isActive &&
+        gCutsceneAllowPause &&
         sDelayedWarpOp == WARP_OP_NONE &&
         gTutorialDone &&
         (gPlayer1Controller->buttonPressed & START_BUTTON)) {
@@ -1152,6 +1147,7 @@ s32 play_mode_paused(void) {
         set_menu_mode(RENDER_PAUSE_SCREEN);
         lower_background_noise(2);
     } else if (gPauseScreenMode == 1) {
+        raise_background_noise(1);
         raise_background_noise(2);
         gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
         set_play_mode(PLAY_MODE_NORMAL);
@@ -1161,7 +1157,7 @@ s32 play_mode_paused(void) {
         if (gDebugLevelSelect) {
             fade_into_special_warp(-9, 1);
         } else {
-            initiate_warp(LEVEL_CASTLE, 1, 0x1F, 0);
+            initiate_warp(LEVEL_CASTLE_COURTYARD, 1, 0x0A, 0);
             fade_into_special_warp(0, 0);
             gSavedCourseNum = COURSE_NONE;
         }

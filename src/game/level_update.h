@@ -50,6 +50,12 @@
 #define MARIO_SPAWN_LAUNCH_DEATH          0x25
 #define MARIO_SPAWN_UNKNOWN_27            0x27
 
+#define PLAY_MODE_NORMAL 0
+#define PLAY_MODE_PAUSED 2
+#define PLAY_MODE_CHANGE_AREA 3
+#define PLAY_MODE_CHANGE_LEVEL 4
+#define PLAY_MODE_FRAME_ADVANCE 5
+
 
 struct CreditsEntry
 {

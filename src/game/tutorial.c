@@ -38,7 +38,7 @@
 //     - Air jump. A certain object will allow you to jump again in the air with A.
 // - **Water:**
 //     - Move any lateral direction using only the controller stick.
-//     - Hold A to ascend, and B to decend
+//     - Hold A to ascend, and B to descend
 //     - Water groundpound. Like a normal groundpund, but in water.
 //     - Water jump. After reaching the surface, press A to jump.
 //     - Similar movement as Super Mario Sunshine.
@@ -88,7 +88,7 @@ char sWaterText[WATER_TIPS][198] = {
     TITLE_STICK ".",
 
     "Hold " TITLE_A_BUTTON " to ascend,\n"
-    "and " TITLE_B_BUTTON " to decend.",
+    "and " TITLE_B_BUTTON " to descend.",
 
     "Water groundpound. Press " TITLE_Z_BUTTON "\n"
     "like a normal groundpound, but in water.",
@@ -246,16 +246,16 @@ void render_tutorial_title(void) {
     s2d_alpha = sTutorialFadeAlpha;
     switch(sCurrentTutorial) {
         case TUTORIAL_AIR:
-            s2d_print_alloc(24, 20, ALIGN_LEFT, sTitleAir);
+            s2d_print_alloc(20, 20, ALIGN_LEFT, sTitleAir);
             break;
         case TUTORIAL_WATER:
-            s2d_print_alloc(24, 20, ALIGN_LEFT, sTitleWater);
+            s2d_print_alloc(20, 20, ALIGN_LEFT, sTitleWater);
             break;
         case TUTORIAL_CAMERA:
-            s2d_print_alloc(24, 20, ALIGN_LEFT, sTitleCamera);
+            s2d_print_alloc(20, 20, ALIGN_LEFT, sTitleCamera);
             break;
         case TUTORIAL_EXTRA:
-            s2d_print_alloc(24, 20, ALIGN_LEFT, sTitleExtra);
+            s2d_print_alloc(20, 20, ALIGN_LEFT, sTitleExtra);
             break;
     }
 }
@@ -298,7 +298,7 @@ void render_skip_text(void) {
     s2d_alpha = sSkipTimer;
 
     s2d_print_alloc(
-        GFX_DIMENSIONS_FROM_RIGHT_EDGE(35),
+        GFX_DIMENSIONS_FROM_RIGHT_EDGE(CONV_WIDE(31)),
         SCREEN_HEIGHT - 35,
         ALIGN_RIGHT,
         sSkipText
@@ -315,6 +315,8 @@ void render_skip_text(void) {
 }
 
 void render_pause_hint_text(void) {
+    if (gPCOptionOpen) return;
+
     gS2DScale = 0.5f;
     drop_shadow = FALSE;
 
@@ -322,41 +324,12 @@ void render_pause_hint_text(void) {
 
     s2d_alpha = sSkipTimer;
 
-    if (!gPCOptionOpen) {
-        s2d_print_alloc(
-            GFX_DIMENSIONS_FROM_RIGHT_EDGE(10),
-            SCREEN_HEIGHT - 36,
-            ALIGN_RIGHT,
-            sPauseText
-        );
-    }
-
-    gS2DScale = 0.5f;
     s2d_print_alloc(
-        GFX_DIMENSIONS_FROM_RIGHT_EDGE(70),
-        10,
-        ALIGN_LEFT,
-        gPCOptionOpen ? sPuppyOptionText2 : sPuppyOptionText1
+        GFX_DIMENSIONS_FROM_RIGHT_EDGE(10),
+        SCREEN_HEIGHT - 36,
+        ALIGN_RIGHT,
+        sPauseText
     );
-
-    gS2DScale = 0.5f;
-    s2d_print_alloc(
-        GFX_DIMENSIONS_FROM_RIGHT_EDGE(70),
-        24,
-        ALIGN_LEFT,
-        gWidescreen ? sAspect169 : sAspect43
-    );
-    if (gPlayer1Controller->buttonPressed & L_TRIG) gWidescreen = !gWidescreen;
-
-    if (gPCOptionOpen) {
-        gS2DScale = 1.0f;
-        s2d_print_alloc(
-            (SCREEN_WIDTH / 2) + 8,
-            55,
-            ALIGN_CENTER,
-            sPuppyOptionTitle
-        );
-    }
 }
 
 // CTODO: Add pause to skip for intro tutorial
@@ -434,6 +407,8 @@ s32 render_tutorial(s32 onPause) {
 }
 
 s32 render_tip(u8 tipType) {
+    if (sCurrPlayMode != PLAY_MODE_NORMAL) return;
+
     if (update_tutorial_fade(
         TUTORIAL_FADE_IN_LEN,
         TUTORIAL_SHOW_LEN,

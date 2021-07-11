@@ -47,6 +47,7 @@ s8 gWaitingToStart = TRUE;
 u32 gStartWaitTimer = 0;
 
 s8 gCurCutscene = 0;
+s8 gCutsceneAllowPause = TRUE;
 u32 gCurCutsceneTimer = 0;
 s32 sWarpOp = 0;
 s8 sIntroCutsceneDone = FALSE;
@@ -1855,7 +1856,29 @@ void set_current_cutscene(s32 cutscene) {
     } else if (gCurCutscene != cutscene) {
         gCurCutsceneTimer = 0;
     }
+
     gCurCutscene = cutscene;
+    switch (gCurCutscene) {
+        case CUTSCENE_NONE:
+        case CUTSCENE_SLIDE:
+        case CUTSCENE_TOWERCLIMB:
+        case CUTSCENE_FORCE_YAW:
+            gCutsceneAllowPause = TRUE;
+            break;
+        default:
+            gCutsceneAllowPause = FALSE;
+    }
+}
+
+void reset_global_state(void) {
+    sIntroCutsceneDone = FALSE;
+    gWaitingToStart = TRUE;
+    gStartWaitTimer = 0;
+    gGameStarted = FALSE;
+    bzero(&gParasitesGrabbed, sizeof(gParasitesGrabbed));
+    bzero(&gParasitesGoals, sizeof(gParasitesGoals));
+    bzero(&gParasitesGoalsSet, sizeof(gParasitesGoalsSet));
+    set_current_cutscene(CUTSCENE_NONE);
 }
 
 void handle_cutscene(void) {
@@ -2069,7 +2092,7 @@ void handle_lucy_blinks(struct MarioState *m) {
 }
 
 void handle_lucy_action_mouths(struct MarioState *m) {
-    if (gMarioState->action & ACT_GROUP_MASK == ACT_GROUP_CUTSCENE) return;
+    if ((gMarioState->action & ACT_GROUP_MASK) == ACT_GROUP_CUTSCENE) return;
 
     s32 sayingSomething = check_bank_playing_sound(SOUND_BANK_VOICE);
 
