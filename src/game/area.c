@@ -32,7 +32,6 @@
 #include "tutorial.h"
 #include "credits.h"
 
-
 struct SpawnInfo gPlayerSpawnInfos[1];
 struct GraphNode *D_8033A160[0x100];
 struct Area gAreaData[8];
@@ -207,7 +206,7 @@ void calculate_and_update_fps(void)
 
 void print_fps(s32 x, s32 y)
 {
-    char text[10];
+    char text[40]; // WHY DOES THIS NEED TO BE 40 WTF
     sprintf(text, "%2.2f", sFPS);
     if (gGameIsLagging) s2d_print_deferred(x, y, ALIGN_LEFT, 255, 0.5f, text);
     else s2d_print_deferred(x, y, ALIGN_LEFT, 100, 0.5f, text);
@@ -530,6 +529,7 @@ void render_goals(void) {
         gCurrLevelNum == LEVEL_CASTLE_GROUNDS &&
         gCurCutscene != CUTSCENE_INTRO_TEMPLE &&
         !render_tutorial(FALSE) &&
+        sCurrPlayMode == PLAY_MODE_NORMAL &&
         update_text_fade(GOAL_FADE_IN_LEN, GOAL_SHOW_LEN, GOAL_FADE_OUT_LEN) &&
         gMarioState->lastParaGroup != -1
     ) {
@@ -543,7 +543,7 @@ void render_goals(void) {
             gParasitesGrabbed[gMarioState->lastParaGroup],
             gParasitesGoals[gMarioState->lastParaGroup]
         );
-        s2d_print_alloc(40, 20, ALIGN_LEFT, s1);
+        s2d_print_alloc(20, 20, ALIGN_LEFT, s1);
 
         s2d_stop();
     }
@@ -620,7 +620,7 @@ void handle_waiting_to_start(void) {
                 switch (gSelectedOption)
                 {
                     case OPT_WIDE:
-                        gWidescreen = !gWidescreen;
+                        widescreen_set_save(!gWidescreen);
                         break;
                     case OPT_RETURN:
                     default:
@@ -633,7 +633,7 @@ void handle_waiting_to_start(void) {
                 switch (gSelectedOption)
                 {
                     case OPT_SPECIAL_WIDE:
-                        gWidescreen = !gWidescreen;
+                        widescreen_set_save(!gWidescreen);
                         break;
                     case OPT_SPECIAL_CHALLENGE:
                         gChallengeMode = !gChallengeMode;
@@ -707,8 +707,23 @@ void handle_waiting_to_start(void) {
     }
 }
 
-#define OPT_STATUS_LEFT 90
-#define OPT_STATUS_LEFT_EXTRA 120
+#define OPT_STATUS_LEFT CONV_WIDE(100)
+// #define OPT_STATUS_LEFT 90
+#define OPT_STATUS_LEFT_EXTRA CONV_WIDE(124)
+
+#define OPT_Y(n) ((int) (SCREEN_HEIGHT - (50 + ((n) * 20))))
+
+
+void print_selected_option(void) {
+    s2d_print_deferred(
+        15,
+        OPT_Y(sNumOptions - (gSelectedOption + 1)),
+        ALIGN_LEFT,
+        sFadeAlpha,
+        0.5f,
+        "|"
+    );
+}
 
 void render_start_options(void) {
     sNumOptions = save_file_get_flags() & SAVE_FLAG_BEAT_GAME ? 4 : 2;
@@ -722,7 +737,7 @@ void render_start_options(void) {
     if (sNumOptions == 2) {
         s2d_print_deferred(
             20,
-            (int) (SCREEN_HEIGHT - 70),
+            OPT_Y(1),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == 0 ? 1.0f : 0.4f)),
             0.5f,
@@ -730,7 +745,7 @@ void render_start_options(void) {
         );
         s2d_print_deferred(
             OPT_STATUS_LEFT,
-            (int) (SCREEN_HEIGHT - 70),
+            OPT_Y(1),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == 0 ? 1.0f : 0.4f)),
             0.5f,
@@ -739,7 +754,7 @@ void render_start_options(void) {
 
         s2d_print_deferred(
             20,
-            (int) (SCREEN_HEIGHT - 50),
+            OPT_Y(0),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == 1 ? 1.0f : 0.4f)),
             0.5f,
@@ -748,7 +763,7 @@ void render_start_options(void) {
     } else {
         s2d_print_deferred(
             20,
-            (int) (SCREEN_HEIGHT - 110),
+            OPT_Y(3),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_WIDE ? 1.0f : 0.4f)),
             0.5f,
@@ -756,7 +771,7 @@ void render_start_options(void) {
         );
         s2d_print_deferred(
             OPT_STATUS_LEFT,
-            (int) (SCREEN_HEIGHT - 110),
+            OPT_Y(3),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_WIDE ? 1.0f : 0.4f)),
             0.5f,
@@ -765,7 +780,7 @@ void render_start_options(void) {
 
         s2d_print_deferred(
             20,
-            (int) (SCREEN_HEIGHT - 90),
+            OPT_Y(2),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_CHALLENGE ? 1.0f : 0.4f)),
             0.5f,
@@ -773,7 +788,7 @@ void render_start_options(void) {
         );
         s2d_print_deferred(
             OPT_STATUS_LEFT_EXTRA,
-            (int) (SCREEN_HEIGHT - 90),
+            OPT_Y(2),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_CHALLENGE ? 1.0f : 0.4f)),
             0.5f,
@@ -782,7 +797,7 @@ void render_start_options(void) {
 
         s2d_print_deferred(
             20,
-            (int) (SCREEN_HEIGHT - 70),
+            OPT_Y(1),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_SPEEDRUN ? 1.0f : 0.4f)),
             0.5f,
@@ -790,7 +805,7 @@ void render_start_options(void) {
         );
         s2d_print_deferred(
             OPT_STATUS_LEFT_EXTRA,
-            (int) (SCREEN_HEIGHT - 70),
+            OPT_Y(1),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_SPEEDRUN ? 1.0f : 0.4f)),
             0.5f,
@@ -799,14 +814,14 @@ void render_start_options(void) {
 
         s2d_print_deferred(
             20,
-            (int) (SCREEN_HEIGHT - 50),
+            OPT_Y(0),
             ALIGN_LEFT,
             MIN(200, sFadeAlpha * (gSelectedOption == OPT_SPECIAL_RETURN ? 1.0f : 0.4f)),
             0.5f,
             sOptionsReturn
         );
     }
-    
+    print_selected_option();
 }
 
 void title_screen_waiting_to_start(void) {
@@ -850,6 +865,7 @@ void title_screen_waiting_to_start(void) {
                 0.5f,
                 sOptions
             );
+            print_selected_option();
         }
     }
 }
@@ -1069,7 +1085,17 @@ void render_game(void) {
             if (isDone) set_tip_type(0);
         }
         calculate_and_update_fps();
-        if (gShowingCredits) render_final_credits();
+        if (gShowingCredits) {
+            render_final_credits();
+            if (gGameLagged) {
+                s32 numLagFrames = gGameLagged;
+                while (numLagFrames > 0) {
+                    s2d_reset_defer_index();
+                    render_final_credits();
+                    numLagFrames--;
+                }
+            }
+        }
 
 #ifdef CDEBUG
         // if (gPlayer1Controller->buttonPressed & L_TRIG && gPlayer1Controller->buttonDown & R_TRIG)

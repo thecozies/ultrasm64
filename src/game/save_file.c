@@ -16,6 +16,7 @@
 #endif
 #include "puppycam2.h"
 #include "string.h"
+#include "rendering_graph_node.h"
 
 #define ALIGN4(val) (((val) + 0x3) & ~0x3)
 
@@ -400,6 +401,20 @@ void puppycam_set_save(void)
     //gSaveBuffer.menuData.saveOptions.sensitivityX = gPuppyCam.options.sensitivityX;
 
     gSaveBuffer.menuData.firstBoot = 4;
+
+    gMainMenuDataModified = TRUE;
+    save_main_menu_data();
+}
+
+void widescreen_get_save(void)
+{
+    gWidescreen = gSaveBuffer.menuData.widescreen;
+}
+
+void widescreen_set_save(s32 enabled)
+{
+    gSaveBuffer.menuData.widescreen = enabled;
+    gWidescreen = enabled;
 
     gMainMenuDataModified = TRUE;
     save_main_menu_data();

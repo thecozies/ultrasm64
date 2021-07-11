@@ -60,6 +60,7 @@ struct MainMenuSaveData
 #endif
     u8 firstBoot;
     struct gPuppyOptions saveOptions;
+    s8 widescreen;
     struct SaveBlockSignature signature;
 };
 
@@ -75,6 +76,9 @@ struct SaveBuffer
 void puppycam_set_save(void);
 void puppycam_get_save(void);
 void puppycam_check_save(void);
+
+void widescreen_set_save(s32 enabled);
+void widescreen_get_save(void);
 
 extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;

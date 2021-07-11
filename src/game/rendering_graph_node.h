@@ -40,6 +40,8 @@ extern s32 gWidescreen;
 #define FOUR_BY_3 (4.0f / 3.0f)
 #define SIXTEEN_BY_9 (16.0f / 9.0f)
 
+#define CONV_WIDE(x) (gWidescreen ? (x) * 0.75f : x)
+
 void geo_process_node_and_siblings(struct GraphNode *firstNode);
 void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor);
 
