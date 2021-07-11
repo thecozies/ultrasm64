@@ -425,12 +425,22 @@ void change_vi(OSViMode *mode, int width, int height){
     }
     else
     {
+        // mode->comRegs.ctrl &= ~VI_CTRL_ANTIALIAS_MASK;
         mode->fldRegs[0].origin = width*2;
         mode->fldRegs[1].origin = width*4;
         mode->fldRegs[0].yScale = ((height*1024)/240);
         mode->fldRegs[1].yScale = ((height*1024)/240);
     }
 }
+
+// void change_vi_AA(s32 turnOn){
+//     if (turnOn) VI.comRegs.ctrl |= VI_CTRL_ANTIALIAS_MASK;
+//     else VI.comRegs.ctrl &= ~VI_CTRL_ANTIALIAS_MASK;
+
+//     osViSetMode(&VI);
+//     osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
+//     osViSetSpecialFeatures(OS_VI_GAMMA_OFF);
+// }
 
 /**
  * Initialize hardware, start main thread, then idle.
@@ -442,7 +452,8 @@ void thread1_idle(UNUSED void *arg) {
 	case OS_TV_NTSC:
 		// NTSC
         //osViSetMode(&osViModeTable[OS_VI_NTSC_LAN1]);
-        VI = osViModeTable[OS_VI_NTSC_LAN1];
+        // VI = osViModeTable[OS_VI_NTSC_LAN1];
+        VI = osViModeTable[OS_VI_NTSC_LPN1];
 		break;
 	case OS_TV_MPAL:
 		// MPAL
