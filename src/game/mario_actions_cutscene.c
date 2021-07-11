@@ -2366,9 +2366,9 @@ s32 act_orb_reveal(struct MarioState *m) {
 static void move_final_orb_pos(void) {
     s8 beginning = gCurCutsceneTimer < LUCYS_LEVITATION_NIRVANA;
     if (beginning) {
-        gFinalOrbPos[1]++;
+        gFinalOrbPos[1] += 0.6f;
     } else {
-        gFinalOrbPos[1] += 15.0f;
+        gFinalOrbPos[1] += 5.0f;
     }
 }
 
