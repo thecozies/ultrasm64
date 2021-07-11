@@ -16,7 +16,7 @@ The original goal of this hack on a technical level was to be 100% N64 compatibl
     - Air jump. A certain object will allow you to jump again in the air with A.
 - **Water:**
     - Move any lateral direction using only the controller stick.
-    - Hold A to ascend, and B to decend
+    - Hold A to ascend, and B to descend
     - Water groundpound. Like a normal groundpund, but in water.
     - Water jump. After reaching the surface, press A to jump.
     - Similar movement as Super Mario Sunshine.
