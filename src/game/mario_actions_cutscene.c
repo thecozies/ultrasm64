@@ -28,6 +28,8 @@
 #include "sound_init.h"
 #include "rumble_init.h"
 #include "mario_actions_moving.h"
+#include "levels/pss/header.h"
+
 
 // TODO: put this elsewhere
 enum SaveOption { SAVE_OPT_SAVE_AND_CONTINUE = 1, SAVE_OPT_SAVE_AND_QUIT, SAVE_OPT_CONTINUE_DONT_SAVE };
@@ -2364,12 +2366,9 @@ s32 act_orb_reveal(struct MarioState *m) {
 }
 
 static void move_final_orb_pos(void) {
-    s8 beginning = gCurCutsceneTimer < LUCYS_LEVITATION_NIRVANA;
-    if (beginning) {
-        gFinalOrbPos[1] += 0.6f;
-    } else {
-        gFinalOrbPos[1] += 5.0f;
-    }
+    Vec3f *orbFrames = segmented_to_virtual(lucys_levitation_orb_frames);
+
+    vec3f_copy(gFinalOrbPos, orbFrames[gCurCutsceneTimer]);
 }
 
 // #define MIN_ORB_GRAV_STRENGTH 5.0f
@@ -2407,6 +2406,11 @@ static void gravitate_towards_center_of_orb(struct MarioState *m) {
      * Maybe this is happening now?
      * Looks too "whippy", not enough momentum continuing
      */
+    if (gCurCutsceneTimer >= LUCYS_LEVITATION_CREDITS_IN_ORB) {
+        vec3f_copy(m->pos, gFinalOrbPos);
+        vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
+        return;
+    }
 
     vec3f_diff(diff, gFinalOrbPos, m->pos);
     // clamp_vec3f_grav(diff, m);
@@ -2464,10 +2468,14 @@ s32 act_lucys_levitation(struct MarioState *m) {
     }
     m->actionTimer++;
 
-    if (gCurCutsceneTimer == LUCYS_LEVITATION_START_CREDITS) gShowingCredits = TRUE;
+    if (gCurCutsceneTimer >= LUCYS_LEVITATION_START_CREDITS && gCurCutsceneTimer <= LUCYS_LEVITATION_END_CREDITS - 1000) gShowingCredits = TRUE;
 
     move_final_orb_pos();
     gravitate_towards_center_of_orb(m);
+
+    if (CUTSCENE_RANGE(LUCYS_LEVITATION_CREDITS_IN_ORB, LUCYS_LEVITATION_CAM_EXIT_ORB)) m->faceAngle[1] -= DEGREES(2);
+    else if (gCurCutsceneTimer > LUCYS_LEVITATION_CAM_EXIT_ORB) m->faceAngle[1] = DEGREES(0);
+    m->marioObj->header.gfx.angle[1] = m->faceAngle[1];
 
     switch (m->actionState) {
         case 0:
@@ -3122,7 +3130,7 @@ s32 mario_execute_cutscene_action(struct MarioState *m) {
         case ACT_TEMPLE_1_INTRO:             cancel = act_temple_1_intro(m);             break;
         case ACT_CAMP_INTRO:                 cancel = act_camp_intro(m);                 break;
         case ACT_ORB_REVEAL:                 cancel = act_orb_reveal(m);                 break;
-        case ACT_LUCYS_LEVITATION:           cancel = act_lucys_levitation(m);                 break;
+        case ACT_LUCYS_LEVITATION:           cancel = act_lucys_levitation(m);           break;
     }
     /* clang-format on */
 

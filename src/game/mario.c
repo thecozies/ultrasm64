@@ -39,6 +39,11 @@
 #include "rendering_graph_node.h"
 #include "tutorial.h"
 
+#ifdef CDEBUG
+#include "s2dex/s2d_buffer.h"
+#include "s2dex/s2d_print.h"
+#endif
+
 u32 unused80339F10;
 s8 filler80339F1C[20];
 s8 gCheckingWaterForMario = FALSE;
@@ -1465,7 +1470,11 @@ void update_mario_geometry_inputs(struct MarioState *m) {
     // and check for the floor there.
     // This can cause errant behavior when combined with astral projection,
     // since the graphical position was not Mario's previous location.
-    if (m->floor == NULL) {
+    if (m->floor == NULL && gCurCutscene == CUTSCENE_LUCYS_LEVITATION) {
+        assign_vec3f_to_backup_floor(m->pos);
+        m->floor = &gBackupFloor;
+    }
+    else if (m->floor == NULL) {
         vec3f_copy(m->pos, m->marioObj->header.gfx.pos);
         m->floorHeight = find_floor(m->pos[0], m->pos[1], m->pos[2], &m->floor);
     }
@@ -2201,6 +2210,11 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         // f32 speed = sqrtf((gMarioState->vel[0] * gMarioState->vel[0]) + (gMarioState->vel[1] * gMarioState->vel[1]) + (gMarioState->vel[2] * gMarioState->vel[2]));
         // print_text_fmt_int(80, 20, "%d", (s32) speed);
         // fadeout_level_music(1);
+        if (gCurCutscene) {
+            char timerText[30];
+            sprintf(timerText, "%d", (s32)gCurCutsceneTimer);
+            s2d_print_deferred(20, SCREEN_HEIGHT - 50, ALIGN_LEFT, 255, 0.5f, timerText);
+        }
 #endif
 
         handle_waiting_to_start();

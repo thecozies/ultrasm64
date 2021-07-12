@@ -8,6 +8,32 @@
 #include "surface_collision.h"
 #include "surface_load.h"
 
+struct Surface gBackupFloor =
+{
+    SURFACE_DEFAULT,
+    0,
+    0,
+    0,
+    FLOOR_LOWER_LIMIT,
+    FLOOR_LOWER_LIMIT,
+    { 0, FLOOR_LOWER_LIMIT, 0 },
+    { 0, FLOOR_LOWER_LIMIT, 0 },
+    { 0, FLOOR_LOWER_LIMIT, 0 },
+    { 0.0f, 0.0f, 0.0f },
+    0.0f,
+    NULL    
+};
+
+void assign_vec3f_to_backup_floor(Vec3f pos) {
+    gBackupFloor.vertex1[0] = (s16)pos[0] - 100;
+    gBackupFloor.vertex1[2] = (s16)pos[2] - 100;
+    gBackupFloor.vertex2[0] = (s16)pos[0] + 100;
+    gBackupFloor.vertex2[2] = (s16)pos[2] - 100;
+    gBackupFloor.vertex3[0] = (s16)pos[0] + 100;
+    gBackupFloor.vertex3[2] = (s16)pos[2];
+}
+
+
 /**************************************************
  *                      WALLS                     *
  **************************************************/

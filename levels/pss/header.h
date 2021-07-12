@@ -17,6 +17,7 @@ extern const Gfx pss_seg7_dl_0700E3E8[];
 extern const Collision pss_seg7_collision[];
 extern const MacroObject pss_seg7_macro_objs[];
 #include "levels/pss/marble/marble.h"
+#include "levels/pss/frames/frames.h"
 
 // script
 extern const LevelScript level_pss_entry[];

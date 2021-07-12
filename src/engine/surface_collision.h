@@ -44,5 +44,7 @@ f32 find_water_level_and_floor(f32 x, f32 z, struct Surface **pfloor);
 f32 find_water_level(f32 x, f32 z);
 f32 find_poison_gas_level(f32 x, f32 z);
 // void debug_surface_list_info(f32 xPos, f32 zPos);
+extern struct Surface gBackupFloor;
+void assign_vec3f_to_backup_floor(Vec3f pos);
 
 #endif // SURFACE_COLLISION_H

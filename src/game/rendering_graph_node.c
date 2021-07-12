@@ -375,7 +375,10 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
 static void geo_process_level_of_detail(struct GraphNodeLevelOfDetail *node) {
 	f32 distanceFromCam = -gMatStack[gMatStackIndex][3][2];
     if (gOverrideLOD) {
-        distanceFromCam = -10001.0f;
+        if (node->minDistance == -2020 || node->minDistance == 2020) {
+            if (!gIsConsole) distanceFromCam = 0.0f;
+        }
+        else distanceFromCam = -10001.0f;
     } else if (!gIsConsole) {
         distanceFromCam = 0.0f;
     }

@@ -6,7 +6,7 @@
 #define PAL_ROT_SPEED 10
 
 void scroll_marble(void) {
-	if (gCurCutsceneTimer <= LUCYS_LEVITATION_WARPING) return;
+	if ((gCurCutscene != CUTSCENE_LUCYS_LEVITATION) || (gCurCutsceneTimer <= LUCYS_LEVITATION_WARPING)) return;
 	int cycle = gGlobalTimer % PAL_ROT_SPEED;
 
 	if (gGlobalTimer % PAL_ROT_SPEED == 0) {

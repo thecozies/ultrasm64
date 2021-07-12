@@ -283,7 +283,7 @@ Gfx *geo_backdrop_move(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx
         ((struct GraphNodeTranslationRotation *) node->next)->translation[2] = gLakituState.pos[2];
 
         if (gCurCutscene == CUTSCENE_LUCYS_LEVITATION && CUTSCENE_RANGE(LUCYS_LEVITATION_CREDITS_IN_ORB, LUCYS_LEVITATION_CAM_EXIT_ORB)) {
-            ((struct GraphNodeTranslationRotation *) node->next)->rotation[1] += DEGREES(1);
+            ((struct GraphNodeTranslationRotation *) node->next)->rotation[1] -= DEGREES(1);
         }
         // ((struct GraphNodeTranslation *) node->next)->translation[0] = gLakituState.pos[0] * .98;
         // ((struct GraphNodeTranslation *) node->next)->translation[1] = gLakituState.pos[1] * .98;

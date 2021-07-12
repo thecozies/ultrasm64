@@ -90,19 +90,29 @@ void bhv_big_orb_reveal(void) {
 
 void bhv_big_orb_levitation(void) {
     s32 isBeam = (o->oBehParams >> 16) > 0;
+    s32 lockOrbToCam;
     f32 distFromCam;
+    s32 creditsInOrb = CUTSCENE_RANGE(LUCYS_LEVITATION_CREDITS_IN_ORB, LUCYS_LEVITATION_CAM_EXIT_ORB);
     vec3f_copy(&o->oPosX, gFinalOrbPos);
 
     distFromCam = dist_between_object_and_camera(o);
-    gOverrideLOD = distFromCam < BIG_ORB_RADIUS;
+    lockOrbToCam =
+        (distFromCam < BIG_ORB_RADIUS + 100) ||
+        (creditsInOrb);
 
-    u8 increaseAmt = gOverrideLOD ? 140 : 180;
-    f32 maxMag = ABS((sinf(((f32)gCurCutsceneTimer) * 0.1f) * 25.0f) + 5.0f);
-    o->oOpacity = (sinf(((f32)gCurCutsceneTimer) * 0.25f) * maxMag) + increaseAmt;
-
-    if (gOverrideLOD) set_orb_locked_to_cam();
-    else {
+    u8 increaseAmt = lockOrbToCam ? 140 : 180;
+    f32 magRange = 25.0f;
+    if (creditsInOrb) {
+        increaseAmt = 220;
+        magRange = 12.0f;
     }
+    f32 maxMag = ABS((sinf(((f32)gCurCutsceneTimer) * 0.1f) * magRange) + 5.0f);
+    o->oOpacity = MIN((sinf(((f32)gCurCutsceneTimer) * 0.25f) * maxMag) + increaseAmt, 255);
+
+    if (lockOrbToCam) set_orb_locked_to_cam();
+    gOverrideLOD = lockOrbToCam || (gCurCutsceneTimer >= LUCYS_LEVITATION_HIDE_LEVEL);
+
+    if (creditsInOrb) o->oFaceAngleYaw -= DEGREES(2);
 }
 
 void bhv_big_orb_loop(void) {

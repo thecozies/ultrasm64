@@ -1,7 +1,3 @@
-#include "game/mario.h"
-#include "game/game_init.h"
-#include "header.h"
-
 void scroll_pss_dl_a_avisualMiddle_mesh_layer_1_vtx_0() {
 	int i = 0;
 	int count = 24;
@@ -209,7 +205,11 @@ void scroll_pss() {
 	scroll_pss_dl_a__dehwater_mesh_layer_1_vtx_1();
 	scroll_sts_mat_pss_dl_watero_layer1();
 	scroll_sts_mat_pss_dl_mist_layer5();
-	if (gCurCutsceneTimer >= LUCYS_LEVITATION_WARPING) {
+	if (
+		(gCurCutscene == CUTSCENE_LUCYS_LEVITATION)
+		&&
+		(gCurCutsceneTimer >= LUCYS_LEVITATION_WARPING)
+	) {
 		scroll_pss_dl_a_avisualMiddle_mesh_layer_1_vtx_0();
 		scroll_pss_dl_a_main_mesh_layer_1_vtx_1();
 		scroll_pss_dl_a_main2_mesh_layer_1_vtx_1();

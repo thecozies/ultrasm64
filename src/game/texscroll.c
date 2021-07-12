@@ -6,6 +6,8 @@
 #include "tile_scroll.h"
 #include "texscroll.h"
 #include "scroll_marble.h"
+#include "game/mario.h"
+#include "game/game_init.h"
 
 #ifdef TARGET_N64
 #define SCROLL_CONDITION(condition) condition
@@ -31,7 +33,6 @@ void scroll_textures() {
 
 	if(SCROLL_CONDITION(sSegmentROMTable[0x7] == (uintptr_t)_pss_segment_7SegmentRomStart)) {
 		scroll_textures_pss();
-		if (gCurCutscene == CUTSCENE_LUCYS_LEVITATION && gCurCutsceneTimer > LUCYS_LEVITATION_WARPING) scroll_marble();
 	}
 
 	if(SCROLL_CONDITION(sSegmentROMTable[0x7] == (uintptr_t)_castle_courtyard_segment_7SegmentRomStart)) {
@@ -44,6 +45,10 @@ void scroll_textures() {
 
 	if(SCROLL_CONDITION(sSegmentROMTable[0x5] == (uintptr_t)_group8_yay0SegmentRomStart)) {
 		scroll_textures_group8();
+	}
+
+	if(SCROLL_CONDITION(sSegmentROMTable[0x7] == (uintptr_t)_pss_segment_7SegmentRomStart)) {
+		if (TRUE || (gCurCutscene == CUTSCENE_LUCYS_LEVITATION && gCurCutsceneTimer > LUCYS_LEVITATION_WARPING)) scroll_marble();
 	}
 
 }

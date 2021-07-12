@@ -25,3 +25,5 @@
 
 #include "levels/pss/squat_palm/model.inc.c"
 #include "levels/pss/squat_palm/collision.inc.c"
+
+#include "levels/pss/frames/frames.inc.c"

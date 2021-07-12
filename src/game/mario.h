@@ -54,7 +54,11 @@ enum LUCYS_LEVITATION_ACTS {
     LUCYS_LEVITATION_ACCEPTED = 134,
     LUCYS_LEVITATION_NIRVANA  = 190,
     LUCYS_LEVITATION_WARPING  = 806,
+    LUCYS_LEVITATION_HIDE_LEVEL  = 1423,
     LUCYS_LEVITATION_START_CREDITS  = 1605,
+    LUCYS_LEVITATION_CREDITS_IN_ORB  = 1804,
+    LUCYS_LEVITATION_CAM_EXIT_ORB  = 3037,
+    LUCYS_LEVITATION_END_CREDITS  = 3440,
     LUCYS_LEVITATION_FINAL_FRAME = 4920
 };
 
@@ -80,6 +84,8 @@ enum LUCY_MOUTH_STATES {
 #define LUCY_HAPPY_DANCE_ANIM           4
 #define LUCY_LEVITATING_START           5
 #define LUCY_LEVITATING                 6
+
+#define CUTSCENE_RANGE(r1, r2) (gCurCutsceneTimer > r1 && gCurCutsceneTimer <= r2)
 
 s32 is_anim_at_end(struct MarioState *m);
 s32 is_anim_past_end(struct MarioState *m);

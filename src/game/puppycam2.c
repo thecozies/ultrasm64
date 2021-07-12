@@ -22,6 +22,7 @@
 #include "mario.h"
 #include "puppyframes.h"
 #include "rendering_graph_node.h"
+#include "levels/pss/header.h"
 
 #define OFFSET 30.0f
 #define STEPS 4
@@ -1697,44 +1698,36 @@ void orb_reveal_cutscene(void) {
     sLerpFromLastFrame = FALSE;
 }
 
+typedef Vec3f FocusPos[2];
+
 void lucys_levitation_cutscene(void) {
+    FocusPos *allFrames = segmented_to_virtual(lucys_levitation_frames);
+    // Vec3f *curFrame = allFrames[gCurCutsceneTimer];
+
     sCutsceneVp.vp.vscale[0] = 640;
     sCutsceneVp.vp.vscale[1] = 360;
     sCutsceneVp.vp.vtrans[0] = 640;
     sCutsceneVp.vp.vtrans[1] = 480;
     override_viewport_and_clip(NULL, &sCutsceneVp, 0, 0, 0);
-    set_fov_function(CAM_FOV_SET_CUSTOM);
-    gCustomFOV = FOV_150MM;
+    // set_fov_function(CAM_FOV_SET_CUSTOM);
+    // gCustomFOV = FOV_150MM;
     gCloseClip = 2;
-    // gCloseClip = 2;
 
+    if (gCurCutsceneTimer < LUCYS_LEVITATION_FINAL_FRAME - 1) {
+        vec3f_to_vec3s(gPuppyCam.pos, allFrames[gCurCutsceneTimer][0]);
+        vec3f_to_vec3s(gPuppyCam.focus, allFrames[gCurCutsceneTimer][1]);
+        gPuppyCam.yaw = calculate_yaws(gPuppyCam.pos, gPuppyCam.focus);
+        gPuppyCam.yawTarget = gPuppyCam.yaw;
 
-    // if (gCurCutsceneTimer == ORB_REVEAL_FINAL_FRAME - 1) {
-    //     gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
-    //     gPuppyCam.yawTarget = gPuppyCam.yaw;
-    //     vec3s_copy(gPuppyCam.pos, final_orb_reveal[gCurCutsceneTimer][0]);
-    //     vec3s_copy(gPuppyCam.focus, final_orb_reveal[gCurCutsceneTimer][1]);
-    // } else if (gCurCutsceneTimer >= ORB_REVEAL_FINAL_FRAME) {
-    //     gPuppyCam.yaw = gMarioState->faceAngle[1] + 0x8000;
-    //     gPuppyCam.yawTarget = gPuppyCam.yaw;
-    //     gCloseClip = FALSE;
-    //     set_current_cutscene(CUTSCENE_NONE);
-    //     set_fov_45();
-    //     set_fov_function(CAM_FOV_DEFAULT);
-    // } else {
-        // vec3s_copy(gPuppyCam.pos, final_orb_reveal[gCurCutsceneTimer][0]);
-        // vec3s_copy(gPuppyCam.focus, final_orb_reveal[gCurCutsceneTimer][1]);
-        // gPuppyCam.yaw = calculate_yaws(gPuppyCam.pos, gPuppyCam.focus);
-    // }
-    // vec3s_copy(gPuppyCam.focus, gMarioState->pos);
-    vec3s_copy(gPuppyCam.pos, final_orb_reveal[109][0]);
-    // vec3s_copy(gPuppyCam.focus, final_orb_reveal[109][1]);
-    gPuppyCam.focus[0] = (s16)gFinalOrbPos[0];
-    gPuppyCam.focus[1] = (s16)gFinalOrbPos[1];
-    gPuppyCam.focus[2] = (s16)gFinalOrbPos[2];
-    gPuppyCam.yaw = calculate_yaws(gPuppyCam.pos, gPuppyCam.focus);
-    gPuppyCam.yawTarget = gPuppyCam.yaw;
-    gPuppyCam.flags &= ~PUPPYCAM_BEHAVIOUR_COLLISION;
+        vec3f_copy(gLakituState.pos, allFrames[gCurCutsceneTimer][0]);
+        vec3f_copy(gLakituState.focus, allFrames[gCurCutsceneTimer][1]);
+
+        vec3f_copy(gCamera->pos, allFrames[gCurCutsceneTimer][0]);
+        vec3f_copy(gCamera->focus, allFrames[gCurCutsceneTimer][1]);
+    } else {
+        gPuppyCam.flags &= ~PUPPYCAM_BEHAVIOUR_COLLISION;
+    }
+
 }
 
 void puppycam_handle_cutscene(void) {
@@ -1758,7 +1751,6 @@ void puppycam_handle_cutscene(void) {
             orb_reveal_cutscene();
             break;
         case CUTSCENE_LUCYS_LEVITATION:
-            lucys_levitation_cutscene();
             break;
         default:
             if (sSavedZoomSet != 4) {
@@ -2118,6 +2110,12 @@ static void puppycam_apply(void)
         if (sFovNeedsReset == 1) set_fov_45();
         set_fov_function(CAM_FOV_DEFAULT);
         sFovNeedsReset = FALSE;
+    }
+
+    if (gCurCutscene == CUTSCENE_LUCYS_LEVITATION) {
+        lucys_levitation_cutscene();
+        gCamera->yaw = gPuppyCam.yaw;
+        return;
     }
 
     if (sTimeLeftLerpCutscene && gCurCutscene == CUTSCENE_NONE && sLerpFromLastFrame) {
