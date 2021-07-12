@@ -3,9 +3,10 @@
 #include "game/game_init.h"
 #include "levels/pss/header.h"
 
-#define PAL_ROT_SPEED 8
+#define PAL_ROT_SPEED 10
 
 void scroll_marble(void) {
+	if (gCurCutsceneTimer <= LUCYS_LEVITATION_WARPING) return;
 	int cycle = gGlobalTimer % PAL_ROT_SPEED;
 
 	if (gGlobalTimer % PAL_ROT_SPEED == 0) {
