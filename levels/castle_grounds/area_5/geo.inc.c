@@ -71,7 +71,7 @@ const GeoLayout castle_grounds_area_5[] = {
 				GEO_CAMERA(CAMERA_MODE_8_DIRECTIONS, 0, 0, 0, 0, -100, 0, geo_camera_main),
 				GEO_OPEN_NODE(),
 					GEO_ASM(0, geo_backdrop_move),
-					GEO_TRANSLATE_NODE_WITH_DL(0, 0, 0, 0, sky_dome_sky_dome_001_mesh_layer_0),
+					GEO_TRANSLATE_ROTATE_WITH_DL(0, 0, 0, 0, 0, 0, 0, sky_dome_sky_dome_001_mesh_layer_0),
 					GEO_DISPLAY_LIST(0, sky_dome_material_revert_render_settings),
 					GEO_BRANCH(1, castle_grounds_area_5_geo),
 					GEO_RENDER_OBJ(),
