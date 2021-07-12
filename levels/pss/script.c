@@ -45,7 +45,7 @@ const LevelScript level_pss_entry[] = {
 		OBJECT(MODEL_NONE, -5676, -6037, -95, 0, 90, 0, 0xFF060000, bhvCheckpoint),
 		OBJECT(MODEL_NONE, -7318, 5026, -95, -180, 90, 0, 0xFF060000, bhvCheckpoint),
 		OBJECT(MODEL_PARASITE, -7318, -5525, -95, -180, 90, 0, 0x00080000, bhvParasite),
-		OBJECT(MODEL_PARASITE, -5756, -4499, -95, -180, 90, 0, 0x00080002, bhvParasite),
+		OBJECT(MODEL_PARASITE, -7318, -5525, -95, -180, 90, 0, 0x00080002, bhvParasite),
 		OBJECT(MODEL_NONE, -7318, 5258, -95, -180, 90, 0, 0x000A0000, bhvAirborneWarp),
 		OBJECT(MODEL_SLIDING_DOOR, 1128, -6037, -95, 0, 90, 0, 0xFF090000, bhvSlidingDoorNoRoom),
 		OBJECT(MODEL_SQUAT_PALM, 1714, -4037, -2386, 0, -76, 0, 0x00000000, bhvSquatPalm),
@@ -64,7 +64,7 @@ const LevelScript level_pss_entry[] = {
 		TERRAIN(pss_area_0_collision),
 		ROOMS(pss_area_0_collision_rooms),
 		MACRO_OBJECTS(pss_area_0_macro_objs),
-		SET_BACKGROUND_MUSIC(0x00, SEQ_STREAMED_TEMPLE_TWO),
+		// SET_BACKGROUND_MUSIC(0x00, SEQ_STREAMED_TEMPLE_TWO),
 		TERRAIN_TYPE(TERRAIN_STONE),
 	END_AREA(),
 
